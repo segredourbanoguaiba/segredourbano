@@ -3,19 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="google310d7cbddffa722c" />
-    <title>Segredo Urbano</title>
+    <meta name="google-site-verification" content="khmTM9yemLAQYvN3ZZHNZX_VKoL3l8fWSJHmD42Xii4" />
+    <title>Segredo Urbano | Guaíba e Região</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f4f4; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: inline-block; }
+        body { background: #000; color: #fff; font-family: 'Montserrat', sans-serif; margin: 0; text-align: center; overflow-x: hidden; }
+        header { border-bottom: 2px solid red; padding: 50px 20px 30px; background: linear-gradient(to bottom, #1a0000, #000); position: relative; }
+        .loc-badge-header { display: inline-block; background: #222; border: 1px solid red; color: red; padding: 5px 15px; border-radius: 20px; font-size: 11px; margin-bottom: 35px; font-weight: bold; letter-spacing: 1px; }
+        .logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid red; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        
+        #btn-adm-oculto { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; display: none; }
+        
+        #aviso-18 { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #220000 0%, #000 100%); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; }
+        #aviso-18 h1 { color: #d4af37; font-family: 'Playfair Display'; font-size: 42px; font-weight: 900; margin-bottom: 10px; }
+        .tela { display: none; padding: 20px; }
+        .ativa { display: block !important; }
+        .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 12px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; }
+        .btn small { display: block; font-size: 10px; text-transform: none; font-weight: normal; margin-top: 3px; }
+        .btn-whats { background: #25D366 !important; }
+        #btn-suporte-fixo { position: fixed; bottom: 80px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid red; z-index: 1000; display: none; }
+
+        .cidade-txt { text-align: left; font-size: 10px; color: #ff0000; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; }
+        .img-container { position: relative; border-radius: 15px; overflow: hidden; border: 1px solid #222; }
+        .card-pago img { width: 100%; height: 500px; object-fit: cover; display: block; }
+        .card-pago h2 { font-family: 'Playfair Display', serif; font-size: 30px; margin: 15px 0 5px; color: #fff; text-align: center; }
+        
+        .btn-seta { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: white; border: none; padding: 20px 12px; font-size: 24px; cursor: pointer; z-index: 20; border-radius: 5px; }
+        .seta-esq { left: 5px; }
+        .seta-dir { right: 5px; }
+
+        .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; }
+        .card-gratis-flex { display: flex; align-items: center; }
+        .card-gratis .img-container { width: 85px; height: 85px; margin-right: 15px; flex-shrink: 0; }
+        .card-gratis img { width: 85px; height: 85px; object-fit: cover; border-radius: 10px; }
+        
+        .badge-fotos { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
+        #modal-galeria { display: none; position: fixed; z-index: 1000000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
+        .btn-fechar-galeria { position: absolute; top: 20px; right: 25px; color: white; font-size: 50px; cursor: pointer; z-index: 1000005; font-weight: bold; }
+        .modal-cont { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,0,0,0.7); color: white; border: none; font-size: 28px; padding: 18px; border-radius: 5px; z-index: 1000004; }
+        
+        input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
+        #aviso-pix-central { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
+        
+        /* ADM */
+        .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; }
+        .badge-plano-adm { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 5px; background: #333; color: #fff; }
+        .plano-pago { background: gold !important; color: #000 !important; }
+        .area-revisao { background: #0a0a0a; padding: 15px; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid red; }
+        .grade-fotos-adm { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .foto-revisao { position: relative; width: 65px; height: 85px; cursor: pointer; }
+        .foto-revisao img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
+        .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; border: 2px solid #000; font-size: 14px; cursor: pointer; font-weight: bold; z-index: 10; }
+        .metric-card { background: #1a0000; border: 1px solid red; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>Segredo Urbano</h1>
-        <p>Site em atualização para o domínio <strong>.com.br</strong></p>
-        <p>E-mail: everronourives1283@gmail.com</p>
-        <p>WhatsApp: (51) 98183-3377</p>
+
+    <div id="aviso-18">
+        <h1>AVISO</h1>
+        <p>Conteúdo para maiores de 18 anos</p>
+        <button class="btn" onclick="fecharAviso18()">Entrar</button>
+        <button class="btn" style="background:transparent; border: 1px solid #444; color: #666;" onclick="window.location.href='https://www.google.com'">Sair</button>
     </div>
+
+    <div id="aviso-pix-central">
+        <b style="color:#25D366; font-size:18px;">✓ COPIADO!</b><br><br>
+        <p style="font-size:14px; color:#fff; line-height:1.4; margin:0;">Agora abra o app do seu banco e use a opção <b>Pix Copia e Cola</b> para finalizar.</p>
+        <small style="display:block; margin-top:15px; color:#666;">Aguarde o redirecionamento...</small>
+    </div>
+
+    <a href="https://wa.me/5551981833377" target="_blank" id="btn-suporte-fixo">● SUPORTE</a>
+
+    <header>
+        <button id="btn-adm-oculto" onclick="logAdm()"></button>
+        <div class="loc-badge-header">📍 GUAÍBA E REGIÃO</div>
+        <div class="logo-container">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+                <path d="M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z" fill="rgba(255,0,0,0.15)" />
+                <text x="50%" y="62%" text-anchor="middle" font-family="'Playfair Display', serif" font-size="45" fill="white">S</text>
+                <text x="68%" y="72%" text-anchor="middle" font-family="'Playfair Display', serif" font-size="25" fill="red" font-weight="900">U</text>
+            </svg>
+        </div>
+        <b style="color:red; font-size:26px; text-transform:uppercase; letter-spacing:2px; font-family:'Playfair Display';">Segredo Urbano</b>
+    </header>
+
+    <div id="modal-galeria">
+        <div class="btn-fechar-galeria" onclick="fecharGaleria()">&times;</div>
+        <button class="btn-nav" style="left:15px;" onclick="mudarFoto(-1)">&#10094;</button>
+        <div class="modal-cont"><img id="img-ampliada" src="" style="max-width:95%; max-height:92vh;"></div>
+        <button class="btn-nav" style="right:15px;" onclick="mudarFoto(1)">&#10095;</button>
+    </div>
+
+    <div id="menu" class="tela ativa">
+        <button class="btn" onclick="contarVerAnuncios()">VER ANÚNCIOS</button>
+        <button class="btn" style="background:#fff; color:#000" onclick="ir('planos')">ANUNCIAR AGORA</button>
+    </div>
+
+    <div id="planos" class="tela">
+        <h2 style="color:red; font-family:'Playfair Display';">ESCOLHA SEU DESTAQUE</h2>
+        <button class="btn" onclick="p(30)">30 DIAS - R$ 59,90 <small>Até 10 fotos</small></button>
+        <button class="btn" onclick="p(15)">15 DIAS - R$ 39,90 <small>Até 10 fotos</small></button>
+        <button class="btn" onclick="p(7)">7 DIAS - R$ 19,90 <small>Até 10 fotos</small></button>
+        <button class="btn" onclick="p(0)" style="background:gray">PLANO GRÁTIS <small>Até 3 fotos</small></button>
+        <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('menu')">VOLTAR</button>
+    </div>
+
+    <div id="cad" class="tela">
+        <h3 style="font-family:'Playfair Display';">CADASTRO</h3>
+        <p id="aviso-limite" style="color:red; font-size:11px; margin-bottom:10px;"></p>
+        <input type="text" id="n" placeholder="Nome Artístico">
+        <input type="text" id="cid" placeholder="Cidade">
+        <input type="email" id="email_user" placeholder="Seu E-mail">
+        <input type="text" id="w" placeholder="WhatsApp (ex: 51988887777)">
+        <input type="file" id="f" accept="image/*" multiple onchange="loadFiles()">
+        <div id="preview" style="display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:15px;"></div>
+        <button class="btn" onclick="enviar()">ENVIAR ANÚNCIO</button>
+    </div>
+
+    <div id="tela-pix" class="tela">
+        <h2 style="color:red; font-family:'Playfair Display';">PAGAMENTO</h2>
+        <div style="background:#111; padding:25px; border-radius:12px; border:1px dashed red; max-width:320px; margin: 0 auto;">
+            <p style="font-size:13px; color:#aaa; margin-bottom:20px;">Copie a chave e pague no seu banco.</p>
+            <b id="chave-txt" style="font-size:11px; word-break:break-all; color:#fff; background:#000; padding:10px; display:block; border-radius:5px;">7f0690c2-31b1-4d73-9af4-a88e83bcfabe</b>
+            <button class="btn" id="btn-copia-pix" style="background:#fff; color:#000; margin-top:20px;" onclick="copiarPix()">COPIAR CHAVE PIX</button>
+            <a href="https://wa.me/5551981833377?text=Oi, acabei de fazer o Pix!" target="_blank" class="btn btn-whats" style="margin-top:10px; display:none;" id="btn-comprovante">ENVIAR COMPROVANTE</a>
+        </div>
+    </div>
+
+    <div id="vitrine" class="tela"><div id="lv"></div><button class="btn" onclick="ir('menu')">VOLTAR</button></div>
+
+    <div id="adm" class="tela">
+        <h2 style="color:red;">PAINEL ADM</h2>
+        
+        <div class="metric-card">
+            <span><b>CLIQUES "VER ANÚNCIOS":</b></span>
+            <span id="display-cliques" style="font-size:24px; color:red; font-weight:900;">0</span>
+        </div>
+
+        <h4 style="text-align:left; color:#888;">PARA APROVAR:</h4><div id="ap"></div>
+        <hr style="border-color:#222; margin:20px 0;">
+        <h4 style="text-align:left; color:#888;">ATIVOS:</h4><div id="aa"></div>
+        <button class="btn" onclick="ir('menu')">SAIR</button>
+    </div>
+
+    <script>
+        const conf = { databaseURL: "https://segredo-urbano-a4d81-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(conf);
+        const db = firebase.database();
+        let imgs = []; let dias = 0;
+        let fotosGaleria = []; let fotoIndex = 0;
+        let telaAtual = 'menu';
+        let bancoDeFotos = {}; 
+        let sliderIndices = {};
+
+        // FUNÇÃO DE CONTAGEM
+        function contarVerAnuncios() {
+            db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 1);
+            ir('vitrine');
+        }
+
+        // MONITORAR CLIQUES EM TEMPO REAL NO ADM
+        db.ref('cliques_vitrine').on('value', s => {
+            document.getElementById('display-cliques').innerText = s.val() || 0;
+        });
+
+        window.onpopstate = function() {
+            if (document.getElementById('modal-galeria').style.display === 'block') {
+                fecharGaleria();
+            } else if (telaAtual !== 'menu') {
+                ir('menu', true);
+            }
+        };
+
+        function fecharAviso18() { document.getElementById('aviso-18').style.display = 'none'; ir('menu'); }
+
+        function ir(id, isBack = false) { 
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); 
+            document.getElementById(id).classList.add('ativa'); 
+            telaAtual = id;
+            if (!isBack) history.pushState({page: id}, id);
+            const isMenu = (id === 'menu');
+            document.getElementById('btn-suporte-fixo').style.display = isMenu ? 'block' : 'none';
+            document.getElementById('btn-adm-oculto').style.display = isMenu ? 'block' : 'none';
+        }
+
+        function trocarFotoCard(key, dir) {
+            const fotos = bancoDeFotos[key];
+            if (!fotos) return;
+            if (sliderIndices[key] === undefined) sliderIndices[key] = 0;
+            sliderIndices[key] += dir;
+            if (sliderIndices[key] < 0) sliderIndices[key] = fotos.length - 1;
+            if (sliderIndices[key] >= fotos.length) sliderIndices[key] = 0;
+            document.getElementById('img-pago-' + key).src = fotos[sliderIndices[key]];
+            document.getElementById('badge-pago-' + key).innerText = `📸 ${sliderIndices[key] + 1}/${fotos.length}`;
+        }
+
+        function p(d) { dias = d; imgs = []; document.getElementById('aviso-limite').innerText = `Limite: ${d > 0 ? '10' : '3'} fotos.`; ir('cad'); }
+
+        async function loadFiles() {
+            imgs = []; document.getElementById('preview').innerHTML = '';
+            const files = document.getElementById('f').files;
+            const lim = (dias > 0) ? 10 : 3;
+            if(files.length > lim) return alert(`Limite de ${lim} fotos.`);
+            for (let f of files) {
+                const r = new FileReader();
+                r.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const cv = document.createElement('canvas'); cv.width = 600; cv.height = 800;
+                        cv.getContext('2d').drawImage(img,0,0,600,800);
+                        const data = cv.toDataURL('image/jpeg', 0.7);
+                        imgs.push(data);
+                        document.getElementById('preview').innerHTML += `<img src="${data}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">`;
+                    };
+                    img.src = e.target.result;
+                };
+                r.readAsDataURL(f);
+            }
+        }
+
+        function enviar() {
+            const n = document.getElementById('n').value; 
+            const c = document.getElementById('cid').value || "Guaíba";
+            const em = document.getElementById('email_user').value; 
+            let w = document.getElementById('w').value.replace(/\D/g,'');
+            if(!n || !w || !em || imgs.length === 0) return alert("Complete dados!");
+            if(w.length <= 11) w = "55" + w;
+            db.ref('anuncios').push({ nome:n, cidade:c, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now() }).then(() => { 
+                if(dias > 0) ir('tela-pix'); else ir('vitrine'); 
+            });
+        }
+
+        function copiarPix() { 
+            navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe"); 
+            document.getElementById('btn-copia-pix').innerText = "✓ COPIADO!";
+            document.getElementById('btn-comprovante').style.display = "block";
+            const aviso = document.getElementById('aviso-pix-central');
+            aviso.style.display = "block";
+            setTimeout(() => { aviso.style.display = "none"; ir('vitrine'); }, 6000);
+        }
+
+        function abrirGaleria(key, idxManual) { 
+            const lista = bancoDeFotos[key];
+            if (!lista) return;
+            fotosGaleria = lista; 
+            fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
+            document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; 
+            document.getElementById('modal-galeria').style.display = 'block'; 
+            history.pushState({modal: 'galeria'}, 'galeria');
+        }
+
+        function fecharGaleria() { document.getElementById('modal-galeria').style.display = 'none'; }
+        function mudarFoto(dir) { fotoIndex += dir; if(fotoIndex >= fotosGaleria.length) fotoIndex = 0; if(fotoIndex < 0) fotoIndex = fotosGaleria.length - 1; document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; }
+
+        function logAdm() { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir('adm'); }
+        function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
+        function removerFoto(key, idx) { db.ref('anuncios/'+key+'/fotos').once('value', s => { let fots = s.val(); fots.splice(idx, 1); db.ref('anuncios/'+key).update({ fotos: fots }); }); }
+
+        db.ref('anuncios').on('value', s => {
+            const lv = document.getElementById('lv'); const ap = document.getElementById('ap'); const aa = document.getElementById('aa');
+            lv.innerHTML = ''; ap.innerHTML = ''; aa.innerHTML = ''; let ativos = [];
+            
+            s.forEach(i => {
+                const d = i.val();
+                bancoDeFotos[i.key] = d.fotos; 
+                if(d.status === 'pendente') {
+                    let fotsRev = ''; d.fotos.forEach((f, idx) => {
+                        fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${i.key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${i.key}', ${idx}); event.stopPropagation();">×</button></div>`;
+                    });
+                    const txtPlano = d.plano > 0 ? `${d.plano} DIAS` : 'GRÁTIS';
+                    ap.innerHTML += `<div class="item-adm">
+                        <div><b>${d.nome}</b> (${d.cidade})<br><span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">PLANO: ${txtPlano}</span> <button onclick="toggleRev('${i.key}')" style="float:right; background:red; color:white; border:none; padding:5px 10px; border-radius:4px;">REVISAR</button></div>
+                        <div id="rev-${i.key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button class="btn" style="margin:0; flex:1; background:green;" onclick="db.ref('anuncios').child('${i.key}').update({status:'ativo', criadoEm: Date.now()})">APROVAR</button><button class="btn" style="margin:0; flex:1; background:#444;" onclick="db.ref('anuncios').child('${i.key}').remove()">EXCLUIR</button></div></div>
+                    </div>`;
+                } else { ativos.push({key: i.key, ...d}); }
+            });
+
+            ativos.sort((a, b) => (a.plano > 0 && b.plano === 0) ? -1 : (a.plano === 0 && b.plano > 0) ? 1 : b.criadoEm - a.criadoEm);
+
+            ativos.forEach(d => {
+                const waLink = `https://wa.me/${d.whats}`;
+                const diasOn = d.criadoEm ? Math.floor((Date.now() - d.criadoEm) / 86400000) : 0;
+                
+                if(d.plano > 0) {
+                    lv.innerHTML += `<div class="card-pago">
+                        <div class="cidade-txt">📍 ${d.cidade}</div>
+                        <div class="img-container">
+                            <img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')">
+                            <div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>
+                            ${d.fotos.length > 1 ? `
+                                <button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button>
+                                <button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>
+                            ` : ''}
+                        </div>
+                        <h2>${d.nome}</h2><a href="${waLink}" target="_blank" class="btn btn-whats">WhatsApp</a>
+                    </div>`;
+                } else {
+                    lv.innerHTML += `<div class="card-gratis">
+                        <div class="cidade-txt">📍 ${d.cidade}</div>
+                        <div class="card-gratis-flex">
+                            <div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)">
+                                <img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:5px; right:5px;">📸 ${d.fotos.length}</div>
+                            </div>
+                            <b style="flex:1;">${d.nome}</b>
+                            <a href="${waLink}" target="_blank" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a>
+                        </div>
+                    </div>`;
+                }
+                aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
+                    <img src="${d.fotos[0]}" style="width:40px; height:50px; object-fit:cover; border-radius:4px;">
+                    <div style="flex:1; font-size:12px;"><b>${d.nome}</b> (${diasOn}d online)<br>Cidade: <input type="text" value="${d.cidade}" style="width:100px; padding:4px; margin:0; font-size:11px; height:auto; display:inline;" onchange="db.ref('anuncios/${d.key}').update({cidade: this.value})"></div>
+                    <button onclick="db.ref('anuncios').child('${d.key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button>
+                </div>`;
+            });
+        });
+    </script>
 </body>
 </html>
