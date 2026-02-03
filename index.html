@@ -80,7 +80,7 @@
         <small style="display:block; margin-top:15px; color:#666;">Aguarde o redirecionamento...</small>
     </div>
 
-    <a href="https://wa.me/5551981833377" target="_blank" id="btn-suporte-fixo">● SUPORTE</a>
+    <a href="https://wa.me/5551981833377?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo">● SUPORTE</a>
 
     <header>
         <button id="btn-adm-oculto" onclick="logAdm()"></button>
@@ -214,7 +214,6 @@
         async function loadFiles() {
             imgs = []; document.getElementById('preview').innerHTML = '';
             const files = document.getElementById('f').files;
-            const lim = (dias > 0) ? 10 : 3;
             for (let f of files) {
                 const r = new FileReader();
                 r.onload = (e) => {
@@ -237,6 +236,8 @@
             const c = document.getElementById('cid').value || "Guaíba";
             const em = document.getElementById('email_user').value; 
             let w = document.getElementById('w').value.replace(/\D/g,'');
+            const limite = (dias > 0) ? 10 : 3;
+            if(imgs.length > limite) return alert(`Seu plano permite no máximo ${limite} fotos. Por favor, remova o excesso.`);
             if(!n || !w || !em || imgs.length === 0) return alert("Complete dados!");
             if(w.length <= 11) w = "55" + w;
             db.ref('anuncios').push({ nome:n, cidade:c, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
@@ -247,13 +248,10 @@
         function copiarPix() { 
             navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe"); 
             document.getElementById('btn-copia-pix').innerText = "✓ COPIADO!";
-            
-            // Define o valor no aviso verde antes de mostrar
             let v = "R$ 19,90";
             if(dias === 15) v = "R$ 39,90";
             if(dias === 30) v = "R$ 59,90";
             document.getElementById('valor-aviso').innerText = v;
-
             const aviso = document.getElementById('aviso-pix-central');
             aviso.style.display = "block";
             setTimeout(() => { aviso.style.display = "none"; ir('vitrine'); }, 6000);
@@ -314,9 +312,8 @@
             });
 
             ativos.forEach(d => {
-                const waLink = `https://wa.me/${d.whats}`;
-                const diasOn = d.criadoEm ? Math.floor((Date.now() - d.criadoEm) / 86400000) : 0;
-                
+                const msgWa = encodeURIComponent(`Olá ${d.nome}, encontrei você no Segredo Urbano e gostaria de mais informações.`);
+                const waLink = `https://wa.me/${d.whats}?text=${msgWa}`;
                 if(d.plano > 0) {
                     lv.innerHTML += `<div class="card-pago">
                         <div class="cidade-txt">📍 ${d.cidade}</div>
