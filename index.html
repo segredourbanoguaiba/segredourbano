@@ -60,9 +60,12 @@
         .foto-revisao img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
         .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; border: 2px solid #000; font-size: 14px; cursor: pointer; font-weight: bold; z-index: 10; }
         .metric-card { background: #1a0000; border: 1px solid red; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-        .inp-pos { width: 50px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 5px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
-        .inp-cidade-adm { width: 100px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 5px !important; font-size: 11px !important; border-radius: 4px !important; margin-left: 10px !important; }
+        .inp-pos { width: 45px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 4px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
+        .inp-cidade-adm { width: 80px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px !important; font-size: 10px !important; border-radius: 4px !important; margin-left: 5px !important; }
         .badge-cliques-zap { background: #25D366; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 10px; }
+        .marcador-dias { font-size: 10px; color: #ff9900; font-weight: bold; margin-left: 10px; }
+        .btn-toggle-plano { background: #333; color: #fff; border: 1px solid #555; font-size: 9px; padding: 5px; border-radius: 4px; cursor: pointer; margin-left: 10px; text-transform: uppercase; }
+        .btn-toggle-plano:hover { background: gold; color: #000; }
     </style>
 </head>
 <body>
@@ -212,23 +215,39 @@
         function p(d) { dias = d; imgs = []; document.getElementById('aviso-limite').innerText = `Limite: ${d > 0 ? '10' : '3'} fotos.`; ir('cad'); }
 
         async function loadFiles() {
-            imgs = []; document.getElementById('preview').innerHTML = '';
-            const files = document.getElementById('f').files;
-            for (let f of files) {
-                const r = new FileReader();
-                r.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const cv = document.createElement('canvas'); cv.width = 600; cv.height = 800;
-                        cv.getContext('2d').drawImage(img,0,0,600,800);
-                        const data = cv.toDataURL('image/jpeg', 0.7);
-                        imgs.push(data);
-                        document.getElementById('preview').innerHTML += `<img src="${data}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">`;
+            const files = Array.from(document.getElementById('f').files);
+            document.getElementById('preview').innerHTML = 'Processando fotos...';
+            const promises = files.map(f => {
+                return new Promise((resolve) => {
+                    const r = new FileReader();
+                    r.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const cv = document.createElement('canvas'); 
+                            cv.width = 600; cv.height = 800;
+                            cv.getContext('2d').drawImage(img,0,0,600,800);
+                            resolve(cv.toDataURL('image/jpeg', 0.7));
+                        };
+                        img.src = e.target.result;
                     };
-                    img.src = e.target.result;
-                };
-                r.readAsDataURL(f);
-            }
+                    r.readAsDataURL(f);
+                });
+            });
+            imgs = await Promise.all(promises);
+            document.getElementById('preview').innerHTML = '';
+            imgs.forEach(data => {
+                document.getElementById('preview').innerHTML += `<img src="${data}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">`;
+            });
+        }
+
+        function limparFormulario() {
+            document.getElementById('n').value = '';
+            document.getElementById('cid').value = '';
+            document.getElementById('email_user').value = '';
+            document.getElementById('w').value = '';
+            document.getElementById('f').value = '';
+            document.getElementById('preview').innerHTML = '';
+            imgs = [];
         }
 
         function enviar() {
@@ -241,36 +260,28 @@
             if(!n || !w || !em || imgs.length === 0) return alert("Complete dados!");
             if(w.length <= 11) w = "55" + w;
             db.ref('anuncios').push({ nome:n, cidade:c, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
-                if(dias > 0) ir('tela-pix'); else ir('vitrine'); 
+                if(dias > 0) { ir('tela-pix'); } else { limparFormulario(); ir('vitrine'); }
             });
         }
 
         function copiarPix() { 
             navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe"); 
             document.getElementById('btn-copia-pix').innerText = "✓ COPIADO!";
-            let v = "R$ 19,90";
-            if(dias === 15) v = "R$ 39,90";
-            if(dias === 30) v = "R$ 59,90";
+            let v = "R$ 19,90"; if(dias === 15) v = "R$ 39,90"; if(dias === 30) v = "R$ 59,90";
             document.getElementById('valor-aviso').innerText = v;
             const aviso = document.getElementById('aviso-pix-central');
             aviso.style.display = "block";
-            setTimeout(() => { aviso.style.display = "none"; ir('vitrine'); }, 6000);
+            setTimeout(() => { aviso.style.display = "none"; limparFormulario(); ir('vitrine'); }, 6000);
         }
 
         function abrirGaleria(key, idxManual) { 
-            const lista = bancoDeFotos[key];
-            if (!lista) return;
+            const lista = bancoDeFotos[key]; if (!lista) return;
             fotosGaleria = lista; 
             fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
             const imgEl = document.getElementById('img-ampliada');
             imgEl.src = fotosGaleria[fotoIndex]; 
-            if (bancoPlanos[key] === 0) {
-                imgEl.style.maxWidth = "60%"; 
-                imgEl.style.maxHeight = "60vh";
-            } else {
-                imgEl.style.maxWidth = "95%";
-                imgEl.style.maxHeight = "92vh";
-            }
+            if (bancoPlanos[key] === 0) { imgEl.style.maxWidth = "60%"; imgEl.style.maxHeight = "60vh"; } 
+            else { imgEl.style.maxWidth = "95%"; imgEl.style.maxHeight = "92vh"; }
             document.getElementById('modal-galeria').style.display = 'block'; 
             history.pushState({modal: 'galeria'}, 'galeria');
         }
@@ -281,69 +292,54 @@
         function logAdm() { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir('adm'); }
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         function removerFoto(key, idx) { db.ref('anuncios/'+key+'/fotos').once('value', s => { let fots = s.val(); fots.splice(idx, 1); db.ref('anuncios/'+key).update({ fotos: fots }); }); }
+        
+        // FUNÇÃO DE CORTESIA (ALTERNAR PLANO)
+        function togglePlano(key, planoAtual) {
+            let novoPlano = (planoAtual === 0) ? 7 : 0;
+            db.ref('anuncios/' + key).update({ plano: novoPlano });
+        }
 
         db.ref('anuncios').on('value', s => {
             const lv = document.getElementById('lv'); const ap = document.getElementById('ap'); const aa = document.getElementById('aa');
-            lv.innerHTML = ''; ap.innerHTML = ''; aa.innerHTML = ''; let ativos = [];
+            lv.innerHTML = ''; ap.innerHTML = ''; aa.innerHTML = ''; let ativos = []; const AGORA = Date.now();
             
             s.forEach(i => {
                 const d = i.val();
-                bancoDeFotos[i.key] = d.fotos; 
-                bancoPlanos[i.key] = d.plano; 
+                bancoDeFotos[i.key] = d.fotos; bancoPlanos[i.key] = d.plano; 
                 if(d.status === 'pendente') {
-                    let fotsRev = ''; d.fotos.forEach((f, idx) => {
-                        fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${i.key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${i.key}', ${idx}); event.stopPropagation();">×</button></div>`;
-                    });
+                    let fotsRev = ''; d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${i.key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${i.key}', ${idx}); event.stopPropagation();">×</button></div>`; });
                     const txtPlano = d.plano > 0 ? `${d.plano} DIAS` : 'GRÁTIS';
                     ap.innerHTML += `<div class="item-adm">
                         <div><b>${d.nome}</b> (${d.cidade})<br><span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">PLANO: ${txtPlano}</span> <button onclick="toggleRev('${i.key}')" style="float:right; background:red; color:white; border:none; padding:5px 10px; border-radius:4px;">REVISAR</button></div>
                         <div id="rev-${i.key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button class="btn" style="margin:0; flex:1; background:green;" onclick="db.ref('anuncios').child('${i.key}').update({status:'ativo', criadoEm: Date.now()})">APROVAR</button><button class="btn" style="margin:0; flex:1; background:#444;" onclick="db.ref('anuncios').child('${i.key}').remove()">EXCLUIR</button></div></div>
                     </div>`;
-                } else { ativos.push({key: i.key, ...d}); }
+                } else { 
+                    let dataRef = d.criadoEm || AGORA;
+                    let diasOn = Math.floor((AGORA - dataRef) / (1000 * 60 * 60 * 24));
+                    ativos.push({key: i.key, ...d, diasOn}); 
+                }
             });
 
             ativos.sort((a, b) => {
-                const posA = parseInt(a.pos || 0);
-                const posB = parseInt(b.pos || 0);
+                const posA = parseInt(a.pos || 0); const posB = parseInt(b.pos || 0);
                 if (posA === 0 && posB === 0) return b.criadoEm - a.criadoEm;
-                if (posA === 0) return -1;
-                if (posB === 0) return 1;
-                return posA - posB;
+                if (posA === 0) return -1; if (posB === 0) return 1; return posA - posB;
             });
 
             ativos.forEach(d => {
                 const msgWa = encodeURIComponent(`Olá ${d.nome}, encontrei você no Segredo Urbano e gostaria de mais informações.`);
                 const waLink = `https://wa.me/${d.whats}?text=${msgWa}`;
                 if(d.plano > 0) {
-                    lv.innerHTML += `<div class="card-pago">
-                        <div class="cidade-txt">📍 ${d.cidade}</div>
-                        <div class="img-container">
-                            <img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')">
-                            <div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>
-                            ${d.fotos.length > 1 ? `
-                                <button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button>
-                                <button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>
-                            ` : ''}
-                        </div>
-                        <h2>${d.nome}</h2><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>
-                    </div>`;
+                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
                 } else {
-                    lv.innerHTML += `<div class="card-gratis">
-                        <div class="cidade-txt">📍 ${d.cidade}</div>
-                        <div class="card-gratis-flex">
-                            <div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)">
-                                <img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div>
-                            </div>
-                            <b style="flex:1;">${d.nome}</b>
-                            <a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a>
-                        </div>
-                    </div>`;
+                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><b style="flex:1;">${d.nome}</b><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
                 }
-                aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
-                    <img src="${d.fotos[0]}" style="width:40px; height:50px; object-fit:cover; border-radius:4px;">
-                    <div style="flex:1; font-size:12px;">
-                        <b>${d.nome}</b> <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br>
-                        Pos: <input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${d.key}').update({pos: parseInt(this.value)})">
+                aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:5px;">
+                    <img src="${d.fotos[0]}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">
+                    <div style="flex:1; font-size:11px;">
+                        <b>${d.nome}</b> <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span> <span class="marcador-dias">(${d.diasOn}d)</span>
+                        <button class="btn-toggle-plano" onclick="togglePlano('${d.key}', ${d.plano})">${d.plano === 0 ? 'Dar Destaque' : 'Virar Grátis'}</button><br>
+                        P:<input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${d.key}').update({pos: parseInt(this.value)})">
                         <input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${d.key}').update({cidade: this.value})">
                     </div>
                     <button onclick="db.ref('anuncios').child('${d.key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button>
