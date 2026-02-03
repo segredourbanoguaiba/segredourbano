@@ -51,7 +51,6 @@
         input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
         #aviso-pix-central { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
         
-        /* ADM */
         .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; }
         .badge-plano-adm { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 5px; background: #333; color: #fff; }
         .plano-pago { background: gold !important; color: #000 !important; }
@@ -61,6 +60,9 @@
         .foto-revisao img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
         .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; border: 2px solid #000; font-size: 14px; cursor: pointer; font-weight: bold; z-index: 10; }
         .metric-card { background: #1a0000; border: 1px solid red; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .inp-pos { width: 50px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 5px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
+        .inp-cidade-adm { width: 100px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 5px !important; font-size: 11px !important; border-radius: 4px !important; margin-left: 10px !important; }
+        .badge-cliques-zap { background: #25D366; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -74,7 +76,7 @@
 
     <div id="aviso-pix-central">
         <b style="color:#25D366; font-size:18px;">✓ COPIADO!</b><br><br>
-        <p style="font-size:14px; color:#fff; line-height:1.4; margin:0;">Agora abra o app do seu banco e use a opção <b>Pix Copia e Cola</b> para finalizar.</p>
+        <p style="font-size:14px; color:#fff; line-height:1.4; margin:0;">Pague o valor de <b id="valor-aviso" style="color:#25D366;"></b> no seu banco usando o <b>Pix Copia e Cola</b>.</p>
         <small style="display:block; margin-top:15px; color:#666;">Aguarde o redirecionamento...</small>
     </div>
 
@@ -161,14 +163,17 @@
         let telaAtual = 'menu';
         let bancoDeFotos = {}; 
         let sliderIndices = {};
+        let bancoPlanos = {}; 
 
-        // FUNÇÃO DE CONTAGEM
         function contarVerAnuncios() {
             db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 1);
             ir('vitrine');
         }
 
-        // MONITORAR CLIQUES EM TEMPO REAL NO ADM
+        function trackZap(key) {
+            db.ref('anuncios/' + key + '/cliquesZap').transaction((atual) => (atual || 0) + 1);
+        }
+
         db.ref('cliques_vitrine').on('value', s => {
             document.getElementById('display-cliques').innerText = s.val() || 0;
         });
@@ -210,7 +215,6 @@
             imgs = []; document.getElementById('preview').innerHTML = '';
             const files = document.getElementById('f').files;
             const lim = (dias > 0) ? 10 : 3;
-            if(files.length > lim) return alert(`Limite de ${lim} fotos.`);
             for (let f of files) {
                 const r = new FileReader();
                 r.onload = (e) => {
@@ -235,7 +239,7 @@
             let w = document.getElementById('w').value.replace(/\D/g,'');
             if(!n || !w || !em || imgs.length === 0) return alert("Complete dados!");
             if(w.length <= 11) w = "55" + w;
-            db.ref('anuncios').push({ nome:n, cidade:c, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now() }).then(() => { 
+            db.ref('anuncios').push({ nome:n, cidade:c, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
                 if(dias > 0) ir('tela-pix'); else ir('vitrine'); 
             });
         }
@@ -243,7 +247,13 @@
         function copiarPix() { 
             navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe"); 
             document.getElementById('btn-copia-pix').innerText = "✓ COPIADO!";
-            document.getElementById('btn-comprovante').style.display = "block";
+            
+            // Define o valor no aviso verde antes de mostrar
+            let v = "R$ 19,90";
+            if(dias === 15) v = "R$ 39,90";
+            if(dias === 30) v = "R$ 59,90";
+            document.getElementById('valor-aviso').innerText = v;
+
             const aviso = document.getElementById('aviso-pix-central');
             aviso.style.display = "block";
             setTimeout(() => { aviso.style.display = "none"; ir('vitrine'); }, 6000);
@@ -254,7 +264,15 @@
             if (!lista) return;
             fotosGaleria = lista; 
             fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
-            document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; 
+            const imgEl = document.getElementById('img-ampliada');
+            imgEl.src = fotosGaleria[fotoIndex]; 
+            if (bancoPlanos[key] === 0) {
+                imgEl.style.maxWidth = "60%"; 
+                imgEl.style.maxHeight = "60vh";
+            } else {
+                imgEl.style.maxWidth = "95%";
+                imgEl.style.maxHeight = "92vh";
+            }
             document.getElementById('modal-galeria').style.display = 'block'; 
             history.pushState({modal: 'galeria'}, 'galeria');
         }
@@ -273,6 +291,7 @@
             s.forEach(i => {
                 const d = i.val();
                 bancoDeFotos[i.key] = d.fotos; 
+                bancoPlanos[i.key] = d.plano; 
                 if(d.status === 'pendente') {
                     let fotsRev = ''; d.fotos.forEach((f, idx) => {
                         fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${i.key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${i.key}', ${idx}); event.stopPropagation();">×</button></div>`;
@@ -285,7 +304,14 @@
                 } else { ativos.push({key: i.key, ...d}); }
             });
 
-            ativos.sort((a, b) => (a.plano > 0 && b.plano === 0) ? -1 : (a.plano === 0 && b.plano > 0) ? 1 : b.criadoEm - a.criadoEm);
+            ativos.sort((a, b) => {
+                const posA = parseInt(a.pos || 0);
+                const posB = parseInt(b.pos || 0);
+                if (posA === 0 && posB === 0) return b.criadoEm - a.criadoEm;
+                if (posA === 0) return -1;
+                if (posB === 0) return 1;
+                return posA - posB;
+            });
 
             ativos.forEach(d => {
                 const waLink = `https://wa.me/${d.whats}`;
@@ -302,23 +328,27 @@
                                 <button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>
                             ` : ''}
                         </div>
-                        <h2>${d.nome}</h2><a href="${waLink}" target="_blank" class="btn btn-whats">WhatsApp</a>
+                        <h2>${d.nome}</h2><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>
                     </div>`;
                 } else {
                     lv.innerHTML += `<div class="card-gratis">
                         <div class="cidade-txt">📍 ${d.cidade}</div>
                         <div class="card-gratis-flex">
                             <div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)">
-                                <img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:5px; right:5px;">📸 ${d.fotos.length}</div>
+                                <img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div>
                             </div>
                             <b style="flex:1;">${d.nome}</b>
-                            <a href="${waLink}" target="_blank" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a>
+                            <a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a>
                         </div>
                     </div>`;
                 }
                 aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
                     <img src="${d.fotos[0]}" style="width:40px; height:50px; object-fit:cover; border-radius:4px;">
-                    <div style="flex:1; font-size:12px;"><b>${d.nome}</b> (${diasOn}d online)<br>Cidade: <input type="text" value="${d.cidade}" style="width:100px; padding:4px; margin:0; font-size:11px; height:auto; display:inline;" onchange="db.ref('anuncios/${d.key}').update({cidade: this.value})"></div>
+                    <div style="flex:1; font-size:12px;">
+                        <b>${d.nome}</b> <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br>
+                        Pos: <input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${d.key}').update({pos: parseInt(this.value)})">
+                        <input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${d.key}').update({cidade: this.value})">
+                    </div>
                     <button onclick="db.ref('anuncios').child('${d.key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button>
                 </div>`;
             });
