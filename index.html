@@ -6,10 +6,8 @@
     <meta name="google-site-verification" content="khmTM9yemLAQYvN3ZZHNZX_VKoL3l8fWSJHmD42Xii4" />
     
     <title>Segredo Urbano | A elite do entretenimento em Guaíba e Região</title>
-    <meta name="description" content="Segredo Urbano: A elite do entretenimento em Guaíba e Região. Conheça nossas modelos selecionadas e desfrute de momentos exclusivos com total sigilo e sofisticação.">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z%22 fill=%22red%22 /><text x=%2250%%22 y=%2262%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2245%22 fill=%22white%22>S</text><text x=%2268%%22 y=%2272%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2225%22 fill=%22black%22 font-weight=%22900%22>U</text></svg>">
-
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -29,6 +27,7 @@
         .btn-whats { background: #25D366 !important; }
         #btn-suporte-fixo { position: fixed; bottom: 30px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid red; z-index: 1000; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
         .cidade-txt { text-align: left; font-size: 10px; color: #ff0000; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .bairro-txt { color: #888; font-size: 10px; margin-left: 5px; text-transform: uppercase; font-weight: normal; }
         .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; }
         .img-container { position: relative; border-radius: 15px; overflow: hidden; border: 1px solid #222; }
         .card-pago img { width: 100%; height: 500px; object-fit: cover; display: block; }
@@ -36,21 +35,17 @@
         .btn-seta { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: white; border: none; padding: 20px 12px; font-size: 24px; cursor: pointer; z-index: 20; border-radius: 5px; }
         .seta-esq { left: 5px; }
         .seta-dir { right: 5px; }
-        
         .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; }
         .card-gratis-flex { display: flex; align-items: center; }
         .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; }
         .card-gratis b { font-size: 18px; }
-        
-        /* CSS NOVO: Carrossel de Modelos */
         .galeria-social { width: 100%; overflow: hidden; margin-top: 25px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
         .social-track { display: flex; width: max-content; animation: scroll-social 30s linear infinite; gap: 15px; padding-left: 15px; }
         .item-social { width: 70px; text-align: center; flex-shrink: 0; }
         .item-social img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid #333; }
         .item-social span { display: block; font-size: 8px; color: #888; text-transform: uppercase; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         @keyframes scroll-social { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
         .badge-fotos { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
         #modal-galeria { display: none; position: fixed; z-index: 1000000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
         .btn-fechar-galeria { position: absolute; top: 20px; right: 25px; color: white; font-size: 50px; cursor: pointer; z-index: 1000005; font-weight: bold; }
@@ -115,7 +110,7 @@
 
     <div id="container-busca-cidade">
         <div class="caixa-busca-moderna">
-            <input type="text" id="inp-filtro-cidade" class="inp-busca-txt" placeholder="Digite sua cidade..." onkeypress="if(event.key==='Enter') filtrarPorCidade()">
+            <input type="text" id="inp-filtro-cidade" class="inp-busca-txt" placeholder="Digite sua cidade..." onkeydown="if(event.key==='Enter'){ filtrarPorCidade(); this.blur(); }">
             <button class="btn-busca-lupa" onclick="filtrarPorCidade()">
                 <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
@@ -132,7 +127,6 @@
     <div id="menu" class="tela ativa">
         <button class="btn" onclick="filtrarPorCidade()">VER ANÚNCIOS</button>
         <button class="btn" style="background:#fff; color:#000" onclick="ir('planos')">ANUNCIAR AGORA</button>
-        
         <div class="galeria-social" id="area-social" style="display:none;">
             <div class="social-track" id="track-social"></div>
         </div>
@@ -152,6 +146,7 @@
         <p id="aviso-limite" style="color:red; font-size:11px; margin-bottom:10px;"></p>
         <input type="text" id="n" placeholder="Nome Artístico">
         <input type="text" id="cid" placeholder="Cidade">
+        <input type="text" id="bai" placeholder="Bairro (Obrigatório)">
         <input type="email" id="email_user" placeholder="Seu E-mail">
         <input type="text" id="w" placeholder="WhatsApp (ex: 51988887777)">
         <input type="file" id="f" accept="image/*" multiple onchange="loadFiles()">
@@ -199,7 +194,6 @@
 
         function fecharAviso18() { 
             document.getElementById('aviso-18').style.display = 'none'; 
-            document.getElementById('container-busca-cidade').style.display = 'block'; 
             ir('menu'); 
         }
 
@@ -207,64 +201,62 @@
             const input = document.getElementById('inp-filtro-cidade');
             const termoOriginal = (termoManual || input.value).trim();
             const termoBusca = normalizarTxt(termoOriginal);
-            
             if(!termoBusca) {
                 input.classList.add('busca-erro');
                 input.placeholder = "DIGITE UMA CIDADE!";
                 setTimeout(() => input.classList.remove('busca-erro'), 2000);
                 return false;
             }
-
             db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 1);
-            
             input.value = termoOriginal.toUpperCase();
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
             ir('vitrine');
-            
             const cards = document.querySelectorAll('.card-pago, .card-gratis');
             let encontrados = 0;
-            
             cards.forEach(c => {
                 const cidadeNoCard = normalizarTxt(c.getAttribute('data-cidade') || "");
-                if(cidadeNoCard.includes(termoBusca)) {
-                    c.style.display = 'block';
-                    encontrados++;
-                } else {
-                    c.style.display = 'none';
-                }
+                if(cidadeNoCard.includes(termoBusca)) { c.style.display = 'block'; encontrados++; } else { c.style.display = 'none'; }
             });
-
             const aviso = document.getElementById('aviso-vazio');
             if(encontrados === 0) {
                 document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`;
                 aviso.style.display = 'block';
-                setTimeout(() => {
-                    input.value = '';
-                    aviso.style.display = 'none';
-                }, 4000);
-            } else {
-                aviso.style.display = 'none';
-            }
+                setTimeout(() => { input.value = ''; aviso.style.display = 'none'; }, 4000);
+            } else { aviso.style.display = 'none'; }
             return true;
         }
 
-        function trackZap(key) { db.ref('anuncios/' + key + '/cliquesZap').transaction((atual) => (atual || 0) + 1); }
-        db.ref('cliques_vitrine').on('value', s => { document.getElementById('display-cliques').innerText = s.val() || 0; });
-        window.onpopstate = function() { if (document.getElementById('modal-galeria').style.display === 'block') { fecharGaleria(); } else if (telaAtual !== 'menu') { ir('menu', true); } };
+        window.onpopstate = function() { 
+            if (document.getElementById('modal-galeria').style.display === 'block') { 
+                fecharGaleria(); 
+            } else if (telaAtual !== 'menu') { 
+                ir('menu', true); 
+            } 
+        };
 
         function ir(id, isBack = false) { 
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); 
             document.getElementById(id).classList.add('ativa'); 
             telaAtual = id;
             if (!isBack) history.pushState({page: id}, id);
+            
+            document.getElementById('inp-filtro-cidade').value = '';
+
             const barra = document.getElementById('container-busca-cidade');
-            const telasSemBusca = ['tela-pix', 'planos', 'adm', 'cad'];
-            if(telasSemBusca.includes(id)) barra.style.display = 'none';
-            else if(document.getElementById('aviso-18').style.display === 'none') barra.style.display = 'block';
+            const telasComBusca = ['menu', 'vitrine'];
+            if(telasComBusca.includes(id) && document.getElementById('aviso-18').style.display === 'none') {
+                barra.style.display = 'block';
+            } else {
+                barra.style.display = 'none';
+            }
+
             const isMenu = (id === 'menu');
             document.getElementById('btn-suporte-fixo').style.display = isMenu ? 'block' : 'none';
             document.getElementById('btn-adm-oculto').style.display = isMenu ? 'block' : 'none';
         }
+
+        function trackZap(key) { db.ref('anuncios/' + key + '/cliquesZap').transaction((atual) => (atual || 0) + 1); }
+        db.ref('cliques_vitrine').on('value', s => { document.getElementById('display-cliques').innerText = s.val() || 0; });
 
         function trocarFotoCard(key, dir) {
             const fotos = bancoDeFotos[key]; if (!fotos) return;
@@ -302,20 +294,34 @@
         }
 
         function limparFormulario() {
-            document.getElementById('n').value = ''; document.getElementById('cid').value = ''; document.getElementById('email_user').value = ''; document.getElementById('w').value = ''; document.getElementById('f').value = ''; document.getElementById('preview').innerHTML = ''; imgs = [];
+            document.getElementById('n').value = ''; 
+            document.getElementById('cid').value = ''; 
+            document.getElementById('bai').value = ''; 
+            document.getElementById('email_user').value = ''; 
+            document.getElementById('w').value = ''; 
+            document.getElementById('f').value = ''; 
+            document.getElementById('preview').innerHTML = ''; 
+            document.getElementById('inp-filtro-cidade').value = '';
+            imgs = [];
         }
 
         function enviar() {
-            const n = document.getElementById('n').value; 
-            const c = document.getElementById('cid').value || "Guaíba"; 
-            const em = document.getElementById('email_user').value; 
+            const n = document.getElementById('n').value.trim(); 
+            const c = document.getElementById('cid').value.trim(); 
+            const b = document.getElementById('bai').value.trim(); 
+            const em = document.getElementById('email_user').value.trim(); 
             let w = document.getElementById('w').value.replace(/\D/g,'');
             cidadePostagemOriginal = c;
+            
             const limite = (dias > 0) ? 10 : 3;
             if(imgs.length > limite) return alert(`Limite: ${limite} fotos.`);
-            if(!n || !w || !em || imgs.length === 0) return alert("Complete dados!");
+            
+            if(!n || !c || !b || !w || !em || imgs.length === 0) {
+                return alert("Por favor, preencha todos os campos obrigatórios, incluindo o BAIRRO!");
+            }
+
             if(w.length <= 11) w = "55" + w;
-            db.ref('anuncios').push({ nome:n, cidade:c, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
+            db.ref('anuncios').push({ nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
                 if(dias > 0) ir('tela-pix'); 
                 else { const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }
             });
@@ -323,11 +329,25 @@
 
         function copiarPix() { 
             navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe"); 
-            document.getElementById('btn-copia-pix').innerText = "✓ COPIADO!";
-            let v = "R$ 19,90"; if(dias === 15) v = "R$ 39,90"; if(dias === 30) v = "R$ 59,90";
+            const btnCopia = document.getElementById('btn-copia-pix');
+            btnCopia.innerText = "✓ COPIADO!";
+            btnCopia.style.background = "#25D366";
+            btnCopia.style.color = "#000";
+
+            let v = "R$ 19,90"; 
+            if(dias === 15) v = "R$ 39,90"; 
+            if(dias === 30) v = "R$ 59,90";
             document.getElementById('valor-aviso').innerText = v;
             document.getElementById('aviso-pix-central').style.display = "block";
-            setTimeout(() => { document.getElementById('aviso-pix-central').style.display = "none"; const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }, 6000);
+            
+            setTimeout(() => { 
+                document.getElementById('aviso-pix-central').style.display = "none"; 
+                btnCopia.innerText = "COPIAR CHAVE PIX";
+                btnCopia.style.background = "#fff";
+                const cidTemp = cidadePostagemOriginal; 
+                limparFormulario(); 
+                filtrarPorCidade(cidTemp); 
+            }, 6000);
         }
 
         function abrirGaleria(key, idxManual) { 
@@ -347,16 +367,19 @@
 
         function renderizarListasAdm() {
             const ap = document.getElementById('ap'); const aa = document.getElementById('aa');
-            const filtro = document.getElementById('filtro-adm-cidade').value;
+            const filtroRaw = document.getElementById('filtro-adm-cidade').value;
+            const filtroNorm = normalizarTxt(filtroRaw); 
+            
             ap.innerHTML = ''; aa.innerHTML = ''; const AGORA = Date.now();
             anunciosCache.forEach(item => {
                 const d = item.data; const key = item.key;
+                const cidadeItemNorm = d.cidade ? normalizarTxt(d.cidade) : "";
+                
                 if(d.status === 'pendente') {
                     let fotsRev = ''; d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${key}', ${idx}); event.stopPropagation();">×</button></div>`; });
-                    ap.innerHTML += `<div class="item-adm"><div><b>${d.nome}</b> (${d.cidade})<br><span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">PLANO: ${d.plano > 0 ? d.plano : 'GRÁTIS'}</span> <button onclick="toggleRev('${key}')" style="float:right; background:red; color:white; border:none; padding:5px 10px; border-radius:4px;">REVISAR</button></div><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button class="btn" style="margin:0; flex:1; background:green;" onclick="db.ref('anuncios').child('${key}').update({status:'ativo', criadoEm: Date.now()})">APROVAR</button><button class="btn" style="margin:0; flex:1; background:#444;" onclick="db.ref('anuncios').child('${key}').remove()">EXCLUIR</button></div></div></div>`;
-                } else if(d.status === 'ativo' && (filtro === 'todas' || d.cidade === filtro)) {
-                    let diasOn = Math.floor((AGORA - (d.criadoEm || AGORA)) / (1000 * 60 * 60 * 24));
-                    aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:5px;"><img src="${d.fotos[0]}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;"><div style="flex:1; font-size:11px;"><b>${d.nome}</b> <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span> <span class="marcador-dias">(${diasOn}d)</span><button class="btn-toggle-plano" onclick="togglePlano('${key}', ${d.plano})">${d.plano === 0 ? 'Destaque' : 'Grátis'}</button><br>P:<input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${key}').update({pos: parseInt(this.value)})"><input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${key}').update({cidade: this.value})"></div><button onclick="db.ref('anuncios').child('${key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button></div>`;
+                    ap.innerHTML += `<div class="item-adm"><div><b>${d.nome}</b> (${d.cidade} - ${d.bairro})<br><span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">PLANO: ${d.plano > 0 ? d.plano : 'GRÁTIS'}</span> <button onclick="toggleRev('${key}')" style="float:right; background:red; color:white; border:none; padding:5px 10px; border-radius:4px;">REVISAR</button></div><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button class="btn" style="margin:0; flex:1; background:green;" onclick="db.ref('anuncios').child('${key}').update({status:'ativo', criadoEm: Date.now()})">APROVAR</button><button class="btn" style="margin:0; flex:1; background:#444;" onclick="db.ref('anuncios').child('${key}').remove()">EXCLUIR</button></div></div></div>`;
+                } else if(d.status === 'ativo' && (filtroRaw === 'todas' || cidadeItemNorm === filtroNorm)) {
+                    aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:5px;"><img src="${d.fotos[0]}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;"><div style="flex:1; font-size:11px;"><b>${d.nome}</b> (${d.bairro}) <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br>P:<input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${key}').update({pos: parseInt(this.value)})"><input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${key}').update({cidade: this.value})"></div><button onclick="db.ref('anuncios').child('${key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button></div>`;
                 }
             });
         }
@@ -367,32 +390,31 @@
             anunciosCache = []; cidadesDetectadas.clear(); let ativos = []; const AGORA = Date.now();
             
             s.forEach(i => {
-                const d = i.val(); anunciosCache.push({key: i.key, data: d}); cidadesDetectadas.add(d.cidade);
+                const d = i.val(); anunciosCache.push({key: i.key, data: d}); 
+                if(d.cidade) cidadesDetectadas.add(d.cidade.trim().toUpperCase());
                 bancoDeFotos[i.key] = d.fotos; bancoPlanos[i.key] = d.plano; 
                 if(d.status === 'ativo') ativos.push({key: i.key, ...d});
             });
 
-            // LÓGICA DO CARROSSEL ALEATÓRIO
             if(ativos.length > 0) {
                 document.getElementById('area-social').style.display = 'block';
-                // Embaralha e pega até 12 modelos
                 let aleatorios = [...ativos].sort(() => 0.5 - Math.random()).slice(0, 12);
-                // Duplicamos a lista para o loop infinito ser perfeito
                 const listaDobrada = [...aleatorios, ...aleatorios];
-                listaDobrada.forEach(m => {
-                    track.innerHTML += `<div class="item-social"><img src="${m.fotos[0]}"><span>${m.cidade}</span></div>`;
-                });
+                listaDobrada.forEach(m => { track.innerHTML += `<div class="item-social"><img src="${m.fotos[0]}"><span>${m.cidade}</span></div>`; });
             }
 
             const seletor = document.getElementById('filtro-adm-cidade'); const vAt = seletor.value;
             seletor.innerHTML = '<option value="todas">VER TODAS AS CIDADES</option>';
-            Array.from(cidadesDetectadas).sort().forEach(cid => { seletor.innerHTML += `<option value="${cid}">${cid.toUpperCase()}</option>`; });
+            Array.from(cidadesDetectadas).sort().forEach(cid => { seletor.innerHTML += `<option value="${cid}">${cid}</option>`; });
             seletor.value = vAt;
+
             ativos.sort((a, b) => { const pA = parseInt(a.pos || 0); const pB = parseInt(b.pos || 0); if (pA === 0 && pB === 0) return b.criadoEm - a.criadoEm; if (pA === 0) return -1; if (pB === 0) return 1; return pA - pB; });
+            
             ativos.forEach(d => {
                 const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`;
-                if(d.plano > 0) lv.innerHTML += `<div class="card-pago" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
-                else lv.innerHTML += `<div class="card-gratis" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><b style="flex:1;">${d.nome}</b><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                const bairroHtml = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
+                if(d.plano > 0) lv.innerHTML += `<div class="card-pago" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade} ${bairroHtml}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
+                else lv.innerHTML += `<div class="card-gratis" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade} ${bairroHtml}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><b style="flex:1;">${d.nome}</b><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
             });
             renderizarListasAdm();
         });
