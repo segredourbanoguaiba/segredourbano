@@ -37,13 +37,20 @@
         .seta-esq { left: 5px; }
         .seta-dir { right: 5px; }
         
-        /* Fotos da vitrine com aumento de 10% (de 110px para 121px) */
         .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; }
         .card-gratis-flex { display: flex; align-items: center; }
         .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; }
         .card-gratis b { font-size: 18px; }
         
+        /* CSS NOVO: Carrossel de Modelos */
+        .galeria-social { width: 100%; overflow: hidden; margin-top: 25px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
+        .social-track { display: flex; width: max-content; animation: scroll-social 30s linear infinite; gap: 15px; padding-left: 15px; }
+        .item-social { width: 70px; text-align: center; flex-shrink: 0; }
+        .item-social img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid #333; }
+        .item-social span { display: block; font-size: 8px; color: #888; text-transform: uppercase; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @keyframes scroll-social { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
         .badge-fotos { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
         #modal-galeria { display: none; position: fixed; z-index: 1000000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
         .btn-fechar-galeria { position: absolute; top: 20px; right: 25px; color: white; font-size: 50px; cursor: pointer; z-index: 1000005; font-weight: bold; }
@@ -125,6 +132,10 @@
     <div id="menu" class="tela ativa">
         <button class="btn" onclick="filtrarPorCidade()">VER ANÚNCIOS</button>
         <button class="btn" style="background:#fff; color:#000" onclick="ir('planos')">ANUNCIAR AGORA</button>
+        
+        <div class="galeria-social" id="area-social" style="display:none;">
+            <div class="social-track" id="track-social"></div>
+        </div>
     </div>
 
     <div id="planos" class="tela">
@@ -351,12 +362,28 @@
         }
 
         db.ref('anuncios').on('value', s => {
-            const lv = document.getElementById('lv'); lv.innerHTML = ''; anunciosCache = []; cidadesDetectadas.clear(); let ativos = []; const AGORA = Date.now();
+            const lv = document.getElementById('lv'); lv.innerHTML = ''; 
+            const track = document.getElementById('track-social'); track.innerHTML = '';
+            anunciosCache = []; cidadesDetectadas.clear(); let ativos = []; const AGORA = Date.now();
+            
             s.forEach(i => {
                 const d = i.val(); anunciosCache.push({key: i.key, data: d}); cidadesDetectadas.add(d.cidade);
                 bancoDeFotos[i.key] = d.fotos; bancoPlanos[i.key] = d.plano; 
                 if(d.status === 'ativo') ativos.push({key: i.key, ...d});
             });
+
+            // LÓGICA DO CARROSSEL ALEATÓRIO
+            if(ativos.length > 0) {
+                document.getElementById('area-social').style.display = 'block';
+                // Embaralha e pega até 12 modelos
+                let aleatorios = [...ativos].sort(() => 0.5 - Math.random()).slice(0, 12);
+                // Duplicamos a lista para o loop infinito ser perfeito
+                const listaDobrada = [...aleatorios, ...aleatorios];
+                listaDobrada.forEach(m => {
+                    track.innerHTML += `<div class="item-social"><img src="${m.fotos[0]}"><span>${m.cidade}</span></div>`;
+                });
+            }
+
             const seletor = document.getElementById('filtro-adm-cidade'); const vAt = seletor.value;
             seletor.innerHTML = '<option value="todas">VER TODAS AS CIDADES</option>';
             Array.from(cidadesDetectadas).sort().forEach(cid => { seletor.innerHTML += `<option value="${cid}">${cid.toUpperCase()}</option>`; });
