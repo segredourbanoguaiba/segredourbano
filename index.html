@@ -18,6 +18,7 @@
         .loc-badge-header { display: inline-block; background: #222; border: 1px solid red; color: red; padding: 5px 15px; border-radius: 20px; font-size: 11px; margin-bottom: 35px; font-weight: bold; letter-spacing: 1px; }
         .logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid red; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         #btn-adm-oculto { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; display: none; }
+        #btn-adm-vencimento { position: absolute; top: 0; left: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; display: none; }
         #aviso-18 { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #220000 0%, #000 100%); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; }
         #aviso-18 h1 { color: #d4af37; font-family: 'Playfair Display'; font-size: 42px; font-weight: 900; margin-bottom: 10px; }
         .tela { display: none; padding: 20px; }
@@ -30,7 +31,8 @@
         .bairro-txt { color: #888; font-size: 10px; margin-left: 5px; text-transform: uppercase; font-weight: normal; }
         .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; }
         .img-container { position: relative; border-radius: 15px; overflow: hidden; border: 1px solid #222; }
-        .card-pago img { width: 100%; height: 500px; object-fit: cover; display: block; }
+        /* AJUSTE PARA PRESERVAR PROPORÇÃO VISUAL */
+        .card-pago img { width: 100%; height: auto; min-height: 400px; object-fit: contain; background: #000; display: block; }
         .card-pago h2 { font-family: 'Playfair Display', serif; font-size: 30px; margin: 15px 0 5px; color: #fff; text-align: center; }
         .btn-seta { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: white; border: none; padding: 20px 12px; font-size: 24px; cursor: pointer; z-index: 20; border-radius: 5px; }
         .seta-esq { left: 5px; }
@@ -53,7 +55,7 @@
         .btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,0,0,0.7); color: white; border: none; font-size: 28px; padding: 18px; border-radius: 5px; z-index: 1000004; }
         input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
         #aviso-pix-central { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
-        .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; }
+        .item-adm, .card-validade { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; }
         .badge-plano-adm { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 5px; background: #333; color: #fff; }
         .plano-pago { background: gold !important; color: #000 !important; }
         .area-revisao { background: #0a0a0a; padding: 15px; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid red; }
@@ -67,6 +69,8 @@
         .badge-cliques-zap { background: #25D366; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 10px; }
         .btn-toggle-plano { background: #333; color: #fff; border: 1px solid #555; font-size: 9px; padding: 5px; border-radius: 4px; cursor: pointer; margin-top: 8px; text-transform: uppercase; font-weight: bold; width: 100%; }
         .btn-toggle-plano:hover { background: gold; color: #000; }
+        .badge-vencido { color: #ff4444; font-weight: bold; }
+        .badge-ok { color: #25D366; font-weight: bold; }
         #container-busca-cidade { display: none; padding: 15px; background: #000; }
         .caixa-busca-moderna { display: flex; max-width: 400px; margin: 0 auto; gap: 8px; }
         .inp-busca-txt { flex: 1; background: #111; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 25px; outline: none; font-size: 14px; transition: border-color 0.3s; }
@@ -95,6 +99,7 @@
     <a href="https://wa.me/5551981833377?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo">● SUPORTE</a>
 
     <header>
+        <button id="btn-adm-vencimento" onclick="logAdmPrazos()"></button>
         <button id="btn-adm-oculto" onclick="logAdm()"></button>
         <div class="loc-badge-header" id="badge-local-topo">📍 EM TODO BRASIL</div>
         <div class="logo-container">
@@ -180,6 +185,19 @@
         <button class="btn" onclick="ir('menu')">SAIR</button>
     </div>
 
+    <div id="tela-validade" class="tela">
+        <h2 style="color:red; font-family:'Playfair Display';">CONTROLE DE PRAZOS</h2>
+        <div class="metric-card" style="margin-bottom:10px;">
+            <span><b>CIDADES ATIVAS:</b></span>
+            <span id="qtd-cidades-prazos" style="font-size:24px; color:red; font-weight:900;">0</span>
+        </div>
+        <select id="filtro-prazos-cidade" class="seletor-cidade-adm" onchange="renderizarPrazos()">
+            <option value="todas">VER TODAS AS CIDADES</option>
+        </select>
+        <div id="lista-prazos"></div>
+        <button class="btn" onclick="ir('menu')">SAIR</button>
+    </div>
+
     <script>
         const conf = { databaseURL: "https://segredo-urbano-a4d81-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(conf);
@@ -228,6 +246,7 @@
             if(['menu', 'vitrine'].includes(id) && document.getElementById('aviso-18').style.display === 'none') { barra.style.display = 'block'; } else { barra.style.display = 'none'; }
             const isMenu = (id === 'menu'); document.getElementById('btn-suporte-fixo').style.display = isMenu ? 'block' : 'none';
             document.getElementById('btn-adm-oculto').style.display = isMenu ? 'block' : 'none';
+            document.getElementById('btn-adm-vencimento').style.display = isMenu ? 'block' : 'none';
         }
 
         function trackZap(key) { db.ref('anuncios/' + key + '/cliquesZap').transaction((atual) => (atual || 0) + 1); }
@@ -243,6 +262,7 @@
 
         function p(d) { dias = d; imgs = []; document.getElementById('aviso-limite').innerText = `Limite: ${d > 0 ? '10' : '3'} fotos.`; ir('cad'); }
 
+        // CORREÇÃO DA IMAGEM DENTRO DO CÓDIGO IMUTÁVEL
         async function loadFiles() {
             const files = Array.from(document.getElementById('f').files);
             document.getElementById('preview').innerHTML = 'Processando...';
@@ -252,8 +272,16 @@
                     r.onload = (e) => {
                         const img = new Image();
                         img.onload = () => {
-                            const cv = document.createElement('canvas'); cv.width = 600; cv.height = 800;
-                            cv.getContext('2d').drawImage(img,0,0,600,800); resolve(cv.toDataURL('image/jpeg', 0.7));
+                            const cv = document.createElement('canvas');
+                            const ctx = cv.getContext('2d');
+                            let w = img.width;
+                            let h = img.height;
+                            const max = 1100; // Mantém qualidade sem estourar o banco
+                            if (w > h) { if (w > max) { h *= max / w; w = max; } }
+                            else { if (h > max) { w *= max / h; h = max; } }
+                            cv.width = w; cv.height = h;
+                            ctx.drawImage(img, 0, 0, w, h);
+                            resolve(cv.toDataURL('image/jpeg', 0.7));
                         };
                         img.src = e.target.result;
                     };
@@ -270,7 +298,7 @@
             document.getElementById('preview').innerHTML = ''; document.getElementById('inp-filtro-cidade').value = ''; imgs = [];
         }
 
-        function enviar() {
+        async function enviar() {
             const n = document.getElementById('n').value.trim(); const c = document.getElementById('cid').value.trim(); 
             const b = document.getElementById('bai').value.trim(); const em = document.getElementById('email_user').value.trim(); 
             let w = document.getElementById('w').value.replace(/\D/g,''); cidadePostagemOriginal = c;
@@ -278,6 +306,8 @@
             if(imgs.length > limite) return alert(`Limite: ${limite} fotos.`);
             if(!n || !c || !b || !w || !em || imgs.length === 0) return alert("Por favor, preencha todos os campos!");
             if(w.length <= 11) w = "55" + w;
+            const duplicata = anunciosCache.find(a => a.data.whats === w || a.data.email === em);
+            if(duplicata) { if(dias > 0 || duplicata.data.plano === 0) { await db.ref('anuncios').child(duplicata.key).remove(); } }
             db.ref('anuncios').push({ nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
                 if(dias > 0) ir('tela-pix'); else { const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }
             });
@@ -301,10 +331,31 @@
 
         function fecharGaleria() { document.getElementById('modal-galeria').style.display = 'none'; }
         function mudarFoto(dir) { fotoIndex += dir; if(fotoIndex >= fotosGaleria.length) fotoIndex = 0; if(fotoIndex < 0) fotoIndex = fotosGaleria.length - 1; document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; }
+        
         function logAdm() { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir('adm'); }
+        function logAdmPrazos() { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") { renderizarPrazos(); ir('tela-validade'); } }
+
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         function removerFoto(key, idx) { db.ref('anuncios/'+key+'/fotos').once('value', s => { let fots = s.val(); fots.splice(idx, 1); db.ref('anuncios/'+key).update({ fotos: fots }); }); }
         function togglePlano(key, planoAtual) { let novoPlano = (planoAtual === 0) ? 7 : 0; db.ref('anuncios/' + key).update({ plano: novoPlano }); }
+
+        function renderizarPrazos() {
+            const container = document.getElementById('lista-prazos');
+            const filtroRaw = document.getElementById('filtro-prazos-cidade').value;
+            const filtroNorm = normalizarTxt(filtroRaw);
+            container.innerHTML = ''; const agora = Date.now();
+            anunciosCache.forEach(item => {
+                const d = item.data; const key = item.key;
+                const cidadeNorm = normalizarTxt(d.cidade);
+                if(d.status === 'ativo' && (filtroRaw === 'todas' || cidadeNorm === filtroNorm)) {
+                    const prazoDias = (d.plano > 0) ? d.plano : 30;
+                    const diasRestantes = prazoDias - Math.floor((agora - (d.criadoEm || agora)) / 86400000);
+                    const cor = diasRestantes > 0 ? 'badge-ok' : 'badge-vencido';
+                    const isVencido = diasRestantes <= 0;
+                    container.innerHTML += `<div class="card-validade"><b>${d.nome}</b> (${d.cidade})<br><small>${d.plano>0?'PLANO PAGO':'GRÁTIS'}</small> | <span class="${cor}">${!isVencido ? 'Restam ' + diasRestantes + ' dias' : 'VENCIDO'}</span><div style="float:right; display:flex; gap:5px; margin-top:5px;"><button onclick="window.open('https://wa.me/${d.whats}')" style="background:#25D366; border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer;">ZAP</button>${isVencido && d.plano > 0 ? `<button onclick="if(confirm('Tornar GRÁTIS?')){ db.ref('anuncios/${key}').update({plano:0, criadoEm: Date.now()}); }" style="background:#666; color:#fff; border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer;">GRÁTIS</button>` : ''}<button onclick="if(confirm('Excluir anúncio?')){ db.ref('anuncios').child('${key}').remove(); }" style="background:red; border:none; padding:8px; border-radius:4px; font-weight:bold; cursor:pointer; color:#fff;">X</button></div></div>`;
+                }
+            });
+        }
 
         function renderizarListasAdm() {
             const ap = document.getElementById('ap'); const aa = document.getElementById('aa');
@@ -318,16 +369,7 @@
                     let fotsRev = ''; d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${key}', ${idx}); event.stopPropagation();">×</button></div>`; });
                     ap.innerHTML += `<div class="item-adm"><div><b>${d.nome}</b> (${d.cidade})<br><span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">PLANO: ${d.plano > 0 ? d.plano : 'GRÁTIS'}</span> <button onclick="toggleRev('${key}')" style="float:right; background:red; color:white; border:none; padding:5px 10px; border-radius:4px;">REVISAR</button></div><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button class="btn" style="margin:0; flex:1; background:green;" onclick="db.ref('anuncios').child('${key}').update({status:'ativo', criadoEm: Date.now()})">APROVAR</button><button class="btn" style="margin:0; flex:1; background:#444;" onclick="db.ref('anuncios').child('${key}').remove()">EXCLUIR</button></div></div></div>`;
                 } else if(d.status === 'ativo' && (filtroRaw === 'todas' || cidadeItemNorm === filtroBuscaNorm)) {
-                    aa.innerHTML += `<div class="item-adm">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <img src="${d.fotos[0]}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">
-                            <div style="flex:1; font-size:11px;"><b>${d.nome}</b> (${d.bairro}) <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br>
-                            P:<input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${key}').update({pos: parseInt(this.value)})">
-                            <input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${key}').update({cidade: this.value})"></div>
-                            <button onclick="db.ref('anuncios').child('${key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button>
-                        </div>
-                        <button class="btn-toggle-plano" onclick="togglePlano('${key}', ${d.plano || 0})">${d.plano > 0 ? 'MUDAR P/ GRÁTIS' : 'DAR DESTAQUE (PAGO)'}</button>
-                    </div>`;
+                    aa.innerHTML += `<div class="item-adm"><div style="display:flex; align-items:center; gap:8px;"><img src="${d.fotos[0]}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;"><div style="flex:1; font-size:11px;"><b>${d.nome}</b> (${d.bairro}) <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br>P:<input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${key}').update({pos: parseInt(this.value)})"><input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${key}').update({cidade: this.value})"></div><button onclick="db.ref('anuncios').child('${key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button></div><button class="btn-toggle-plano" onclick="togglePlano('${key}', ${d.plano || 0})">${d.plano > 0 ? 'MUDAR P/ GRÁTIS' : 'DAR DESTAQUE (PAGO)'}</button></div>`;
                 }
             });
         }
@@ -337,21 +379,23 @@
             anunciosCache = []; let mapaTemporario = {}; let ativos = [];
             s.forEach(i => {
                 const d = i.val(); anunciosCache.push({key: i.key, data: d}); 
-                if(d.cidade) {
-                    const norm = normalizarTxt(d.cidade);
-                    if(!mapaTemporario[norm]) mapaTemporario[norm] = d.cidade.trim().toUpperCase();
+                if(d.cidade && d.status === 'ativo') { 
+                    const norm = normalizarTxt(d.cidade); 
+                    if(!mapaTemporario[norm]) mapaTemporario[norm] = d.cidade.trim().toUpperCase(); 
                 }
-                bancoDeFotos[i.key] = d.fotos; bancoPlanos[i.key] = d.plano; if(d.status === 'ativo') ativos.push({key: i.key, ...d});
+                bancoDeFotos[i.key] = d.fotos; bancoPlanos[i.key] = d.plano; 
+                if(d.status === 'ativo') ativos.push({key: i.key, ...d});
             });
-            if(ativos.length > 0) {
-                document.getElementById('area-social').style.display = 'block';
-                let aleatorios = [...ativos].sort(() => 0.5 - Math.random()).slice(0, 12);
-                [...aleatorios, ...aleatorios].forEach(m => { track.innerHTML += `<div class="item-social"><img src="${m.fotos[0]}"><span>${m.cidade}</span></div>`; });
-            }
-            const seletor = document.getElementById('filtro-adm-cidade'); const vAt = seletor.value;
-            seletor.innerHTML = '<option value="todas">VER TODAS AS CIDADES</option>';
-            Object.values(mapaTemporario).sort().forEach(nomeExibicao => { seletor.innerHTML += `<option value="${nomeExibicao}">${nomeExibicao}</option>`; });
-            seletor.value = vAt;
+            if(ativos.length > 0) { document.getElementById('area-social').style.display = 'block'; let aleatorios = [...ativos].sort(() => 0.5 - Math.random()).slice(0, 12); [...aleatorios, ...aleatorios].forEach(m => { track.innerHTML += `<div class="item-social"><img src="${m.fotos[0]}"><span>${m.cidade}</span></div>`; }); }
+            const seletorAdm = document.getElementById('filtro-adm-cidade'); 
+            const seletorPrazos = document.getElementById('filtro-prazos-cidade');
+            const vAtAdm = seletorAdm.value; const vAtPrz = seletorPrazos.value;
+            const cidadesOrdenadas = Object.values(mapaTemporario).sort();
+            document.getElementById('qtd-cidades-prazos').innerText = cidadesOrdenadas.length;
+            let optionsHtml = '<option value="todas">VER TODAS AS CIDADES</option>';
+            cidadesOrdenadas.forEach(nome => { optionsHtml += `<option value="${nome}">${nome}</option>`; });
+            seletorAdm.innerHTML = optionsHtml; seletorPrazos.innerHTML = optionsHtml;
+            seletorAdm.value = vAtAdm; seletorPrazos.value = vAtPrz;
             ativos.sort((a, b) => { const pA = parseInt(a.pos || 0); const pB = parseInt(b.pos || 0); if (pA === 0 && pB === 0) return b.criadoEm - a.criadoEm; if (pA === 0) return -1; if (pB === 0) return 1; return pA - pB; });
             ativos.forEach(d => {
                 const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`;
@@ -360,6 +404,7 @@
                 else lv.innerHTML += `<div class="card-gratis" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade} ${bairroHtml}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><b style="flex:1;">${d.nome}</b><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
             });
             renderizarListasAdm();
+            if(telaAtual === 'tela-validade') renderizarPrazos();
         });
     </script>
 </body>
