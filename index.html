@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="khmTM9yemLAQYvN3ZZHNZX_VKoL3l8fWSHNZX_VKoL3l8fWSJHmD42Xii4" />
+    <meta name="google-site-verification" content="khmTM9yemLAQYvN3ZZHNZX_VKoL3l8fWSJHmD42Xii4" />
     
     <title>Segredo Urbano | A elite do entretenimento em todo o Brasil</title>
     
@@ -17,11 +17,7 @@
         header { border-bottom: 2px solid red; padding: 50px 20px 30px; background: linear-gradient(to bottom, #1a0000, #000); position: relative; }
         .loc-badge-header { display: inline-block; background: #222; border: 1px solid red; color: red; padding: 5px 15px; border-radius: 20px; font-size: 11px; margin-bottom: 35px; font-weight: bold; letter-spacing: 1px; }
         .logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid red; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        
-        /* BOTÕES ADM OCULTOS */
-        #btn-adm-oculto { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; }
-        #btn-prazos-oculto { position: absolute; top: 0; left: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; }
-
+        #btn-adm-oculto { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; display: none; }
         #aviso-18 { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #220000 0%, #000 100%); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; }
         #aviso-18 h1 { color: #d4af37; font-family: 'Playfair Display'; font-size: 42px; font-weight: 900; margin-bottom: 10px; }
         .tela { display: none; padding: 20px; }
@@ -44,13 +40,6 @@
         .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; }
         .card-gratis b { font-size: 18px; }
-        
-        /* CONTROLE DE PRAZOS STYLES */
-        .item-prazo { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 10px; text-align: left; border-left: 4px solid #333; }
-        .prazo-pago { border-left-color: gold !important; }
-        .restam-dias { color: #25D366; font-weight: bold; font-size: 13px; }
-        .vencido { color: red !important; }
-
         .galeria-social { width: 100%; overflow: hidden; margin-top: 25px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
         .social-track { display: flex; width: max-content; animation: scroll-social 30s linear infinite; gap: 15px; padding-left: 15px; }
         .item-social { width: 70px; text-align: center; flex-shrink: 0; }
@@ -58,15 +47,12 @@
         .item-social span { display: block; font-size: 8px; color: #888; text-transform: uppercase; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         @keyframes scroll-social { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .badge-fotos { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
-        
         #modal-galeria { display: none; position: fixed; z-index: 1000000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
         .btn-fechar-galeria { position: absolute; top: 20px; right: 25px; color: white; font-size: 50px; cursor: pointer; z-index: 1000005; font-weight: bold; }
         .modal-cont { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; }
         .btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,0,0,0.7); color: white; border: none; font-size: 28px; padding: 18px; border-radius: 5px; z-index: 1000004; }
-        input, select { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
-        
-        #aviso-pix-central, #modal-sucesso { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
-
+        input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
+        #aviso-pix-central { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
         .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; }
         .badge-plano-adm { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 5px; background: #333; color: #fff; }
         .plano-pago { background: gold !important; color: #000 !important; }
@@ -75,17 +61,20 @@
         .foto-revisao { position: relative; width: 65px; height: 85px; cursor: pointer; }
         .foto-revisao img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
         .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; border: 2px solid #000; font-size: 14px; cursor: pointer; font-weight: bold; z-index: 10; }
-        .metric-card { background: #000; border: 1px solid #331111; padding: 25px; border-radius: 15px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; }
-        .inp-pos { width: 45px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 6px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
-        .inp-cidade-adm { width: 80px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 6px !important; font-size: 11px !important; border-radius: 4px !important; margin-left: 5px !important; }
-        .badge-cliques-zap { background: #25D366; color: #000; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 900; margin-left: 10px; }
-        .btn-toggle-plano { background: #333; color: #fff; border: none; font-size: 10px; padding: 12px; border-radius: 6px; cursor: pointer; margin-top: 12px; text-transform: uppercase; font-weight: bold; width: 100%; }
+        .metric-card { background: #1a0000; border: 1px solid red; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .inp-pos { width: 45px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 4px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
+        .inp-cidade-adm { width: 80px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px !important; font-size: 10px !important; border-radius: 4px !important; margin-left: 5px !important; }
+        .badge-cliques-zap { background: #25D366; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 10px; }
+        .btn-toggle-plano { background: #333; color: #fff; border: 1px solid #555; font-size: 9px; padding: 5px; border-radius: 4px; cursor: pointer; margin-top: 8px; text-transform: uppercase; font-weight: bold; width: 100%; }
+        .btn-toggle-plano:hover { background: gold; color: #000; }
         #container-busca-cidade { display: none; padding: 15px; background: #000; }
         .caixa-busca-moderna { display: flex; max-width: 400px; margin: 0 auto; gap: 8px; }
         .inp-busca-txt { flex: 1; background: #111; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 25px; outline: none; font-size: 14px; transition: border-color 0.3s; }
         .btn-busca-lupa { background: red; border: none; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .seletor-cidade-adm { background: #000; color: red; border: 1px solid red; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 15px; font-weight: bold; text-align: center; }
+        .seletor-cidade-adm { background: #000; color: red; border: 1px solid red; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 15px; font-weight: bold; }
+        .busca-erro { border-color: red !important; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
         #aviso-vazio { display: none; background: #1a0000; border: 1px dashed red; padding: 25px; border-radius: 12px; margin: 30px auto; max-width: 300px; }
+        #aviso-vazio p { color: #ff0000; font-size: 14px; font-weight: bold; margin: 0; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -103,16 +92,9 @@
         <small style="display:block; margin-top:15px; color:#666;">Aguarde o redirecionamento...</small>
     </div>
 
-    <div id="modal-sucesso">
-        <b style="color:#25D366; font-size:18px;">✓ RECEBIDO!</b><br><br>
-        <p style="font-size:14px; color:#fff; line-height:1.4; margin:0;">Seu anúncio foi enviado com sucesso e está em fase de moderação.</p>
-        <button class="btn btn-whats" style="margin-top:20px; padding:10px;" onclick="ir('menu')">VOLTAR AO INÍCIO</button>
-    </div>
-
     <a href="https://wa.me/5551981833377?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo">● SUPORTE</a>
 
     <header>
-        <button id="btn-prazos-oculto" onclick="logPrazos()"></button>
         <button id="btn-adm-oculto" onclick="logAdm()"></button>
         <div class="loc-badge-header" id="badge-local-topo">📍 EM TODO BRASIL</div>
         <div class="logo-container">
@@ -169,7 +151,6 @@
         <input type="file" id="f" accept="image/*" multiple onchange="loadFiles()">
         <div id="preview" style="display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:15px;"></div>
         <button class="btn" onclick="enviar()">ENVIAR ANÚNCIO</button>
-        <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('menu')">VOLTAR</button>
     </div>
 
     <div id="tela-pix" class="tela">
@@ -179,7 +160,6 @@
             <b id="chave-txt" style="font-size:11px; word-break:break-all; color:#fff; background:#000; padding:10px; display:block; border-radius:5px;">7f0690c2-31b1-4d73-9af4-a88e83bcfabe</b>
             <button class="btn" id="btn-copia-pix" style="background:#fff; color:#000; margin-top:20px;" onclick="copiarPix()">COPIAR CHAVE PIX</button>
         </div>
-        <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('menu')">VOLTAR AO INÍCIO</button>
     </div>
 
     <div id="vitrine" class="tela">
@@ -191,31 +171,13 @@
     </div>
 
     <div id="adm" class="tela">
-        <h2 style="color:red; font-weight: 900; margin-bottom: 25px;">PAINEL ADM</h2>
-        <div class="metric-card">
-            <span style="font-weight: 900; letter-spacing: 1px; font-size: 14px;">BUSCAS REALIZADAS:</span>
-            <span id="display-cliques" style="font-size:28px; color:red; font-weight:900;">0</span>
-        </div>
-        <select id="filtro-adm-cidade" class="seletor-cidade-adm" onchange="renderizarListasAdm()">
-            <option value="todas">VER TODAS AS CIDADES</option>
-        </select>
-        <h4 style="text-align:left; color:#888; text-transform: uppercase; font-size: 14px; margin-top: 30px;">PARA APROVAR:</h4>
-        <div id="ap"></div>
-        <hr style="border-color:#222; margin:30px 0;">
-        <h4 style="text-align:left; color:#888; text-transform: uppercase; font-size: 14px;">ATIVOS:</h4>
-        <div id="aa"></div>
-        <button class="btn" style="margin-top: 40px; background: #222;" onclick="ir('menu')">SAIR</button>
-    </div>
-
-    <div id="adm-prazos" class="tela">
-        <h2 style="color:red; font-family:'Playfair Display';">CONTROLE DE PRAZOS</h2>
-        <div class="metric-card">
-            <span style="font-weight:900;">CIDADES ATIVAS:</span>
-            <span id="num-cidades" style="font-size:24px; color:red; margin-left:15px;">0</span>
-        </div>
-        <select id="filtro-prazos-cidade" onchange="renderizarPrazos()"><option value="todas">VER TODAS AS CIDADES</option></select>
-        <div id="lista-prazos-cont"></div>
-        <button class="btn" style="background:#222; margin-top:30px;" onclick="ir('menu')">SAIR</button>
+        <h2 style="color:red;">PAINEL ADM</h2>
+        <div class="metric-card"><span><b>BUSCAS REALIZADAS:</b></span><span id="display-cliques" style="font-size:24px; color:red; font-weight:900;">0</span></div>
+        <select id="filtro-adm-cidade" class="seletor-cidade-adm" onchange="renderizarListasAdm()"><option value="todas">VER TODAS AS CIDADES</option></select>
+        <h4 style="text-align:left; color:#888;">PARA APROVAR:</h4><div id="ap"></div>
+        <hr style="border-color:#222; margin:20px 0;">
+        <h4 style="text-align:left; color:#888;">ATIVOS:</h4><div id="aa"></div>
+        <button class="btn" onclick="ir('menu')">SAIR</button>
     </div>
 
     <script>
@@ -224,81 +186,48 @@
         const db = firebase.database();
         let imgs = []; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
         let bancoDeFotos = {}; let sliderIndices = {}; let bancoPlanos = {}; 
-        let anunciosCache = []; let cidadePostagemOriginal = "";
+        let anunciosCache = []; let cidadesMapeadas = {}; 
+        let cidadePostagemOriginal = "";
 
         const normalizarTxt = (txt) => txt ? txt.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : "";
 
         function fecharAviso18() { document.getElementById('aviso-18').style.display = 'none'; ir('menu'); }
 
-        function limparTudo() {
-            document.getElementById('inp-filtro-cidade').value = '';
-            document.getElementById('badge-local-topo').innerText = "📍 EM TODO BRASIL";
-            document.getElementById('n').value = ''; document.getElementById('cid').value = '';
-            document.getElementById('bai').value = ''; document.getElementById('email_user').value = '';
-            document.getElementById('w').value = ''; document.getElementById('f').value = '';
-            document.getElementById('preview').innerHTML = '';
-            document.getElementById('modal-sucesso').style.display = 'none';
-            imgs = [];
-        }
-
-        window.onpopstate = function(event) {
-            if (document.getElementById('modal-galeria').style.display === 'block') { fecharGaleria(); history.pushState(null, null, null); } 
-            else if (telaAtual !== 'menu') { ir('menu', true); }
-        };
-
-        function ir(id, isBack = false) { 
-            if (id === 'menu') limparTudo();
-            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); 
-            document.getElementById(id).classList.add('ativa'); 
-            telaAtual = id;
-            if(id === 'adm-prazos') renderizarPrazos();
-            if (!isBack) history.pushState({page: id}, id);
-            const barra = document.getElementById('container-busca-cidade');
-            if(['menu', 'vitrine'].includes(id) && document.getElementById('aviso-18').style.display === 'none') barra.style.display = 'block'; else barra.style.display = 'none';
-            const isMenu = (id === 'menu');
-            document.getElementById('btn-suporte-fixo').style.display = isMenu ? 'block' : 'none';
-            document.getElementById('btn-adm-oculto').style.display = isMenu ? 'block' : 'none';
-            document.getElementById('btn-prazos-oculto').style.display = isMenu ? 'block' : 'none';
-        }
-
-        function logAdm() { const s = prompt("Senha ADM:"); if(btoa(s) === "MTkwNzgz") ir('adm'); }
-        function logPrazos() { const s = prompt("Senha Prazos:"); if(btoa(s) === "MTkwNzgz") ir('adm-prazos'); }
-
-        function renderizarPrazos() {
-            const cont = document.getElementById('lista-prazos-cont');
-            const filtro = document.getElementById('filtro-prazos-cidade').value;
-            const filtroNorm = normalizarTxt(filtro);
-            cont.innerHTML = ''; let cidadesSet = new Set();
-            anunciosCache.forEach(item => {
-                const d = item.data; if(d.status !== 'ativo') return;
-                if(d.cidade) cidadesSet.add(d.cidade.toUpperCase());
-                if(filtro !== 'todas' && normalizarTxt(d.cidade) !== filtroNorm) return;
-                const hoje = Date.now();
-                const expiraEm = (d.criadoEm || hoje) + (d.plano * 24 * 60 * 60 * 1000);
-                const diff = expiraEm - hoje;
-                const diasRestantes = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                let txtPrazo = d.plano > 0 ? `Restam ${diasRestantes} dias` : "PLANO GRÁTIS";
-                if(d.plano > 0 && diasRestantes <= 0) txtPrazo = "EXPIRADO";
-                cont.innerHTML += `<div class="item-prazo ${d.plano > 0 ? 'prazo-pago' : ''}"><b>${d.nome}</b> (${d.cidade || '---'})<br><small>${d.plano > 0 ? 'PLANO PAGO' : 'PLANO GRÁTIS'}</small> | <span class="restam-dias ${diasRestantes <= 0 && d.plano > 0 ? 'vencido' : ''}">${txtPrazo}</span><div style="float:right;"><button onclick="window.open('https://wa.me/${d.whats}')" style="background:#25D366; border:none; padding:5px 8px; border-radius:4px; color:#000; font-weight:bold; font-size:10px;">ZAP</button><button onclick="if(confirm('Excluir?')) db.ref('anuncios/${item.key}').remove()" style="background:red; border:none; padding:5px 8px; border-radius:4px; color:#fff; font-weight:bold; font-size:10px;">X</button></div></div>`;
-            });
-            document.getElementById('num-cidades').innerText = cidadesSet.size;
-        }
-
-        // --- AS DEMAIS FUNÇÕES (ENVIAR, FILTRAR, BUSCA, ZAP, ADM MODERAÇÃO) CONTINUAM IGUAIS ---
         function filtrarPorCidade(termoManual = "") {
             const input = document.getElementById('inp-filtro-cidade');
             const termoOriginal = (termoManual || input.value).trim();
             const termoBusca = normalizarTxt(termoOriginal);
-            if(!termoBusca) { input.classList.add('busca-erro'); input.placeholder = "DIGITE UMA CIDADE!"; setTimeout(() => input.classList.remove('busca-erro'), 2000); return false; }
+            if(!termoBusca) {
+                input.classList.add('busca-erro'); input.placeholder = "DIGITE UMA CIDADE!";
+                setTimeout(() => input.classList.remove('busca-erro'), 2000); return false;
+            }
             db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 1);
             input.value = termoOriginal.toUpperCase(); document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
             ir('vitrine');
             const cards = document.querySelectorAll('.card-pago, .card-gratis');
             let encontrados = 0;
-            cards.forEach(c => { const cidadeNoCard = normalizarTxt(c.getAttribute('data-cidade') || ""); if(cidadeNoCard.includes(termoBusca)) { c.style.display = 'block'; encontrados++; } else { c.style.display = 'none'; } });
+            cards.forEach(c => {
+                const cidadeNoCard = normalizarTxt(c.getAttribute('data-cidade') || "");
+                if(cidadeNoCard.includes(termoBusca)) { c.style.display = 'block'; encontrados++; } else { c.style.display = 'none'; }
+            });
             const aviso = document.getElementById('aviso-vazio');
-            if(encontrados === 0) { document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`; aviso.style.display = 'block'; setTimeout(() => { input.value = ''; aviso.style.display = 'none'; }, 4000); } else { aviso.style.display = 'none'; }
+            if(encontrados === 0) {
+                document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`;
+                aviso.style.display = 'block'; setTimeout(() => { input.value = ''; aviso.style.display = 'none'; }, 4000);
+            } else { aviso.style.display = 'none'; }
             return true;
+        }
+
+        window.onpopstate = function() { if (document.getElementById('modal-galeria').style.display === 'block') { fecharGaleria(); } else if (telaAtual !== 'menu') { ir('menu', true); } };
+
+        function ir(id, isBack = false) { 
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById(id).classList.add('ativa'); telaAtual = id;
+            if (!isBack) history.pushState({page: id}, id);
+            document.getElementById('inp-filtro-cidade').value = '';
+            const barra = document.getElementById('container-busca-cidade');
+            if(['menu', 'vitrine'].includes(id) && document.getElementById('aviso-18').style.display === 'none') { barra.style.display = 'block'; } else { barra.style.display = 'none'; }
+            const isMenu = (id === 'menu'); document.getElementById('btn-suporte-fixo').style.display = isMenu ? 'block' : 'none';
+            document.getElementById('btn-adm-oculto').style.display = isMenu ? 'block' : 'none';
         }
 
         function trackZap(key) { db.ref('anuncios/' + key + '/cliquesZap').transaction((atual) => (atual || 0) + 1); }
@@ -315,51 +244,64 @@
         function p(d) { dias = d; imgs = []; document.getElementById('aviso-limite').innerText = `Limite: ${d > 0 ? '10' : '3'} fotos.`; ir('cad'); }
 
         async function loadFiles() {
-            const input = document.getElementById('f'); const files = Array.from(input.files);
-            const limite = dias > 0 ? 10 : 3;
-            if (files.length > limite) { alert(`Limite de ${limite} fotos.`); input.value = ""; document.getElementById('preview').innerHTML = ""; imgs = []; return; }
+            const files = Array.from(document.getElementById('f').files);
             document.getElementById('preview').innerHTML = 'Processando...';
             const promises = files.map(f => {
                 return new Promise((resolve) => {
-                    const r = new FileReader(); r.onload = (e) => {
-                        const img = new Image(); img.onload = () => {
+                    const r = new FileReader();
+                    r.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
                             const cv = document.createElement('canvas'); cv.width = 600; cv.height = 800;
                             cv.getContext('2d').drawImage(img,0,0,600,800); resolve(cv.toDataURL('image/jpeg', 0.7));
-                        }; img.src = e.target.result;
-                    }; r.readAsDataURL(f);
+                        };
+                        img.src = e.target.result;
+                    };
+                    r.readAsDataURL(f);
                 });
             });
             imgs = await Promise.all(promises); document.getElementById('preview').innerHTML = '';
             imgs.forEach(data => { document.getElementById('preview').innerHTML += `<img src="${data}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">`; });
         }
 
+        function limparFormulario() {
+            document.getElementById('n').value = ''; document.getElementById('cid').value = ''; document.getElementById('bai').value = ''; 
+            document.getElementById('email_user').value = ''; document.getElementById('w').value = ''; document.getElementById('f').value = ''; 
+            document.getElementById('preview').innerHTML = ''; document.getElementById('inp-filtro-cidade').value = ''; imgs = [];
+        }
+
         function enviar() {
             const n = document.getElementById('n').value.trim(); const c = document.getElementById('cid').value.trim(); 
             const b = document.getElementById('bai').value.trim(); const em = document.getElementById('email_user').value.trim(); 
             let w = document.getElementById('w').value.replace(/\D/g,''); cidadePostagemOriginal = c;
-            if(!n || !c || !b || !em || !w) return alert("Preencha todos os campos.");
-            if(imgs.length === 0) return alert("Escolha uma foto."); if(w.length <= 11) w = "55" + w;
+            const limite = (dias > 0) ? 10 : 3;
+            if(imgs.length > limite) return alert(`Limite: ${limite} fotos.`);
+            if(!n || !c || !b || !w || !em || imgs.length === 0) return alert("Por favor, preencha todos os campos!");
+            if(w.length <= 11) w = "55" + w;
             db.ref('anuncios').push({ nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
-                if(dias > 0) ir('tela-pix'); else document.getElementById('modal-sucesso').style.display = 'block';
+                if(dias > 0) ir('tela-pix'); else { const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }
             });
         }
 
         function copiarPix() { 
-            navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe");
-            document.getElementById('valor-aviso').innerText = dias === 15 ? "R$ 39,90" : (dias === 30 ? "R$ 59,90" : "R$ 19,90");
-            document.getElementById('aviso-pix-central').style.display = "block";
-            setTimeout(() => { document.getElementById('aviso-pix-central').style.display = "none"; document.getElementById('modal-sucesso').style.display = 'block'; }, 6000);
+            navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe"); const btnCopia = document.getElementById('btn-copia-pix');
+            btnCopia.innerText = "✓ COPIADO!"; btnCopia.style.background = "#25D366"; btnCopia.style.color = "#000";
+            let v = dias === 15 ? "R$ 39,90" : (dias === 30 ? "R$ 59,90" : "R$ 19,90");
+            document.getElementById('valor-aviso').innerText = v; document.getElementById('aviso-pix-central').style.display = "block";
+            setTimeout(() => { document.getElementById('aviso-pix-central').style.display = "none"; btnCopia.innerText = "COPIAR CHAVE PIX"; btnCopia.style.background = "#fff"; const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }, 6000);
         }
 
         function abrirGaleria(key, idxManual) { 
             const lista = bancoDeFotos[key]; if (!lista) return;
             fotosGaleria = lista; fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
-            document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; document.getElementById('modal-galeria').style.display = 'block';
-            history.pushState({modal: 'galeria'}, null, null);
+            const imgEl = document.getElementById('img-ampliada'); imgEl.src = fotosGaleria[fotoIndex]; 
+            if (bancoPlanos[key] === 0) { imgEl.style.maxWidth = "60%"; imgEl.style.maxHeight = "60vh"; } else { imgEl.style.maxWidth = "95%"; imgEl.style.maxHeight = "92vh"; }
+            document.getElementById('modal-galeria').style.display = 'block'; history.pushState({modal: 'galeria'}, 'galeria');
         }
 
         function fecharGaleria() { document.getElementById('modal-galeria').style.display = 'none'; }
         function mudarFoto(dir) { fotoIndex += dir; if(fotoIndex >= fotosGaleria.length) fotoIndex = 0; if(fotoIndex < 0) fotoIndex = fotosGaleria.length - 1; document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; }
+        function logAdm() { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir('adm'); }
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         function removerFoto(key, idx) { db.ref('anuncios/'+key+'/fotos').once('value', s => { let fots = s.val(); fots.splice(idx, 1); db.ref('anuncios/'+key).update({ fotos: fots }); }); }
         function togglePlano(key, planoAtual) { let novoPlano = (planoAtual === 0) ? 7 : 0; db.ref('anuncios/' + key).update({ plano: novoPlano }); }
@@ -371,49 +313,54 @@
             ap.innerHTML = ''; aa.innerHTML = '';
             anunciosCache.forEach(item => {
                 const d = item.data; const key = item.key;
+                const cidadeItemNorm = normalizarTxt(d.cidade);
                 if(d.status === 'pendente') {
-                    let fotsRev = ''; if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${key}', ${idx}); event.stopPropagation();">×</button></div>`; });
+                    let fotsRev = ''; d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${key}', ${idx}); event.stopPropagation();">×</button></div>`; });
                     ap.innerHTML += `<div class="item-adm"><div><b>${d.nome}</b> (${d.cidade})<br><span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">PLANO: ${d.plano > 0 ? d.plano : 'GRÁTIS'}</span> <button onclick="toggleRev('${key}')" style="float:right; background:red; color:white; border:none; padding:5px 10px; border-radius:4px;">REVISAR</button></div><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button class="btn" style="margin:0; flex:1; background:green;" onclick="db.ref('anuncios').child('${key}').update({status:'ativo', criadoEm: Date.now()})">APROVAR</button><button class="btn" style="margin:0; flex:1; background:#444;" onclick="db.ref('anuncios').child('${key}').remove()">EXCLUIR</button></div></div></div>`;
-                } else if(d.status === 'ativo' && (filtroRaw === 'todas' || normalizarTxt(d.cidade) === filtroBuscaNorm)) {
-                    aa.innerHTML += `<div class="item-adm"><div style="display:flex; align-items:center; gap:12px;"><img src="${d.fotos ? d.fotos[0] : ''}" style="width:55px; height:70px; object-fit:cover; border-radius:8px; border:1px solid #333;"><div style="flex:1; font-size:12px;"><b>${d.nome}</b> <span style="color:#666;">(${d.bairro})</span> <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br><div style="margin-top:8px;">P: <input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${key}').update({pos: parseInt(this.value)})"> <input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${key}').update({cidade: this.value})"></div></div><button onclick="if(confirm('Excluir?')) db.ref('anuncios').child('${key}').remove()" style="background:#222; color:#fff; border:1px solid #444; width:35px; height:35px; border-radius:6px;">X</button></div><button class="btn-toggle-plano" onclick="togglePlano('${key}', ${d.plano || 0})">${d.plano > 0 ? 'MUDAR P/ GRÁTIS' : 'DAR DESTAQUE (PAGO)'}</button></div>`;
+                } else if(d.status === 'ativo' && (filtroRaw === 'todas' || cidadeItemNorm === filtroBuscaNorm)) {
+                    aa.innerHTML += `<div class="item-adm">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <img src="${d.fotos[0]}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">
+                            <div style="flex:1; font-size:11px;"><b>${d.nome}</b> (${d.bairro}) <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br>
+                            P:<input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${key}').update({pos: parseInt(this.value)})">
+                            <input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${key}').update({cidade: this.value})"></div>
+                            <button onclick="db.ref('anuncios').child('${key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button>
+                        </div>
+                        <button class="btn-toggle-plano" onclick="togglePlano('${key}', ${d.plano || 0})">${d.plano > 0 ? 'MUDAR P/ GRÁTIS' : 'DAR DESTAQUE (PAGO)'}</button>
+                    </div>`;
                 }
             });
         }
 
         db.ref('anuncios').on('value', s => {
-            const lv = document.getElementById('lv'); if(lv) lv.innerHTML = ''; 
-            const track = document.getElementById('track-social'); if(track) track.innerHTML = '';
+            const lv = document.getElementById('lv'); lv.innerHTML = ''; const track = document.getElementById('track-social'); track.innerHTML = '';
             anunciosCache = []; let mapaTemporario = {}; let ativos = [];
             s.forEach(i => {
-                const d = i.val(); const key = i.key; anunciosCache.push({key: key, data: d}); 
-                if(d.cidade) { const norm = normalizarTxt(d.cidade); if(!mapaTemporario[norm]) mapaTemporario[norm] = d.cidade.trim().toUpperCase(); }
-                bancoDeFotos[key] = d.fotos || []; bancoPlanos[key] = d.plano || 0; if(d.status === 'ativo') ativos.push({key: key, ...d});
+                const d = i.val(); anunciosCache.push({key: i.key, data: d}); 
+                if(d.cidade) {
+                    const norm = normalizarTxt(d.cidade);
+                    if(!mapaTemporario[norm]) mapaTemporario[norm] = d.cidade.trim().toUpperCase();
+                }
+                bancoDeFotos[i.key] = d.fotos; bancoPlanos[i.key] = d.plano; if(d.status === 'ativo') ativos.push({key: i.key, ...d});
             });
             if(ativos.length > 0) {
                 document.getElementById('area-social').style.display = 'block';
                 let aleatorios = [...ativos].sort(() => 0.5 - Math.random()).slice(0, 12);
-                [...aleatorios, ...aleatorios].forEach(m => { if(m.fotos && m.fotos[0]) track.innerHTML += `<div class="item-social"><img src="${m.fotos[0]}"><span>${m.cidade}</span></div>`; });
+                [...aleatorios, ...aleatorios].forEach(m => { track.innerHTML += `<div class="item-social"><img src="${m.fotos[0]}"><span>${m.cidade}</span></div>`; });
             }
-            const selAdm = document.getElementById('filtro-adm-cidade'); const selPrz = document.getElementById('filtro-prazos-cidade');
-            const vAdm = selAdm.value; const vPrz = selPrz.value;
-            selAdm.innerHTML = selPrz.innerHTML = '<option value="todas">VER TODAS AS CIDADES</option>';
-            Object.values(mapaTemporario).sort().forEach(nome => { const opt = `<option value="${nome}">${nome}</option>`; selAdm.innerHTML += opt; selPrz.innerHTML += opt; });
-            selAdm.value = vAdm; selPrz.value = vPrz;
-            ativos.sort((a, b) => { 
-                const pA = parseInt(a.pos || 0); const pB = parseInt(b.pos || 0);
-                if (pA === 0 && pB !== 0) return -1; if (pB === 0 && pA !== 0) return 1;
-                if (pA !== pB) return pA - pB; return (b.criadoEm || 0) - (a.criadoEm || 0); 
-            });
+            const seletor = document.getElementById('filtro-adm-cidade'); const vAt = seletor.value;
+            seletor.innerHTML = '<option value="todas">VER TODAS AS CIDADES</option>';
+            Object.values(mapaTemporario).sort().forEach(nomeExibicao => { seletor.innerHTML += `<option value="${nomeExibicao}">${nomeExibicao}</option>`; });
+            seletor.value = vAt;
+            ativos.sort((a, b) => { const pA = parseInt(a.pos || 0); const pB = parseInt(b.pos || 0); if (pA === 0 && pB === 0) return b.criadoEm - a.criadoEm; if (pA === 0) return -1; if (pB === 0) return 1; return pA - pB; });
             ativos.forEach(d => {
                 const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`;
                 const bairroHtml = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
                 if(d.plano > 0) lv.innerHTML += `<div class="card-pago" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade} ${bairroHtml}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
-                else lv.innerHTML += `<div class="card-gratis" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade} ${bairroHtml}</div><div class="card-gratis-flex"><div class="img-container" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><b style="flex:1;">${d.nome}</b><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                else lv.innerHTML += `<div class="card-gratis" data-cidade="${d.cidade}"><div class="cidade-txt">📍 ${d.cidade} ${bairroHtml}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><b style="flex:1;">${d.nome}</b><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
             });
-            renderizarListasAdm(); renderizarPrazos();
+            renderizarListasAdm();
         });
-
-        window.onload = function() { if (window.history.state === null) history.pushState({page: 'menu'}, "menu"); };
     </script>
 </body>
 </html>
