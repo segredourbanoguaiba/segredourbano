@@ -25,7 +25,7 @@
         #aviso-18 h1 { color: #d4af37; font-family: 'Playfair Display'; font-size: 42px; font-weight: 900; margin-bottom: 10px; }
         .tela { display: none; padding: 20px; }
         .ativa { display: block !important; }
-        .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 12px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; }
+        .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 8px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; }
         .btn small { display: block; font-size: 10px; text-transform: none; font-weight: normal; margin-top: 3px; }
         .btn-whats { background: #25D366 !important; }
         
@@ -35,41 +35,52 @@
         .cidade-txt { text-align: left; font-size: 10px; color: #ff0000; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .bairro-txt { color: #888; font-size: 10px; margin-left: 5px; text-transform: uppercase; font-weight: normal; }
         .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; }
-        .img-container { position: relative; border-radius: 15px; overflow: hidden; border: 1px solid #222; }
-        .card-pago img { width: 100%; height: 500px; object-fit: cover; display: block; }
+        .img-container { position: relative; border-radius: 15px; overflow: hidden; border: 1px solid #222; background: #000; }
+        .card-pago img { width: 100%; height: auto; max-height: 600px; object-fit: contain; display: block; margin: 0 auto; }
         .card-pago h2 { font-family: 'Playfair Display', serif; font-size: 30px; margin: 15px 0 5px; color: #fff; text-align: center; }
         .btn-seta { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: white; border: none; padding: 20px 12px; font-size: 24px; cursor: pointer; z-index: 20; border-radius: 5px; }
         .seta-esq { left: 5px; }
         .seta-dir { right: 5px; }
+        
+        .info-opcional-bar { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+        .badge-opcional { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .badge-opcional.destaque-valor { border-color: gold; color: gold; }
+        .badge-on { background: #25D366; color: #000; border: none; }
+
         .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; }
         .card-gratis-flex { display: flex; align-items: center; }
         .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; }
         .card-gratis b { font-size: 18px; }
-        .galeria-social { width: 100%; overflow: hidden; margin-top: 25px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
+        
+        .galeria-social { width: 100%; overflow: hidden; margin-top: 15px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
         .social-track { display: flex; width: max-content; animation: scroll-social 30s linear infinite; gap: 15px; padding-left: 15px; }
         .item-social { width: 70px; text-align: center; flex-shrink: 0; }
         .item-social img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid #333; }
         .item-social span { display: block; font-size: 8px; color: #888; text-transform: uppercase; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         @keyframes scroll-social { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .badge-fotos { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
+        
         #modal-galeria { display: none; position: fixed; z-index: 1000000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
         .btn-fechar-galeria { position: absolute; top: 20px; right: 25px; color: white; font-size: 50px; cursor: pointer; z-index: 1000005; font-weight: bold; }
         .modal-cont { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; }
         .btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,0,0,0.7); color: white; border: none; font-size: 28px; padding: 18px; border-radius: 5px; z-index: 1000004; }
-        input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
+        
+        select, input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
+        
         #aviso-pix-central { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
-        .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; }
+        .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; position: relative; }
         .badge-plano-adm { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 5px; background: #333; color: #fff; }
         .plano-pago { background: gold !important; color: #000 !important; }
         .area-revisao { background: #0a0a0a; padding: 15px; border-radius: 8px; margin-top: 10px; display: none; border: 1px solid red; }
         .grade-fotos-adm { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .foto-revisao { position: relative; width: 65px; height: 85px; cursor: pointer; }
         .foto-revisao img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
-        .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 22px; height: 22px; border: 2px solid #000; font-size: 14px; cursor: pointer; font-weight: bold; z-index: 10; }
         .metric-card { background: #1a0000; border: 1px solid red; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        
         .inp-pos { width: 45px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 4px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
         .inp-cidade-adm { width: 80px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px !important; font-size: 10px !important; border-radius: 4px !important; margin-left: 5px !important; }
+
         .badge-cliques-zap { background: #25D366; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 10px; }
         .btn-toggle-plano { background: #333; color: #fff; border: 1px solid #555; font-size: 9px; padding: 5px; border-radius: 4px; cursor: pointer; margin-top: 8px; text-transform: uppercase; font-weight: bold; width: 100%; }
         .btn-toggle-plano:hover { background: gold; color: #000; }
@@ -86,9 +97,11 @@
         .prazo-info { text-align: left; flex: 1; }
         .prazo-info b { display: block; font-size: 14px; }
         .prazo-info span { font-size: 10px; color: #888; text-transform: uppercase; }
-        .badge-restam { font-weight: bold; margin-left: 5px; }
         .btn-prazo-zap { background: #25D366; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; text-decoration: none; margin-right: 5px; }
         .btn-prazo-del { background: red; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; }
+
+        .identificacao-modelo { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; text-align: left; }
+        .identificacao-modelo img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid red; }
     </style>
 </head>
 <body>
@@ -109,7 +122,7 @@
     <a href="https://wa.me/5551981833377?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo">● SUPORTE 1</a>
     <a href="https://wa.me/5551981521281?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo-2">● SUPORTE 2</a>
 
-    <header>
+    <header style="padding-top:20px;">
         <button id="btn-prazos-esq" onclick="logAdm('tela-prazos')"></button>
         <button id="btn-adm-dir" onclick="logAdm('adm')"></button>
         <div class="loc-badge-header" id="badge-local-topo">📍 EM TODO BRASIL</div>
@@ -129,7 +142,9 @@
             <span><b>CIDADES ATIVAS:</b></span>
             <span id="cont-cidades-ativas" style="font-size:24px; color:red; font-weight:900;">0</span>
         </div>
-        <select id="filtro-prazos-cidade" class="seletor-cidade-adm" onchange="renderizarPrazos()"></select>
+        <select id="filtro-prazos-cidade" class="seletor-cidade-adm" onchange="renderizarPrazos()">
+            <option value="todas">VER TODAS AS CIDADES</option>
+        </select>
         <div id="lista-prazos-cont"></div>
         <button class="btn" onclick="ir('menu')">VOLTAR</button>
     </div>
@@ -146,16 +161,44 @@
     <div id="modal-galeria">
         <div class="btn-fechar-galeria" onclick="fecharGaleria()">&times;</div>
         <button class="btn-nav" style="left:15px;" onclick="mudarFoto(-1)">&#10094;</button>
-        <div class="modal-cont"><img id="img-ampliada" src="" style="max-width:95%; max-height:92vh;"></div>
+        <div class="modal-cont"><img id="img-ampliada" src="" style="max-width:95%; max-height:92vh; object-fit: contain;"></div>
         <button class="btn-nav" style="right:15px;" onclick="mudarFoto(1)">&#10095;</button>
     </div>
 
     <div id="menu" class="tela ativa">
-        <button class="btn" onclick="filtrarPorCidade()">VER ANÚNCIOS</button>
+        <button class="btn" onclick="document.getElementById('inp-filtro-cidade').focus();">VER ANÚNCIOS</button>
         <button class="btn" style="background:#fff; color:#000" onclick="ir('planos')">ANUNCIAR AGORA</button>
+        <button class="btn" style="background:none; border: 1px solid #333; font-size:10px;" onclick="abrirEdicao()">SOMENTE PARA ANUNCIANTES, EDITAR MEU ANÚNCIO</button>
         <div class="galeria-social" id="area-social" style="display:none;">
             <div class="social-track" id="track-social"></div>
         </div>
+    </div>
+
+    <div id="edicao" class="tela">
+        <h2 style="color:red; font-family:'Playfair Display';">ÁREA DO ANUNCIANTE</h2>
+        <div id="form-busca-edicao">
+            <p style="font-size:13px; color:#888;">Para sua segurança, informe os dados idênticos ao cadastro:</p>
+            <input type="email" id="email-busca-edit" placeholder="E-mail cadastrado">
+            <input type="text" id="whats-busca-edit" placeholder="WhatsApp (somente números)">
+            <button class="btn" onclick="buscarParaEditar()">LOCALIZAR MEU ANÚNCIO</button>
+        </div>
+        <div id="form-campos-edicao" style="display:none;">
+            <div class="identificacao-modelo" id="info-modelo-edit"></div>
+            
+            <p style="font-size:11px; text-align:left; color:#888;">NOVO VALOR POR HORA (Opcional):</p>
+            <input type="text" id="edit-valor" placeholder="Ex: 250">
+            
+            <p style="font-size:11px; text-align:left; color:#888;">LOCAL DE ATENDIMENTO:</p>
+            <select id="edit-local">
+                <option value="sim">Tenho Local</option>
+                <option value="nao">Apenas Saídas</option>
+            </select>
+            
+            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px;">NOVO HORÁRIO (Ex: 09:00 às 23:00):</p>
+            <input type="text" id="edit-horario" placeholder="Ex: 08:00 às 22:00">
+            <button class="btn" onclick="salvarEdicao()">SALVAR ALTERAÇÕES</button>
+        </div>
+        <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('menu')">VOLTAR AO INÍCIO</button>
     </div>
 
     <div id="planos" class="tela">
@@ -173,6 +216,13 @@
         <input type="text" id="n" placeholder="Nome Artístico">
         <input type="text" id="cid" placeholder="Cidade">
         <input type="text" id="bai" placeholder="Bairro (Obrigatório)">
+        <input type="text" id="v_hora" placeholder="Valor p/ Hora (ex: 150) - Opcional">
+        <select id="tem_local">
+            <option value="">Onde atende? (Opcional)</option>
+            <option value="sim">Tenho Local</option>
+            <option value="nao">Apenas Saídas</option>
+        </select>
+        <input type="text" id="horario_atend" placeholder="Horário (ex: 08:00 às 22:00)">
         <input type="email" id="email_user" placeholder="Seu E-mail">
         <input type="text" id="w" placeholder="WhatsApp (ex: 51988887777)">
         <input type="file" id="f" accept="image/*" multiple onchange="loadFiles()">
@@ -200,7 +250,9 @@
     <div id="adm" class="tela">
         <h2 style="color:red;">PAINEL ADM</h2>
         <div class="metric-card"><span><b>BUSCAS REALIZADAS:</b></span><span id="display-cliques" style="font-size:24px; color:red; font-weight:900;">0</span></div>
-        <select id="filtro-adm-cidade" class="seletor-cidade-adm" onchange="renderizarListasAdm()"><option value="todas">VER TODAS AS CIDADES</option></select>
+        <select id="filtro-adm-cidade" class="seletor-cidade-adm" onchange="renderizarListasAdm()">
+            <option value="todas">VER TODAS AS CIDADES</option>
+        </select>
         <h4 style="text-align:left; color:#888;">PARA APROVAR:</h4><div id="ap"></div>
         <hr style="border-color:#222; margin:20px 0;">
         <h4 style="text-align:left; color:#888;">ATIVOS:</h4><div id="aa"></div>
@@ -212,12 +264,79 @@
         firebase.initializeApp(conf);
         const db = firebase.database();
         let imgs = []; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
-        let bancoDeFotos = {}; let sliderIndices = {}; let bancoPlanos = {}; 
-        let anunciosCache = []; let cidadePostagemOriginal = "";
+        let bancoDeFotos = {}; let sliderIndices = {}; 
+        let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
 
         const normalizarTxt = (txt) => txt ? txt.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") : "";
 
         function fecharAviso18() { document.getElementById('aviso-18').style.display = 'none'; ir('menu'); }
+
+        function checkStatus(horario) {
+            if(!horario || !horario.includes('às')) return false;
+            try {
+                const partes = horario.split('às').map(p => p.trim());
+                const agora = new Date();
+                const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+                const [hIn, mIn] = partes[0].split(':').map(Number);
+                const [hFim, mFim] = partes[1].split(':').map(Number);
+                const inicio = hIn * 60 + mIn;
+                const fim = hFim * 60 + mFim;
+                return (horaAtual >= inicio && horaAtual <= fim);
+            } catch(e) { return false; }
+        }
+
+        function abrirEdicao() { 
+            document.getElementById('form-busca-edicao').style.display = 'block';
+            document.getElementById('form-campos-edicao').style.display = 'none';
+            document.getElementById('email-busca-edit').value = "";
+            document.getElementById('whats-busca-edit').value = "";
+            ir('edicao'); 
+        }
+
+        function buscarParaEditar() {
+            const emailBusca = document.getElementById('email-busca-edit').value.trim().toLowerCase();
+            let whatsBusca = document.getElementById('whats-busca-edit').value.replace(/\D/g, ''); 
+            
+            if(!emailBusca || !whatsBusca) {
+                alert("Por favor, preencha o E-mail e o WhatsApp cadastrados.");
+                return;
+            }
+            if(whatsBusca.length === 11) whatsBusca = "55" + whatsBusca;
+
+            const found = anunciosCache.find(a => {
+                const emailDb = (a.data.email || "").trim().toLowerCase();
+                const whatsDb = (a.data.whats || "").toString().replace(/\D/g, '');
+                return emailDb === emailBusca && whatsDb === whatsBusca;
+            });
+            
+            if(found) {
+                keyEdicao = found.key;
+                const infoDiv = document.getElementById('info-modelo-edit');
+                infoDiv.innerHTML = `
+                    <img src="${found.data.fotos[0]}">
+                    <div>
+                        <b style="font-size:18px;">${found.data.nome}</b><br>
+                        <small style="color:#25D366; font-weight:bold;">Anúncio Localizado ✔️</small>
+                    </div>`;
+                
+                document.getElementById('edit-valor').value = found.data.v_hora || "";
+                document.getElementById('edit-local').value = found.data.tem_local || "nao";
+                document.getElementById('edit-horario').value = found.data.horario_atend || "";
+                
+                document.getElementById('form-busca-edicao').style.display = 'none';
+                document.getElementById('form-campos-edicao').style.display = 'block';
+            } else { 
+                alert("Nenhum anúncio encontrado. Verifique se o e-mail e o WhatsApp estão corretos."); 
+            }
+        }
+
+        function salvarEdicao() {
+            const v = document.getElementById('edit-valor').value;
+            const l = document.getElementById('edit-local').value;
+            const h = document.getElementById('edit-horario').value;
+            db.ref('anuncios/' + keyEdicao).update({ v_hora: v, tem_local: l, horario_atend: h })
+            .then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
+        }
 
         function filtrarPorCidade(termoManual = "") {
             const input = document.getElementById('inp-filtro-cidade');
@@ -229,22 +348,40 @@
             db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 1);
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
             db.ref('anuncios').once('value', (snapshot) => {
-                lv.innerHTML = ''; let encontrados = 0; let listaFiltrada = [];
+                lv.innerHTML = ''; let listaFiltrada = [];
                 snapshot.forEach(child => {
                     const d = child.val(); const status = d.status ? d.status.toLowerCase() : "pendente"; const cidadeNorm = normalizarTxt(d.cidade);
                     if(status === 'ativo' && (cidadeNorm.includes(termoBusca) || termoBusca.includes(cidadeNorm))) { listaFiltrada.push({key: child.key, ...d}); }
                 });
                 listaFiltrada.sort((a, b) => { const pA = parseInt(a.pos || 0); const pB = parseInt(b.pos || 0); if (pA === 0 && pB === 0) return b.criadoEm - a.criadoEm; if (pA === 0) return 1; if (pB === 0) return -1; return pA - pB; });
+                
+                const agora = Date.now();
                 listaFiltrada.forEach(d => {
-                    encontrados++; const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`; const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
-                    if(d.plano > 0) {
-                        lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
+                    const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`;
+                    const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
+                    const estaOn = checkStatus(d.horario_atend);
+                    
+                    let planoEfetivo = d.plano || 0;
+                    if(planoEfetivo > 0) {
+                        const dataFim = (d.criadoEm || agora) + (planoEfetivo * 24 * 60 * 60 * 1000);
+                        if(agora > dataFim) planoEfetivo = 0; 
+                    }
+
+                    let opcionalHtml = '<div class="info-opcional-bar">';
+                    if(estaOn) opcionalHtml += `<div class="badge-opcional badge-on">🟢 DISPONÍVEL AGORA</div>`;
+                    if(d.v_hora) opcionalHtml += `<div class="badge-opcional destaque-valor">💵 R$ ${d.v_hora}</div>`;
+                    if(d.tem_local === 'sim') opcionalHtml += `<div class="badge-opcional">🏠 COM LOCAL</div>`;
+                    if(d.tem_local === 'nao') opcionalHtml += `<div class="badge-opcional">🚗 SÓ SAÍDAS</div>`;
+                    opcionalHtml += '</div>';
+
+                    if(planoEfetivo > 0) {
+                        lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
                     } else {
-                        lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><b style="flex:1;">${d.nome}</b><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                        lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
                     }
                 });
                 const aviso = document.getElementById('aviso-vazio');
-                if(encontrados === 0) { document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`; aviso.style.display = 'block'; } else { aviso.style.display = 'none'; }
+                if(listaFiltrada.length === 0) { document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`; aviso.style.display = 'block'; } else { aviso.style.display = 'none'; }
             });
             return true;
         }
@@ -282,7 +419,7 @@
             const input = document.getElementById('f');
             const files = Array.from(input.files);
             const limite = (dias > 0) ? 10 : 3;
-            if (files.length > limite) { alert(`Erro: Seu plano permite no máximo ${limite} fotos. Você selecionou ${files.length}.`); input.value = ''; return; }
+            if (files.length > limite) { alert(`Erro: Seu plano permite no máximo ${limite} fotos.`); input.value = ''; return; }
             document.getElementById('preview').innerHTML = 'Processando...';
             const promises = files.map(f => {
                 return new Promise((resolve) => {
@@ -290,10 +427,13 @@
                     r.onload = (e) => {
                         const img = new Image();
                         img.onload = () => {
-                            const cv = document.createElement('canvas'); cv.width = 600; cv.height = 800;
-                            cv.getContext('2d').drawImage(img,0,0,600,800); 
-                            // Otimização para WebP (30% mais leve que JPEG)
-                            resolve(cv.toDataURL('image/webp', 0.7)); 
+                            const cv = document.createElement('canvas');
+                            const maxW = 800;
+                            const scale = maxW / img.width;
+                            cv.width = maxW;
+                            cv.height = img.height * scale;
+                            cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+                            resolve(cv.toDataURL('image/webp', 0.8));
                         };
                         img.src = e.target.result;
                     };
@@ -301,118 +441,186 @@
                 });
             });
             imgs = await Promise.all(promises); document.getElementById('preview').innerHTML = '';
-            imgs.forEach(data => { document.getElementById('preview').innerHTML += `<img src="${data}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;">`; });
+            imgs.forEach(data => { document.getElementById('preview').innerHTML += `<img src="${data}" style="width:45px; height:auto; border-radius:4px; border:1px solid #333;">`; });
         }
 
         function limparFormulario() {
             document.getElementById('n').value = ''; document.getElementById('cid').value = ''; document.getElementById('bai').value = ''; 
+            document.getElementById('v_hora').value = ''; document.getElementById('tem_local').value = ''; document.getElementById('horario_atend').value = '';
             document.getElementById('email_user').value = ''; document.getElementById('w').value = ''; document.getElementById('f').value = ''; 
             document.getElementById('preview').innerHTML = ''; document.getElementById('inp-filtro-cidade').value = ''; imgs = [];
         }
 
         function enviar() {
-            const n = document.getElementById('n').value.trim(); const c = document.getElementById('cid').value.trim(); 
-            const b = document.getElementById('bai').value.trim(); const em = document.getElementById('email_user').value.trim(); 
-            let w = document.getElementById('w').value.replace(/\D/g,''); cidadePostagemOriginal = c;
-            const limite = (dias > 0) ? 10 : 3;
-            if(imgs.length > limite) return alert(`Limite: ${limite} fotos.`);
-            if(!n || !c || !b || !w || !em || imgs.length === 0) return alert("Por favor, preencha todos os campos!");
+            const n = document.getElementById('n').value.trim(); 
+            const c = document.getElementById('cid').value.trim(); 
+            const b = document.getElementById('bai').value.trim(); 
+            const em = document.getElementById('email_user').value.trim().toLowerCase(); 
+            const vh = document.getElementById('v_hora').value.trim(); 
+            const loc = document.getElementById('tem_local').value;
+            const hr = document.getElementById('horario_atend').value.trim();
+            let w = document.getElementById('w').value.replace(/\D/g,''); 
+            cidadePostagemOriginal = c;
+            
+            if(!n || !c || !b || !w || !em || imgs.length === 0) return alert("Preencha os campos obrigatórios!");
             if(w.length <= 11) w = "55" + w;
 
-            db.ref('anuncios').push({ nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0 }).then(() => { 
-                if(dias > 0) {
-                    ir('tela-pix'); 
-                } else { 
-                    alert("Anúncio enviado para análise com sucesso!"); 
-                    const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); 
-                }
+            const cidadeNormalizadaNova = normalizarTxt(c);
+            const duplicadoNaCidade = anunciosCache.find(a => {
+                const mesmoContato = (normalizarTxt(a.data.email) === normalizarTxt(em) || normalizarTxt(a.data.whats) === normalizarTxt(w));
+                const mesmaCidade = (normalizarTxt(a.data.cidade) === cidadeNormalizadaNova);
+                return mesmoContato && mesmaCidade;
+            });
+
+            if(duplicadoNaCidade) {
+                alert(`Erro: Você já possui um anúncio em ${c.toUpperCase()}. Só é permitido um anúncio por cidade.`);
+                return;
+            }
+
+            db.ref('anuncios').push({ 
+                nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, 
+                plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0,
+                v_hora: vh, tem_local: loc, horario_atend: hr
+            }).then(() => { 
+                if(dias > 0) { ir('tela-pix'); } 
+                else { alert("Sucesso! Aguarde aprovação."); const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }
             });
         }
 
         function copiarPix() { 
-            navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe"); const btnCopia = document.getElementById('btn-copia-pix');
-            btnCopia.innerText = "✓ COPIADO!"; btnCopia.style.background = "#25D366"; btnCopia.style.color = "#000";
-            let v = dias === 15 ? "R$ 39,90" : (dias === 30 ? "R$ 59,90" : "R$ 19,90");
-            document.getElementById('valor-aviso').innerText = v; document.getElementById('aviso-pix-central').style.display = "block";
-            setTimeout(() => { document.getElementById('aviso-pix-central').style.display = "none"; btnCopia.innerText = "COPIAR CHAVE PIX"; btnCopia.style.background = "#fff"; const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }, 6000);
+            navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe");
+            document.getElementById('aviso-pix-central').style.display = "block";
+            setTimeout(() => { document.getElementById('aviso-pix-central').style.display = "none"; const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }, 6000);
         }
 
         function abrirGaleria(key, idxManual) { 
             const lista = bancoDeFotos[key]; if (!lista) return;
             fotosGaleria = lista; fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
             const imgEl = document.getElementById('img-ampliada'); imgEl.src = fotosGaleria[fotoIndex]; 
-            if (bancoPlanos[key] === 0) { imgEl.style.maxWidth = "60%"; imgEl.style.maxHeight = "60vh"; } else { imgEl.style.maxWidth = "95%"; imgEl.style.maxHeight = "92vh"; }
-            document.getElementById('modal-galeria').style.display = 'block'; history.pushState({modal: 'galeria'}, 'galeria');
+            document.getElementById('modal-galeria').style.display = 'block';
         }
 
         function fecharGaleria() { document.getElementById('modal-galeria').style.display = 'none'; }
         function mudarFoto(dir) { fotoIndex += dir; if(fotoIndex >= fotosGaleria.length) fotoIndex = 0; if(fotoIndex < 0) fotoIndex = fotosGaleria.length - 1; document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; }
         function logAdm(alvo) { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir(alvo); }
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
-        function removerFoto(key, idx) { db.ref('anuncios/'+key+'/fotos').once('value', s => { let fots = s.val(); fots.splice(idx, 1); db.ref('anuncios/'+key).update({ fotos: fots }); }); }
-        function togglePlano(key, planoAtual) { let novoPlano = (planoAtual === 0) ? 7 : 0; db.ref('anuncios/' + key).update({ plano: novoPlano }); }
-
-        function aprovarAnuncio(key, email, whats, cidadeNova) {
-            anunciosCache.forEach(item => {
-                const mesmaPessoa = (item.data.email === email || item.data.whats === whats);
-                const mesmaCidade = (normalizarTxt(item.data.cidade) === normalizarTxt(cidadeNova));
-                if(item.key !== key && mesmaPessoa && mesmaCidade) {
-                    db.ref('anuncios/' + item.key).remove();
-                }
-            });
-            db.ref('anuncios').child(key).update({ status: 'ativo', criadoEm: Date.now() });
-            alert("Anúncio aprovado!");
-        }
-
+        
         function renderizarListasAdm() {
             const ap = document.getElementById('ap'); const aa = document.getElementById('aa');
-            const seletor = document.getElementById('filtro-adm-cidade'); const filtroRaw = seletor.value; const filtroBuscaNorm = normalizarTxt(filtroRaw); 
-            ap.innerHTML = ''; aa.innerHTML = ''; let mapaCid = {};
-            anunciosCache.forEach(i => { if(i.data.cidade) { let n = normalizarTxt(i.data.cidade); mapaCid[n] = i.data.cidade.trim().toUpperCase(); } });
-            const vAtual = seletor.value; seletor.innerHTML = '<option value="todas">VER TODAS AS CIDADES</option>';
-            Object.values(mapaCid).sort().forEach(c => { seletor.innerHTML += `<option value="${c}">${c}</option>`; }); seletor.value = vAtual;
+            const seletor = document.getElementById('filtro-adm-cidade'); 
+            const vSalvo = seletor.value || 'todas'; const filtroBuscaNorm = normalizarTxt(vSalvo); 
+            ap.innerHTML = ''; aa.innerHTML = ''; 
+            let cidadesUnicas = new Set();
+            anunciosCache.forEach(i => { if(i.data.cidade) cidadesUnicas.add(i.data.cidade.trim().toUpperCase()); });
+            let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
+            Array.from(cidadesUnicas).sort().forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
+            seletor.innerHTML = opcoes;
+
             anunciosCache.forEach(item => {
-                const d = item.data; const key = item.key; const cidadeItemNorm = normalizarTxt(d.cidade); const bairroExib = d.bairro || "S/ Bairro"; const statusL = d.status ? d.status.toLowerCase() : "pendente";
+                const d = item.data; const key = item.key; const statusL = d.status ? d.status.toLowerCase() : "pendente";
+                const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
+                const emailInfo = `<div style="font-size:9px; color:#888; margin-top:2px;">E-mail: ${d.email || 'N/A'}</div>`;
+
                 if(statusL === 'pendente') {
-                    let fotsRev = ''; if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto" onclick="removerFoto('${key}', ${idx}); event.stopPropagation();">×</button></div>`; });
-                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade})<br><span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">PLANO: ${d.plano > 0 ? d.plano : 'GRÁTIS'}</span> <button onclick="toggleRev('${key}')" style="float:right; background:red; color:white; border:none; padding:5px 10px; border-radius:4px;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button class="btn" style="margin:0; flex:1; background:green;" onclick="aprovarAnuncio('${key}', '${d.email}', '${d.whats}', '${d.cidade}')">APROVAR</button><button class="btn" style="margin:0; flex:1; background:#444;" onclick="db.ref('anuncios').child('${key}').remove()">EXCLUIR</button></div></div></div>`;
-                } else if(statusL === 'ativo' && (filtroRaw === 'todas' || cidadeItemNorm === filtroBuscaNorm)) {
-                    aa.innerHTML += `<div class="item-adm"><div style="display:flex; align-items:center; gap:8px;"><img src="${d.fotos ? d.fotos[0] : ''}" style="width:35px; height:45px; object-fit:cover; border-radius:4px;"><div style="flex:1; font-size:11px;"><b>${d.nome}</b> (${bairroExib}) <span class="badge-cliques-zap">📲 ${d.cliquesZap || 0}</span><br>P:<input type="number" value="${d.pos || 0}" class="inp-pos" onchange="db.ref('anuncios/${key}').update({pos: parseInt(this.value)})"><input type="text" value="${d.cidade}" class="inp-cidade-adm" onchange="db.ref('anuncios/${key}').update({cidade: this.value})"></div><button onclick="db.ref('anuncios').child('${key}').remove()" style="background:#444; color:white; border:none; padding:8px; border-radius:4px;">X</button></div><button class="btn-toggle-plano" onclick="togglePlano('${key}', ${d.plano || 0})">${d.plano > 0 ? 'MUDAR P/ GRÁTIS' : 'DAR DESTAQUE (PAGO)'}</button></div>`;
+                    let fotsRev = ''; if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"></div>`; });
+                    ap.innerHTML += `<div class="item-adm">
+                        <b>${d.nome}</b> (${d.cidade}) ${badgeP}
+                        ${emailInfo}
+                        <button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button>
+                        <div id="rev-${key}" class="area-revisao">
+                            <div class="grade-fotos-adm">${fotsRev}</div>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()})">APROVAR</button>
+                                <button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove()">X</button>
+                            </div>
+                        </div>
+                    </div>`;
+                } else if(statusL === 'ativo' && (vSalvo === 'todas' || normalizarTxt(d.cidade) === filtroBuscaNorm)) {
+                    aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
+                        <img src="${d.fotos[0]}" style="width:40px; height:40px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
+                        <div style="flex:1;">
+                            <b>${d.nome}</b> ${badgeP}
+                            ${emailInfo}
+                            <div style="margin-top:5px;">
+                                <input type="number" class="inp-pos" value="${d.pos || 0}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
+                                <span class="badge-cliques-zap">⚡ ${d.cliquesZap || 0}</span>
+                            </div>
+                            <button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()})">Alterar Plano</button>
+                        </div>
+                        <button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove()" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button>
+                    </div>`;
                 }
             });
         }
 
         function renderizarPrazos() {
-            const cont = document.getElementById('lista-prazos-cont'); const seletor = document.getElementById('filtro-prazos-cidade');
-            const vAtual = seletor.value; const filtroNorm = normalizarTxt(vAtual);
-            cont.innerHTML = ''; let cidadesSet = new Set();
-            anunciosCache.forEach(i => { if(i.data.status === 'ativo') { cidadesSet.add(i.data.cidade.trim().toUpperCase()); } });
-            const vSalvo = seletor.value; seletor.innerHTML = '<option value="todas">VER TODAS AS CIDADES</option>';
-            Array.from(cidadesSet).sort().forEach(c => seletor.innerHTML += `<option value="${c}">${c}</option>`);
-            seletor.value = vSalvo || 'todas';
-            document.getElementById('cont-cidades-ativas').innerText = cidadesSet.size;
+            const cont = document.getElementById('lista-prazos-cont');
+            const seletor = document.getElementById('filtro-prazos-cidade');
+            const vSelecionado = seletor.value || 'todas';
+            cont.innerHTML = ''; let cidadesAtivasSet = new Set();
+            anunciosCache.forEach(item => { if(item.data.status === 'ativo' && item.data.cidade) cidadesAtivasSet.add(item.data.cidade.trim().toUpperCase()); });
+            let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
+            Array.from(cidadesAtivasSet).sort().forEach(c => { opcoes += `<option value="${c}" ${vSelecionado === c ? 'selected' : ''}>${c}</option>`; });
+            seletor.innerHTML = opcoes;
+            document.getElementById('cont-cidades-ativas').innerText = cidadesAtivasSet.size;
+
+            const agora = Date.now();
             anunciosCache.forEach(item => {
                 const d = item.data; if(d.status !== 'ativo') return;
-                const cidadeNorm = normalizarTxt(d.cidade);
-                if(vAtual !== 'todas' && vAtual && cityNorm !== filtroNorm) return;
-                const dataRef = d.criadoEm || Date.now(); const hoje = Date.now();
-                const diasPassados = Math.floor((hoje - dataRef) / (1000 * 60 * 60 * 24));
-                const planoEfetivo = d.plano > 0 ? d.plano : 7; const restam = planoEfetivo - diasPassados;
-                const corPrazo = restam <= 2 ? 'red' : '#25D366';
-                const planoTxt = d.plano > 0 ? 'PLANO PAGO' : 'PLANO GRÁTIS';
-                const restamTxt = `| <span class="badge-restam" style="color:${corPrazo}">Restam ${restam > 0 ? restam : 0} dias</span>`;
-                cont.innerHTML += `<div class="item-prazo"><div class="prazo-info"><b>${d.nome}</b> (${d.cidade})<span>${planoTxt} ${restamTxt}</span></div><div><a href="https://wa.me/${d.whats}" target="_blank" class="btn-prazo-zap">ZAP</a><button class="btn-prazo-del" onclick="if(confirm('Excluir anúncio?')) db.ref('anuncios/${item.key}').remove()">X</button></div></div>`;
+                const filtroNorm = normalizarTxt(vSelecionado);
+                if(vSelecionado !== 'todas' && normalizarTxt(d.cidade) !== filtroNorm) return;
+
+                let prazoHtml = "";
+                if(d.plano > 0) {
+                    const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                    const diff = dataFim - agora;
+                    const diasRestantes = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                    if(diff <= 0) prazoHtml = `<span style="color:red; font-weight:bold;">⚠️ VENCIDO (REBAIXADO)</span>`;
+                    else if(diasRestantes <= 1) prazoHtml = `<span style="color:orange; font-weight:bold;">⏳ VENCE HOJE</span>`;
+                    else prazoHtml = `<span style="color:#25D366;">⏳ Restam ${diasRestantes} dias</span>`;
+                } else { prazoHtml = `<span style="color:#888;">PLANO GRÁTIS</span>`; }
+
+                cont.innerHTML += `<div class="item-prazo" style="border-left: 4px solid ${d.plano > 0 ? '#d4af37' : '#555'};">
+                    <div class="prazo-info"><b>${d.nome}</b><span>${d.cidade} | ${prazoHtml}</span></div>
+                    <div style="text-align:right;">
+                        <a href="https://wa.me/${d.whats}" class="btn-prazo-zap">ZAP</a>
+                        <button class="btn-prazo-del" onclick="if(confirm('Deletar?')) db.ref('anuncios/${item.key}').remove()">X</button>
+                    </div>
+                </div>`;
             });
         }
 
         db.ref('anuncios').on('value', s => {
-            const track = document.getElementById('track-social'); if(track) track.innerHTML = '';
-            anunciosCache = []; let ativos = [];
-            s.forEach(i => { const d = i.val(); anunciosCache.push({key: i.key, data: d}); bancoDeFotos[i.key] = d.fotos; bancoPlanos[i.key] = d.plano; if(d.status && d.status.toLowerCase() === 'ativo') ativos.push({key: i.key, ...d}); });
+            const track = document.getElementById('track-social'); 
+            if(track) track.innerHTML = '';
+            anunciosCache = []; 
+            let ativos = [];
+            
+            s.forEach(i => { 
+                const d = i.val(); 
+                anunciosCache.push({key: i.key, data: d}); 
+                bancoDeFotos[i.key] = d.fotos; 
+                if(d.status === 'ativo') ativos.push(d); 
+            });
+
             if(ativos.length > 0 && track) {
                 document.getElementById('area-social').style.display = 'block';
-                let aleat = [...ativos].sort(() => 0.5 - Math.random()).slice(0, 15);
-                [...aleat, ...aleat].forEach(m => { track.innerHTML += `<div class="item-social"><img src="${m.fotos ? m.fotos[0] : ''}" loading="lazy"><span>${m.cidade}</span></div>`; });
+                
+                // ALEATORIEDADE: Embaralha a lista toda vez
+                ativos.sort(() => Math.random() - 0.5);
+
+                // Monta o HTML de todas (sem limites)
+                let conteudoHTML = '';
+                ativos.forEach(m => { 
+                    conteudoHTML += `<div class="item-social"><img src="${m.fotos[0]}" loading="lazy"><span>${m.cidade}</span></div>`; 
+                });
+
+                // LOOP INFINITO: Duplica o conteúdo para não ter buracos
+                track.innerHTML = conteudoHTML + conteudoHTML;
+                
+                // VELOCIDADE DINÂMICA: Ajusta o tempo de acordo com a quantidade
+                const tempoAnim = ativos.length * 3;
+                track.style.animation = `scroll-social ${tempoAnim}s linear infinite`;
             }
             if(telaAtual === 'adm') renderizarListasAdm();
             if(telaAtual === 'tela-prazos') renderizarPrazos();
