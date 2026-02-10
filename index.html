@@ -5,7 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="khmTM9yemLAQYvN3ZZHNZX_VKoL3l8fWSJHmD42Xii4" />
     
-    <title>Segredo Urbano | A elite do entretenimento em todo o Brasil</title>
+    <title>Segredo Urbano | Acompanhantes e Garotas de Programa no RS</title>
+    <meta name="description" content="Encontre as melhores acompanhantes, garotas de programa e entretenimento adulto no Rio Grande do Sul. Fotos reais e anúncios verificados em Porto Alegre, Pelotas, Santa Maria e mais.">
+    <meta name="keywords" content="acompanhantes rs, garotas de programa rs, acompanhantes porto alegre, entretenimento adulto, segredo urbano">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://segredourbano.com.br/" />
+
+    <meta property="og:title" content="Segredo Urbano | A elite do entretenimento no RS">
+    <meta property="og:description" content="Confira as novidades e modelos disponíveis na sua cidade. Clique para ver fotos e contatos.">
+    <meta property="og:type" content="website">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z%22 fill=%22red%22 /><text x=%2250%%22 y=%2262%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2245%22 fill=%22white%22>S</text><text x=%2268%%22 y=%2272%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2225%22 fill=%22black%22 font-weight=%22900%22>U</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
@@ -501,7 +510,7 @@
         }
 
         function fecharGaleria() { document.getElementById('modal-galeria').style.display = 'none'; }
-        function mudarFoto(dir) { fotoIndex += dir; if(fotoIndex >= fotosGaleria.length) fotoIndex = 0; if(fotoIndex < 0) fotoIndex = fotosGaleria.length - 1; document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; }
+        function mudarFoto(dir) { fotoIndex += dir; if(fotoIndex >= fotosGaleria.length) fotoIndex = 0; if(fotoIndex < 0) fontIndex = fotosGaleria.length - 1; document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; }
         function logAdm(alvo) { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir(alvo); }
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         
@@ -605,20 +614,12 @@
 
             if(ativos.length > 0 && track) {
                 document.getElementById('area-social').style.display = 'block';
-                
-                // ALEATORIEDADE: Embaralha a lista toda vez
                 ativos.sort(() => Math.random() - 0.5);
-
-                // Monta o HTML de todas (sem limites)
                 let conteudoHTML = '';
                 ativos.forEach(m => { 
                     conteudoHTML += `<div class="item-social"><img src="${m.fotos[0]}" loading="lazy"><span>${m.cidade}</span></div>`; 
                 });
-
-                // LOOP INFINITO: Duplica o conteúdo para não ter buracos
                 track.innerHTML = conteudoHTML + conteudoHTML;
-                
-                // VELOCIDADE DINÂMICA: Ajusta o tempo de acordo com a quantidade
                 const tempoAnim = ativos.length * 3;
                 track.style.animation = `scroll-social ${tempoAnim}s linear infinite`;
             }
