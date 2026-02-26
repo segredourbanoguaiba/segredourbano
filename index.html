@@ -115,7 +115,6 @@
         .grid-horarios { display: flex; gap: 10px; width: 90%; margin: 8px auto; }
         .grid-horarios input { width: 100% !important; margin: 0 !important; }
 
-        /* ESTILO DO NOVO BOTÃO DE CIDADES */
         .btn-todas-cidades { background: transparent; color: #888; border: 1px solid #222; padding: 8px 15px; border-radius: 20px; font-size: 10px; font-weight: bold; margin: 10px auto; cursor: pointer; display: block; transition: 0.3s; }
         .btn-todas-cidades:hover { color: red; border-color: red; }
         #modal-cidades { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000002; padding: 20px; box-sizing: border-box; overflow-y: auto; }
@@ -269,9 +268,9 @@
     <div id="tela-pix" class="tela">
         <h2 style="color:red; font-family:'Playfair Display';">PAGAMENTO</h2>
         <div style="background:#111; padding:25px; border-radius:12px; border:1px dashed red; max-width:320px; margin: 0 auto;">
-            <p style="font-size:13px; color:#aaa; margin-bottom:20px;">Copie a chave e pague no seu banco.</p>
-            <b id="chave-txt" style="font-size:11px; word-break:break-all; color:#fff; background:#000; padding:10px; display:block; border-radius:5px;">7f0690c2-31b1-4d73-9af4-a88e83bcfabe</b>
-            <button class="btn" id="btn-copia-pix" style="background:#fff; color:#000; margin-top:20px;" onclick="copiarPix()">COPIAR CHAVE PIX</button>
+            <p style="font-size:13px; color:#aaa; margin-bottom:20px;">Copie o código e pague no seu banco.</p>
+            <b id="chave-txt" style="font-size:11px; word-break:break-all; color:#fff; background:#000; padding:10px; display:block; border-radius:5px;">GERANDO CÓDIGO...</b>
+            <button class="btn" id="btn-copia-pix" style="background:#fff; color:#000; margin-top:20px;" onclick="copiarPix()">COPIAR CÓDIGO PIX</button>
         </div>
     </div>
 
@@ -303,9 +302,15 @@
         let bancoDeFotos = {}; let sliderIndices = {}; 
         let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
 
+        // CHAVES PIX DINÂMICAS DO ITAÚ (VALOR FIXO)
+        const CHAVES_PIX = {
+            30: "00020126330014BR.GOV.BCB.PIX011100732941016520400005303986540559.905802BR5925EVERTON DE SOUZA FIGUEIRE6009SAO PAULO622605227djk5SnxUJ7kEYHCkck3Gr63049E8C",
+            15: "00020126330014BR.GOV.BCB.PIX011100732941016520400005303986540539.905802BR5925EVERTON DE SOUZA FIGUEIRE6009SAO PAULO622605227M59LgQJah31TIsPkMFsaU630470CB",
+            7: "00020126330014BR.GOV.BCB.PIX011100732941016520400005303986540519.905802BR5925EVERTON DE SOUZA FIGUEIRE6009SAO PAULO6226052216TDIMXLKtTd1dKuUrcxw163044AF0"
+        };
+
         const normalizarTxt = (txt) => txt ? txt.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") : "";
 
-        // NOVA FUNÇÃO PARA O BOTÃO "VER TODAS CIDADES"
         function abrirListaCidades() {
             const container = document.getElementById('lista-todas-cidades');
             container.innerHTML = '';
@@ -499,7 +504,20 @@
             document.getElementById('badge-pago-' + key).innerText = `📸 ${sliderIndices[key] + 1}/${fotos.length}`;
         }
 
-        function p(d) { dias = d; imgs = []; document.getElementById('f').value = ''; document.getElementById('preview').innerHTML = ''; if(document.getElementById('aviso-limite')) document.getElementById('aviso-limite').innerText = `Limite: ${d > 0 ? '10' : '3'} fotos.`; ir('cad'); }
+        function p(d) { 
+            dias = d; 
+            imgs = []; 
+            document.getElementById('f').value = ''; 
+            document.getElementById('preview').innerHTML = ''; 
+            if(document.getElementById('aviso-limite')) document.getElementById('aviso-limite').innerText = `Limite: ${d > 0 ? '10' : '3'} fotos.`; 
+            
+            // Define o código Pix na tela de pagamento antes de ir pra lá
+            if (d > 0) {
+                document.getElementById('chave-txt').innerText = CHAVES_PIX[d];
+                document.getElementById('valor-aviso').innerText = d === 30 ? "R$ 59,90" : (d === 15 ? "R$ 39,90" : "R$ 19,90");
+            }
+            ir('cad'); 
+        }
 
         async function loadFiles() {
             const input = document.getElementById('f');
@@ -566,7 +584,8 @@
         }
 
         function copiarPix() { 
-            navigator.clipboard.writeText("7f0690c2-31b1-4d73-9af4-a88e83bcfabe");
+            const codigoPix = CHAVES_PIX[dias] || "Chave não encontrada";
+            navigator.clipboard.writeText(codigoPix);
             document.getElementById('aviso-pix-central').style.display = "block";
             setTimeout(() => { document.getElementById('aviso-pix-central').style.display = "none"; const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }, 6000);
         }
