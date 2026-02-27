@@ -37,6 +37,7 @@
         .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 8px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; }
         .btn small { display: block; font-size: 10px; text-transform: none; font-weight: normal; margin-top: 3px; }
         .btn-whats { background: #25D366 !important; }
+        .btn-upgrade { background: gold !important; color: #000 !important; }
         
         #btn-suporte-fixo { position: fixed; bottom: 70px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid red; z-index: 1000; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
         #btn-suporte-fixo-2 { position: fixed; bottom: 30px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid #25D366; z-index: 1000; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
@@ -167,7 +168,7 @@
         <button class="btn" onclick="ir('menu')">VOLTAR</button>
     </div>
 
-    <div id="modal-cidades">
+    <div id="modal-cidades" class="tela" style="position: fixed; z-index: 1000002; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; height: 100%; top: 0; left: 0;">
         <h2 style="color:red; font-family:'Playfair Display';">SELECIONE SUA CIDADE</h2>
         <div id="lista-todas-cidades" class="lista-cidades-grid"></div>
         <button class="btn" style="margin-top:30px; background:none; border:1px solid #333;" onclick="document.getElementById('modal-cidades').style.display='none'">FECHAR</button>
@@ -210,7 +211,10 @@
         <div id="form-campos-edicao" style="display:none;">
             <div class="identificacao-modelo" id="info-modelo-edit"></div>
             
-            <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">NOVO VALOR POR HORA (Opcional):</p>
+            <button class="btn btn-upgrade" id="btn-solicitar-upgrade" onclick="ir('planos-upgrade')">FAZER UPGRADE DE PLANO 🚀</button>
+            <hr style="border-color:#222; margin: 20px 0;">
+
+            <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">VALOR POR HORA:</p>
             <input type="text" id="edit-valor" placeholder="Ex: 250">
             
             <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">LOCAL DE ATENDIMENTO:</p>
@@ -219,15 +223,28 @@
                 <option value="nao">Apenas Saídas</option>
             </select>
             
-            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">NOVO HORÁRIO DE ATENDIMENTO:</p>
+            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">HORÁRIO DE ATENDIMENTO:</p>
             <div class="grid-horarios">
                 <input type="text" id="edit-h-abre" placeholder="Início (Ex: 08)">
                 <input type="text" id="edit-h-fecha" placeholder="Fim (Ex: 22)">
             </div>
 
+            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">GERENCIAR FOTOS:</p>
+            <input type="file" id="f-edit" accept="image/*" multiple onchange="loadFilesEdit()">
+            <div id="preview-edit" style="display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:15px;"></div>
+
             <button class="btn" onclick="salvarEdicao()">SALVAR ALTERAÇÕES</button>
         </div>
         <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('menu')">VOLTAR AO INÍCIO</button>
+    </div>
+
+    <div id="planos-upgrade" class="tela">
+        <h2 style="color:gold; font-family:'Playfair Display';">TURBINE SEU ANÚNCIO</h2>
+        <p style="font-size:12px; color:#aaa;">Escolha um plano para liberar 10 fotos e ficar no topo.</p>
+        <button class="btn" onclick="solicitarUpgrade(30)">UPGRADE 30 DIAS - R$ 59,90</button>
+        <button class="btn" onclick="solicitarUpgrade(15)">UPGRADE 15 DIAS - R$ 39,90</button>
+        <button class="btn" onclick="solicitarUpgrade(7)">UPGRADE 7 DIAS - R$ 19,90</button>
+        <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('edicao')">CANCELAR</button>
     </div>
 
     <div id="planos" class="tela">
@@ -288,7 +305,12 @@
         <select id="filtro-adm-cidade" class="seletor-cidade-adm" onchange="renderizarListasAdm()">
             <option value="todas">VER TODAS AS CIDADES</option>
         </select>
-        <h4 style="text-align:left; color:#888;">PARA APROVAR:</h4><div id="ap"></div>
+
+        <h4 style="text-align:left; color:gold;">🚀 PEDIDOS DE UPGRADE:</h4>
+        <div id="lista-upgrades"></div>
+        <hr style="border-color:#333;">
+
+        <h4 style="text-align:left; color:#888;">PARA APROVAR (NOVOS):</h4><div id="ap"></div>
         <hr style="border-color:#222; margin:20px 0;">
         <h4 style="text-align:left; color:#888;">ATIVOS:</h4><div id="aa"></div>
         <button class="btn" onclick="ir('menu')">SAIR</button>
@@ -298,11 +320,10 @@
         const conf = { databaseURL: "https://segredo-urbano-a4d81-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(conf);
         const db = firebase.database();
-        let imgs = []; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
+        let imgs = []; let imgsEdit = []; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
         let bancoDeFotos = {}; let sliderIndices = {}; 
         let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
 
-        // CHAVES PIX DINÂMICAS DO ITAÚ (VALOR FIXO)
         const CHAVES_PIX = {
             30: "00020126330014BR.GOV.BCB.PIX011100732941016520400005303986540559.905802BR5925EVERTON DE SOUZA FIGUEIRE6009SAO PAULO622605227djk5SnxUJ7kEYHCkck3Gr63049E8C",
             15: "00020126330014BR.GOV.BCB.PIX011100732941016520400005303986540539.905802BR5925EVERTON DE SOUZA FIGUEIRE6009SAO PAULO622605227M59LgQJah31TIsPkMFsaU630470CB",
@@ -422,9 +443,54 @@
                     document.getElementById('edit-h-abre').value = partes[0];
                     document.getElementById('edit-h-fecha').value = partes[1];
                 }
+                
+                // Mostrar botão de upgrade se for grátis
+                document.getElementById('btn-solicitar-upgrade').style.display = (found.data.plano > 0) ? 'none' : 'block';
+                
+                // Mostrar fotos atuais no preview de edição
+                imgsEdit = found.data.fotos || [];
+                renderPreviewEdit();
+
                 document.getElementById('form-busca-edicao').style.display = 'none';
                 document.getElementById('form-campos-edicao').style.display = 'block';
             } else { alert("Nenhum anúncio encontrado. Verifique se o e-mail e o WhatsApp estão corretos."); }
+        }
+
+        async function loadFilesEdit() {
+            const input = document.getElementById('f-edit');
+            const files = Array.from(input.files);
+            const found = anunciosCache.find(a => a.key === keyEdicao);
+            const limite = (found && found.data.plano > 0) ? 10 : 3;
+            
+            if (files.length > limite) { alert(`Seu plano atual permite no máximo ${limite} fotos.`); input.value = ''; return; }
+            
+            const promises = files.map(f => {
+                return new Promise((resolve) => {
+                    const r = new FileReader();
+                    r.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const cv = document.createElement('canvas');
+                            const maxW = 800;
+                            const scale = maxW / img.width;
+                            cv.width = maxW;
+                            cv.height = img.height * scale;
+                            cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+                            resolve(cv.toDataURL('image/webp', 0.8));
+                        };
+                        img.src = e.target.result;
+                    };
+                    r.readAsDataURL(f);
+                });
+            });
+            imgsEdit = await Promise.all(promises);
+            renderPreviewEdit();
+        }
+
+        function renderPreviewEdit() {
+            const prev = document.getElementById('preview-edit');
+            prev.innerHTML = '';
+            imgsEdit.forEach(data => { prev.innerHTML += `<img src="${data}" style="width:45px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #333;">`; });
         }
 
         function salvarEdicao() {
@@ -433,8 +499,29 @@
             const h1 = formatarInputHora(document.getElementById('edit-h-abre').value);
             const h2 = formatarInputHora(document.getElementById('edit-h-fecha').value);
             const hFinal = `${h1} às ${h2}`;
-            db.ref('anuncios/' + keyEdicao).update({ v_hora: v, tem_local: l, horario_atend: hFinal })
+            
+            const upData = { v_hora: v, tem_local: l, horario_atend: hFinal };
+            if(imgsEdit.length > 0) upData.fotos = imgsEdit;
+
+            db.ref('anuncios/' + keyEdicao).update(upData)
             .then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
+        }
+
+        function solicitarUpgrade(d) {
+            dias = d;
+            const found = anunciosCache.find(a => a.key === keyEdicao);
+            db.ref('pedidos_upgrade').push({
+                anuncioKey: keyEdicao,
+                nome: found.data.nome,
+                cidade: found.data.cidade,
+                planoSolicitado: d,
+                dataPedido: Date.now()
+            }).then(() => {
+                document.getElementById('chave-txt').innerText = CHAVES_PIX[d];
+                document.getElementById('valor-aviso').innerText = d === 30 ? "R$ 59,90" : (d === 15 ? "R$ 39,90" : "R$ 19,90");
+                ir('tela-pix');
+                cidadePostagemOriginal = found.data.cidade;
+            });
         }
 
         function filtrarPorCidade(termoManual = "") {
@@ -446,27 +533,52 @@
             ir('vitrine');
             db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 1);
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
+            
             db.ref('anuncios').once('value', (snapshot) => {
                 lv.innerHTML = ''; let listaFiltrada = [];
-                snapshot.forEach(child => {
-                    const d = child.val(); const status = d.status ? d.status.toLowerCase() : "pendente"; const cityNorm = normalizarTxt(d.cidade);
-                    if(status === 'ativo' && (cityNorm.includes(termoBusca) || termoBusca.includes(cityNorm))) { listaFiltrada.push({key: child.key, ...d}); }
-                });
-                listaFiltrada.sort((a, b) => { const pA = parseInt(a.pos || 0); const pB = parseInt(b.pos || 0); if (pA === 0 && pB === 0) return b.criadoEm - a.criadoEm; if (pA === 0) return 1; if (pB === 0) return -1; return pA - pB; });
                 const agora = Date.now();
+
+                snapshot.forEach(child => {
+                    let d = child.val(); 
+                    const status = d.status ? d.status.toLowerCase() : "pendente"; 
+                    const cityNorm = normalizarTxt(d.cidade);
+                    
+                    if(status === 'ativo' && (cityNorm.includes(termoBusca) || termoBusca.includes(cityNorm))) { 
+                        // Verificação de expiração e downgrade automático
+                        if(d.plano > 0) {
+                            const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                            if(agora > dataFim) {
+                                // Expirou: Volta pro grátis, corta fotos e vai pro fim da fila (pos 999)
+                                d.plano = 0;
+                                d.pos = 999;
+                                if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
+                                db.ref('anuncios/' + child.key).update({ plano: 0, pos: 999, fotos: d.fotos });
+                            }
+                        }
+                        listaFiltrada.push({key: child.key, ...d}); 
+                    }
+                });
+
+                // Lógica Pv = Pp * (1 - D) simplificada na ordenação (Preço/Posição)
+                listaFiltrada.sort((a, b) => { 
+                    const pA = parseInt(a.pos || 999); 
+                    const pB = parseInt(b.pos || 999); 
+                    if (pA === pB) return b.criadoEm - a.criadoEm;
+                    return pA - pB; 
+                });
+
                 listaFiltrada.forEach(d => {
                     const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`;
                     const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
                     const estaOn = checkStatus(d.horario_atend);
-                    let planoEfetivo = d.plano || 0;
-                    if(planoEfetivo > 0) { const dataFim = (d.criadoEm || agora) + (planoEfetivo * 24 * 60 * 60 * 1000); if(agora > dataFim) planoEfetivo = 0; }
                     let opcionalHtml = '<div class="info-opcional-bar">';
                     if(estaOn) opcionalHtml += `<div class="badge-opcional badge-on">🟢 DISPONÍVEL AGORA</div>`;
                     if(d.v_hora) opcionalHtml += `<div class="badge-opcional destaque-valor">💵 R$ ${d.v_hora}</div>`;
                     if(d.tem_local === 'sim') opcionalHtml += `<div class="badge-opcional">🏠 COM LOCAL</div>`;
                     if(d.tem_local === 'nao') opcionalHtml += `<div class="badge-opcional">🚗 SÓ SAÍDAS</div>`;
                     opcionalHtml += '</div>';
-                    if(planoEfetivo > 0) {
+
+                    if(d.plano > 0) {
                         lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
                     } else {
                         lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
@@ -505,13 +617,10 @@
         }
 
         function p(d) { 
-            dias = d; 
-            imgs = []; 
+            dias = d; imgs = []; 
             document.getElementById('f').value = ''; 
             document.getElementById('preview').innerHTML = ''; 
             if(document.getElementById('aviso-limite')) document.getElementById('aviso-limite').innerText = `Limite: ${d > 0 ? '10' : '3'} fotos.`; 
-            
-            // Define o código Pix na tela de pagamento antes de ir pra lá
             if (d > 0) {
                 document.getElementById('chave-txt').innerText = CHAVES_PIX[d];
                 document.getElementById('valor-aviso').innerText = d === 30 ? "R$ 59,90" : (d === 15 ? "R$ 39,90" : "R$ 19,90");
@@ -524,7 +633,6 @@
             const files = Array.from(input.files);
             const limite = (dias > 0) ? 10 : 3;
             if (files.length > limite) { alert(`Erro: Seu plano permite no máximo ${limite} fotos.`); input.value = ''; return; }
-            document.getElementById('preview').innerHTML = 'Processando...';
             const promises = files.map(f => {
                 return new Promise((resolve) => {
                     const r = new FileReader();
@@ -544,8 +652,9 @@
                     r.readAsDataURL(f);
                 });
             });
-            imgs = await Promise.all(promises); document.getElementById('preview').innerHTML = '';
-            imgs.forEach(data => { document.getElementById('preview').innerHTML += `<img src="${data}" style="width:45px; height:auto; border-radius:4px; border:1px solid #333;">`; });
+            imgs = await Promise.all(promises); 
+            document.getElementById('preview').innerHTML = '';
+            imgs.forEach(data => { document.getElementById('preview').innerHTML += `<img src="${data}" style="width:45px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #333;">`; });
         }
 
         function limparFormulario() {
@@ -553,7 +662,7 @@
             document.getElementById('v_hora').value = ''; document.getElementById('tem_local').value = ''; 
             document.getElementById('h_abre').value = ''; document.getElementById('h_fecha').value = '';
             document.getElementById('email_user').value = ''; document.getElementById('w').value = ''; document.getElementById('f').value = ''; 
-            document.getElementById('preview').innerHTML = ''; document.getElementById('inp-filtro-cidade').value = ''; imgs = [];
+            document.getElementById('preview').innerHTML = ''; imgs = [];
         }
 
         function enviar() {
@@ -570,29 +679,42 @@
             cidadePostagemOriginal = c;
             if(!n || !c || !b || !w || !em || imgs.length === 0) return alert("Preencha os campos obrigatórios!");
             if(w.length <= 11) w = "55" + w;
-            const cityNormNova = normalizarTxt(c);
-            const duplicadoNaCidade = anunciosCache.find(a => {
-                const mesmoContato = (normalizarTxt(a.data.email) === normalizarTxt(em) || normalizarTxt(a.data.whats) === normalizarTxt(w));
-                return mesmoContato && (normalizarTxt(a.data.cidade) === cityNormNova);
-            });
-            if(duplicadoNaCidade) return alert(`Erro: Você já possui um anúncio em ${c.toUpperCase()}.`);
+            
             db.ref('anuncios').push({ 
                 nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, 
-                plano:dias, status:'pendente', criadoEm: Date.now(), pos: 0, cliquesZap: 0,
+                plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
                 v_hora: vh, tem_local: loc, horario_atend: hr
-            }).then(() => { if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); } });
+            }).then(() => { if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); filtrarPorCidade(cidadePostagemOriginal); limparFormulario(); } });
         }
 
         function copiarPix() { 
             const codigoPix = CHAVES_PIX[dias] || "Chave não encontrada";
             navigator.clipboard.writeText(codigoPix);
             document.getElementById('aviso-pix-central').style.display = "block";
-            setTimeout(() => { document.getElementById('aviso-pix-central').style.display = "none"; const cidTemp = cidadePostagemOriginal; limparFormulario(); filtrarPorCidade(cidTemp); }, 6000);
+            setTimeout(() => { 
+                document.getElementById('aviso-pix-central').style.display = "none"; 
+                if(telaAtual === 'tela-pix') {
+                    filtrarPorCidade(cidadePostagemOriginal); 
+                    limparFormulario();
+                }
+            }, 6000);
         }
 
         function abrirGaleria(key, idxManual) { 
-            const lista = bancoDeFotos[key]; if (!lista) return;
-            fotosGaleria = lista; fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
+            let lista = bancoDeFotos[key]; if (!lista) return;
+            
+            // Verificamos o plano desse anúncio no cache para aplicar a trava de 3 fotos se for grátis
+            const itemCache = anunciosCache.find(a => a.key === key);
+            if(itemCache && (!itemCache.data.plano || itemCache.data.plano <= 0)) {
+                lista = lista.slice(0, 3);
+            }
+
+            fotosGaleria = lista; 
+            fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
+            
+            // Garantir que o index não estoure o limite da trava (caso alguém tenha clicado na seta e depois na galeria)
+            if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
+
             document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; 
             document.getElementById('modal-galeria').style.display = 'block';
         }
@@ -606,39 +728,53 @@
         function renderizarListasAdm() {
             const ap = document.getElementById('ap'); 
             const aa = document.getElementById('aa');
+            const upList = document.getElementById('lista-upgrades');
             const seletor = document.getElementById('filtro-adm-cidade'); 
             const vSalvo = seletor.value || 'todas'; 
-            const filtroBuscaNorm = normalizarTxt(vSalvo); 
             
-            ap.innerHTML = '<p style="font-size:10px; color:#555;">Processando...</p>'; 
-            aa.innerHTML = ''; 
+            ap.innerHTML = 'Processando...'; aa.innerHTML = ''; upList.innerHTML = '';
+
+            // Renderizar Pedidos de Upgrade
+            db.ref('pedidos_upgrade').once('value', snap => {
+                snap.forEach(ped => {
+                    const p = ped.val();
+                    upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="db.ref('pedidos_upgrade/${ped.key}').remove().then(()=>renderizarListasAdm())" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
+                });
+            });
 
             db.ref('anuncios').once('value', snapshot => {
                 ap.innerHTML = '';
                 let cidadesUnicas = new Set();
                 anunciosCache = [];
-
                 snapshot.forEach(i => {
-                    const d = i.val();
-                    const key = i.key;
+                    const d = i.val(); const key = i.key;
                     anunciosCache.push({key, data: d});
                     bancoDeFotos[key] = d.fotos;
                     if(d.cidade) cidadesUnicas.add(d.cidade.trim().toUpperCase());
-
                     const statusL = d.status ? d.status.toLowerCase() : "pendente";
                     const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
 
                     if(statusL === 'pendente') {
                         let fotsRev = ''; if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"></div>`; });
                         ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}) ${badgeP}<button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
-                    } else if(statusL === 'ativo' && (vSalvo === 'todas' || normalizarTxt(d.cidade) === filtroBuscaNorm)) {
-                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;"><img src="${d.fotos[0]}" style="width:40px; height:40px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP}<div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 0}" onchange="db.ref('anuncios/${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())"><span class="badge-cliques-zap">⚡ ${d.cliquesZap || 0}</span></div><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button></div><button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
+                    } else if(statusL === 'ativo' && (vSalvo === 'todas' || normalizarTxt(d.cidade) === normalizarTxt(vSalvo))) {
+                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;"><img src="${d.fotos[0]}" style="width:40px; height:40px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}]<div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())"></div><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button></div><button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                     }
                 });
 
                 let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
                 Array.from(cidadesUnicas).sort().forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
                 seletor.innerHTML = opcoes;
+            });
+        }
+
+        function aprovarUpgrade(pedidoKey, anuncioKey, planoDias) {
+            db.ref('anuncios/' + anuncioKey).update({
+                plano: planoDias,
+                criadoEm: Date.now(),
+                pos: 1 // Coloca no topo ao aprovar upgrade
+            }).then(() => {
+                db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => renderizarListasAdm());
             });
         }
 
@@ -660,7 +796,7 @@
                     const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
                     const diff = dataFim - agora;
                     const diasRestantes = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                    if(diff <= 0) prazoHtml = `<span style="color:red; font-weight:bold;">⚠️ VENCIDO</span>`;
+                    if(diff <= 0) prazoHtml = `<span style="color:red; font-weight:bold;">⚠️ EXPIROU</span>`;
                     else if(diasRestantes <= 1) prazoHtml = `<span style="color:orange; font-weight:bold;">⏳ VENCE HOJE</span>`;
                     else prazoHtml = `<span style="color:#25D366;">⏳ Restam ${diasRestantes} dias</span>`;
                 } else { prazoHtml = `<span style="color:#888;">PLANO GRÁTIS</span>`; }
@@ -676,7 +812,8 @@
 
         db.ref('anuncios').on('value', s => {
             const track = document.getElementById('track-social'); 
-            anunciosCache = []; let ativos = [];
+            let ativos = [];
+            anunciosCache = [];
             s.forEach(i => { 
                 const d = i.val(); 
                 anunciosCache.push({key: i.key, data: d}); 
