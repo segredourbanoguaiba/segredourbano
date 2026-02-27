@@ -91,7 +91,10 @@
         .inp-pos { width: 45px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 4px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
         .inp-cidade-adm-edit { width: 120px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; margin-left: 5px !important; }
 
-        .badge-cliques-zap { background: #25D366; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 10px; }
+        .marcador-cliques-zap { background: #2ecc71; color: #000; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: 900; margin-left: 10px; display: inline-flex; align-items: center; gap: 3px; }
+        
+        .info-recuperacao-adm { font-size: 10px; color: #888; margin-top: 8px; background: #1a1a1a; padding: 5px; border-radius: 4px; border: 1px solid #222; }
+
         .btn-toggle-plano { background: #333; color: #fff; border: 1px solid #555; font-size: 9px; padding: 5px; border-radius: 4px; cursor: pointer; margin-top: 8px; text-transform: uppercase; font-weight: bold; width: 100%; }
         .btn-toggle-plano:hover { background: gold; color: #000; }
         #container-busca-cidade { display: none; padding: 15px; background: #000; }
@@ -121,6 +124,19 @@
         #modal-cidades { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000002; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .lista-cidades-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
         .item-cidade-link { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; text-decoration: none; text-transform: uppercase; font-weight: bold; }
+
+        /* NOVO PAINEL DE TOKEN E SEGURANÇA */
+        .card-token-seguranca { background: #1a0000; border: 2px solid #ff0000; border-radius: 12px; padding: 15px; margin: 15px auto; max-width: 90%; text-align: center; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
+        .token-display { background: #000; border: 1px dashed #ff0000; color: #ff0000; font-family: 'Courier New', monospace; font-size: 32px; font-weight: 900; padding: 10px; margin: 10px 0; border-radius: 6px; letter-spacing: 5px; }
+        .alerta-seguranca { background: #222; border-radius: 8px; padding: 10px; margin-top: 10px; }
+        .alerta-seguranca p { color: #fff; font-size: 11px; font-weight: bold; margin: 0; line-height: 1.4; }
+        .alerta-seguranca b { color: #ff0000; text-transform: uppercase; }
+
+        /* ESTILOS DA GRADE DE EDIÇÃO DE FOTOS */
+        .foto-edit-wrapper { position: relative; width: 80px; height: 110px; }
+        .foto-edit-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
+        .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        #slot-counter { font-size: 11px; color: gold; font-weight: bold; margin-bottom: 10px; display: block; }
     </style>
 </head>
 <body>
@@ -209,6 +225,16 @@
             <button class="btn" onclick="buscarParaEditar()">LOCALIZAR MEU ANÚNCIO</button>
         </div>
         <div id="form-campos-edicao" style="display:none;">
+            
+            <div class="card-token-seguranca">
+                <span style="font-size: 10px; color: #fff; text-transform: uppercase; letter-spacing: 1px;">Seu Código de Acesso Exclusivo:</span>
+                <div class="token-display" id="token-anunciante-edit">----</div>
+                <div class="alerta-seguranca">
+                    <p>⚠️ <b>NUNCA FORNEÇA ESTE CÓDIGO A NINGUÉM.</b></p>
+                    <p style="margin-top: 5px; font-weight: normal; color: #ccc;">Nossa equipe de suporte <b>nunca</b> pedirá este código. Se precisarmos confirmar sua identidade, <b>NÓS</b> informaremos este código para você, nunca o contrário.</p>
+                </div>
+            </div>
+
             <div class="identificacao-modelo" id="info-modelo-edit"></div>
             
             <button class="btn btn-upgrade" id="btn-solicitar-upgrade" onclick="ir('planos-upgrade')">FAZER UPGRADE DE PLANO 🚀</button>
@@ -230,8 +256,13 @@
             </div>
 
             <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">GERENCIAR FOTOS:</p>
-            <input type="file" id="f-edit" accept="image/*" multiple onchange="loadFilesEdit()">
-            <div id="preview-edit" style="display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:15px;"></div>
+            <span id="slot-counter">Calculando slots...</span>
+            <div id="container-fotos-edit" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin:15px 0;"></div>
+            
+            <div id="area-upload-edit" style="display:none;">
+                <p style="font-size:11px; color:#aaa; margin-bottom:5px;">ADICIONAR MAIS FOTOS:</p>
+                <input type="file" id="f-edit" accept="image/*" multiple onchange="loadFilesEdit()">
+            </div>
 
             <button class="btn" onclick="salvarEdicao()">SALVAR ALTERAÇÕES</button>
         </div>
@@ -434,6 +465,10 @@
             });
             if(found) {
                 keyEdicao = found.key;
+                const tokenS = found.key.slice(-4).toUpperCase();
+                
+                document.getElementById('token-anunciante-edit').innerText = tokenS;
+
                 const infoDiv = document.getElementById('info-modelo-edit');
                 infoDiv.innerHTML = `<img src="${found.data.fotos[0]}"><div><b style="font-size:18px;">${found.data.nome}</b><br><small style="color:#25D366; font-weight:bold;">Anúncio Localizado ✔️</small></div>`;
                 document.getElementById('edit-valor').value = found.data.v_hora || "";
@@ -444,10 +479,7 @@
                     document.getElementById('edit-h-fecha').value = partes[1];
                 }
                 
-                // Mostrar botão de upgrade se for grátis
                 document.getElementById('btn-solicitar-upgrade').style.display = (found.data.plano > 0) ? 'none' : 'block';
-                
-                // Mostrar fotos atuais no preview de edição
                 imgsEdit = found.data.fotos || [];
                 renderPreviewEdit();
 
@@ -460,9 +492,15 @@
             const input = document.getElementById('f-edit');
             const files = Array.from(input.files);
             const found = anunciosCache.find(a => a.key === keyEdicao);
-            const limite = (found && found.data.plano > 0) ? 10 : 3;
+            const planoAtivo = found && found.data.plano > 0;
+            const limiteTotal = planoAtivo ? 10 : 3;
+            const slotsLivres = limiteTotal - imgsEdit.length;
             
-            if (files.length > limite) { alert(`Seu plano atual permite no máximo ${limite} fotos.`); input.value = ''; return; }
+            if (files.length > slotsLivres) { 
+                alert(`Você só tem ${slotsLivres} slot(s) disponível(is).`); 
+                input.value = ''; 
+                return; 
+            }
             
             const promises = files.map(f => {
                 return new Promise((resolve) => {
@@ -483,14 +521,63 @@
                     r.readAsDataURL(f);
                 });
             });
-            imgsEdit = await Promise.all(promises);
+            const novasFotos = await Promise.all(promises);
+            imgsEdit = [...imgsEdit, ...novasFotos];
+            input.value = '';
             renderPreviewEdit();
         }
 
+        function deletarFotoEdit(index) {
+            const found = anunciosCache.find(a => a.key === keyEdicao);
+            const planoAtivo = found && found.data.plano > 0;
+            
+            if(!planoAtivo) {
+                alert("Apenas planos pagos podem gerenciar fotos individualmente.");
+                return;
+            }
+
+            if(imgsEdit.length <= 1) {
+                alert("O anúncio precisa de pelo menos 1 foto.");
+                return;
+            }
+
+            if(confirm("Deseja realmente apagar esta foto? Isso liberará um espaço para uma nova.")) {
+                imgsEdit.splice(index, 1);
+                renderPreviewEdit();
+            }
+        }
+
         function renderPreviewEdit() {
-            const prev = document.getElementById('preview-edit');
+            const prev = document.getElementById('container-fotos-edit');
+            const counter = document.getElementById('slot-counter');
+            const areaUpload = document.getElementById('area-upload-edit');
+            const inputF = document.getElementById('f-edit');
             prev.innerHTML = '';
-            imgsEdit.forEach(data => { prev.innerHTML += `<img src="${data}" style="width:45px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #333;">`; });
+            
+            const found = anunciosCache.find(a => a.key === keyEdicao);
+            const planoAtivo = found && found.data.plano > 0;
+            const limiteTotal = planoAtivo ? 10 : 3;
+            const disponiveis = limiteTotal - imgsEdit.length;
+
+            counter.innerText = `FOTOS: ${imgsEdit.length} de ${limiteTotal} (Disponível: ${disponiveis})`;
+
+            imgsEdit.forEach((data, idx) => { 
+                let htmlFoto = `<div class="foto-edit-wrapper">
+                    <img src="${data}">`;
+                if(planoAtivo) {
+                    htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`;
+                }
+                htmlFoto += `</div>`;
+                prev.innerHTML += htmlFoto;
+            });
+
+            // Lógica de exibição do upload baseada em slots e plano
+            if(planoAtivo && disponiveis > 0) {
+                areaUpload.style.display = 'block';
+                inputF.setAttribute('max', disponiveis);
+            } else {
+                areaUpload.style.display = 'none';
+            }
         }
 
         function salvarEdicao() {
@@ -500,8 +587,12 @@
             const h2 = formatarInputHora(document.getElementById('edit-h-fecha').value);
             const hFinal = `${h1} às ${h2}`;
             
-            const upData = { v_hora: v, tem_local: l, horario_atend: hFinal };
-            if(imgsEdit.length > 0) upData.fotos = imgsEdit;
+            const upData = { 
+                v_hora: v, 
+                tem_local: l, 
+                horario_atend: hFinal,
+                fotos: imgsEdit 
+            };
 
             db.ref('anuncios/' + keyEdicao).update(upData)
             .then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
@@ -544,11 +635,9 @@
                     const cityNorm = normalizarTxt(d.cidade);
                     
                     if(status === 'ativo' && (cityNorm.includes(termoBusca) || termoBusca.includes(cityNorm))) { 
-                        // Verificação de expiração e downgrade automático
                         if(d.plano > 0) {
                             const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
                             if(agora > dataFim) {
-                                // Expirou: Volta pro grátis, corta fotos e vai pro fim da fila (pos 999)
                                 d.plano = 0;
                                 d.pos = 999;
                                 if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
@@ -559,7 +648,6 @@
                     }
                 });
 
-                // Lógica Pv = Pp * (1 - D) simplificada na ordenação (Preço/Posição)
                 listaFiltrada.sort((a, b) => { 
                     const pA = parseInt(a.pos || 999); 
                     const pB = parseInt(b.pos || 999); 
@@ -702,19 +790,13 @@
 
         function abrirGaleria(key, idxManual) { 
             let lista = bancoDeFotos[key]; if (!lista) return;
-            
-            // Verificamos o plano desse anúncio no cache para aplicar a trava de 3 fotos se for grátis
             const itemCache = anunciosCache.find(a => a.key === key);
             if(itemCache && (!itemCache.data.plano || itemCache.data.plano <= 0)) {
                 lista = lista.slice(0, 3);
             }
-
             fotosGaleria = lista; 
             fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
-            
-            // Garantir que o index não estoure o limite da trava (caso alguém tenha clicado na seta e depois na galeria)
             if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
-
             document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; 
             document.getElementById('modal-galeria').style.display = 'block';
         }
@@ -734,7 +816,6 @@
             
             ap.innerHTML = 'Processando...'; aa.innerHTML = ''; upList.innerHTML = '';
 
-            // Renderizar Pedidos de Upgrade
             db.ref('pedidos_upgrade').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
@@ -756,9 +837,23 @@
 
                     if(statusL === 'pendente') {
                         let fotsRev = ''; if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"></div>`; });
-                        ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}) ${badgeP}<button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
+                        ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
                     } else if(statusL === 'ativo' && (vSalvo === 'todas' || normalizarTxt(d.cidade) === normalizarTxt(vSalvo))) {
-                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;"><img src="${d.fotos[0]}" style="width:40px; height:40px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}]<div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())"></div><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button></div><button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
+                        const tokenS = key.slice(-4).toUpperCase();
+                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
+                            <img src="${d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
+                            <div style="flex:1;">
+                                <b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}] <span style="color:#25D366; font-size:9px; border:1px dashed #25D366; padding:1px 4px; border-radius:3px; margin-left:5px;">TOKEN: ${tokenS}</span>
+                                <div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div>
+                                <div class="info-recuperacao-adm">📧 ${d.email} | 📱 ${d.whats}</div>
+                                <div style="margin-top:5px;">
+                                    <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
+                                    <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())">
+                                </div>
+                                <button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button>
+                            </div>
+                            <button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button>
+                        </div>`;
                     }
                 });
 
@@ -772,7 +867,7 @@
             db.ref('anuncios/' + anuncioKey).update({
                 plano: planoDias,
                 criadoEm: Date.now(),
-                pos: 1 // Coloca no topo ao aprovar upgrade
+                pos: 1 
             }).then(() => {
                 db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => renderizarListasAdm());
             });
