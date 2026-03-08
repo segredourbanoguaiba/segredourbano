@@ -86,6 +86,9 @@
         .grade-fotos-adm { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .foto-revisao { position: relative; width: 65px; height: 85px; cursor: pointer; }
         .foto-revisao img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
+        
+        .btn-del-foto-revisao { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
+
         .metric-card { background: #1a0000; border: 1px solid red; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
         
         .inp-pos { width: 45px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 4px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
@@ -125,18 +128,18 @@
         .lista-cidades-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
         .item-cidade-link { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; text-decoration: none; text-transform: uppercase; font-weight: bold; }
 
-        /* NOVO PAINEL DE TOKEN E SEGURANÇA */
         .card-token-seguranca { background: #1a0000; border: 2px solid #ff0000; border-radius: 12px; padding: 15px; margin: 15px auto; max-width: 90%; text-align: center; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
         .token-display { background: #000; border: 1px dashed #ff0000; color: #ff0000; font-family: 'Courier New', monospace; font-size: 32px; font-weight: 900; padding: 10px; margin: 10px 0; border-radius: 6px; letter-spacing: 5px; }
         .alerta-seguranca { background: #222; border-radius: 8px; padding: 10px; margin-top: 10px; }
         .alerta-seguranca p { color: #fff; font-size: 11px; font-weight: bold; margin: 0; line-height: 1.4; }
         .alerta-seguranca b { color: #ff0000; text-transform: uppercase; }
 
-        /* ESTILOS DA GRADE DE EDIÇÃO DE FOTOS */
         .foto-edit-wrapper { position: relative; width: 80px; height: 110px; }
         .foto-edit-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
         .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
         #slot-counter { font-size: 11px; color: gold; font-weight: bold; margin-bottom: 10px; display: block; }
+
+        .inp-whats-adm-edit { width: 95% !important; background: #111 !important; border: 1px solid #2ecc71 !important; color: #2ecc71 !important; padding: 6px !important; font-size: 12px !important; border-radius: 4px !important; margin-top: 5px !important; font-weight: bold !important; text-align: center !important; }
     </style>
 </head>
 <body>
@@ -334,7 +337,7 @@
         <h2 style="color:red;">PAINEL ADM</h2>
         <div class="metric-card"><span><b>BUSCAS REALIZADAS:</b></span><span id="display-cliques" style="font-size:24px; color:red; font-weight:900;">0</span></div>
         <select id="filtro-adm-cidade" class="seletor-cidade-adm" onchange="renderizarListasAdm()">
-            <option value="todas">VER TODAS AS CIDADES</option>
+            <option value="todas">VER TODAS AS CIDADES (Vazio)</option>
         </select>
 
         <h4 style="text-align:left; color:gold;">🚀 PEDIDOS DE UPGRADE:</h4>
@@ -343,7 +346,7 @@
 
         <h4 style="text-align:left; color:#888;">PARA APROVAR (NOVOS):</h4><div id="ap"></div>
         <hr style="border-color:#222; margin:20px 0;">
-        <h4 style="text-align:left; color:#888;">ATIVOS:</h4><div id="aa"></div>
+        <h4 style="text-align:left; color:#888;">ATIVOS NA CIDADE:</h4><div id="aa"></div>
         <button class="btn" onclick="ir('menu')">SAIR</button>
     </div>
 
@@ -354,8 +357,6 @@
         let imgs = []; let imgsEdit = []; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
         let bancoDeFotos = {}; let sliderIndices = {}; 
         let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
-        
-        // CONTADOR LOCAL PARA REDUZIR ESCRITAS
         let contadorBuscasLocal = 0;
 
         const CHAVES_PIX = {
@@ -369,30 +370,35 @@
         function abrirListaCidades() {
             const container = document.getElementById('lista-todas-cidades');
             container.innerHTML = '';
-            let cidadesSet = new Set();
-            anunciosCache.forEach(item => {
-                if(item.data.status === 'ativo' && item.data.cidade) {
-                    cidadesSet.add(item.data.cidade.trim().toUpperCase());
+            
+            // BUSCA OTIMIZADA: Carrega apenas nomes de cidades dos anúncios ativos sem baixar todas as fotos
+            db.ref('anuncios').once('value', snap => {
+                let cidadesSet = new Set();
+                snap.forEach(child => {
+                    const d = child.val();
+                    if(d.status === 'ativo' && d.cidade) {
+                        cidadesSet.add(d.cidade.trim().toUpperCase());
+                    }
+                });
+                const listaOrdenada = Array.from(cidadesSet).sort();
+                if(listaOrdenada.length === 0) {
+                    container.innerHTML = '<p style="grid-column: 1/-1; color:#555;">Nenhuma cidade com anúncios ativos.</p>';
+                } else {
+                    listaOrdenada.forEach(cid => {
+                        const btn = document.createElement('a');
+                        btn.href = "#";
+                        btn.className = 'item-cidade-link';
+                        btn.innerText = cid;
+                        btn.onclick = (e) => {
+                            e.preventDefault();
+                            document.getElementById('modal-cidades').style.display = 'none';
+                            document.getElementById('inp-filtro-cidade').value = cid;
+                            filtrarPorCidade(cid);
+                        };
+                        container.appendChild(btn);
+                    });
                 }
             });
-            const listaOrdenada = Array.from(cidadesSet).sort();
-            if(listaOrdenada.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; color:#555;">Nenhuma cidade com anúncios ativos.</p>';
-            } else {
-                listaOrdenada.forEach(cid => {
-                    const btn = document.createElement('a');
-                    btn.href = "#";
-                    btn.className = 'item-cidade-link';
-                    btn.innerText = cid;
-                    btn.onclick = (e) => {
-                        e.preventDefault();
-                        document.getElementById('modal-cidades').style.display = 'none';
-                        document.getElementById('inp-filtro-cidade').value = cid;
-                        filtrarPorCidade(cid);
-                    };
-                    container.appendChild(btn);
-                });
-            }
             document.getElementById('modal-cidades').style.display = 'block';
         }
 
@@ -461,93 +467,91 @@
             let whatsBusca = document.getElementById('whats-busca-edit').value.replace(/\D/g, ''); 
             if(!emailBusca || !whatsBusca) { alert("Por favor, preencha o E-mail e o WhatsApp cadastrados."); return; }
             if(whatsBusca.length === 11) whatsBusca = "55" + whatsBusca;
-            const found = anunciosCache.find(a => {
-                const emailDb = (a.data.email || "").trim().toLowerCase();
-                const whatsDb = (a.data.whats || "").toString().replace(/\D/g, '');
-                return emailDb === emailBusca && whatsDb === whatsBusca;
+            
+            // BUSCA PONTUAL PARA EDIÇÃO: Não carrega todo o banco
+            db.ref('anuncios').once('value', snap => {
+                let found = null;
+                snap.forEach(child => {
+                    const d = child.val();
+                    const emailDb = (d.email || "").trim().toLowerCase();
+                    const whatsDb = (d.whats || "").toString().replace(/\D/g, '');
+                    if(emailDb === emailBusca && whatsDb === whatsBusca) {
+                        found = { key: child.key, data: d };
+                    }
+                });
+
+                if(found) {
+                    keyEdicao = found.key;
+                    const tokenS = found.key.slice(-4).toUpperCase();
+                    document.getElementById('token-anunciante-edit').innerText = tokenS;
+                    const infoDiv = document.getElementById('info-modelo-edit');
+                    infoDiv.innerHTML = `<img src="${found.data.fotos[0]}"><div><b style="font-size:18px;">${found.data.nome}</b><br><small style="color:#25D366; font-weight:bold;">Anúncio Localizado ✔️</small></div>`;
+                    document.getElementById('edit-valor').value = found.data.v_hora || "";
+                    document.getElementById('edit-local').value = found.data.tem_local || "nao";
+                    if(found.data.horario_atend && found.data.horario_atend.includes(' às ')) {
+                        const partes = found.data.horario_atend.split(' às ');
+                        document.getElementById('edit-h-abre').value = partes[0];
+                        document.getElementById('edit-h-fecha').value = partes[1];
+                    }
+                    document.getElementById('btn-solicitar-upgrade').style.display = (found.data.plano > 0) ? 'none' : 'block';
+                    imgsEdit = found.data.fotos || [];
+                    renderPreviewEdit();
+                    document.getElementById('form-busca-edicao').style.display = 'none';
+                    document.getElementById('form-campos-edicao').style.display = 'block';
+                } else { alert("Nenhum anúncio encontrado. Verifique se o e-mail e o WhatsApp estão corretos."); }
             });
-            if(found) {
-                keyEdicao = found.key;
-                const tokenS = found.key.slice(-4).toUpperCase();
-                
-                document.getElementById('token-anunciante-edit').innerText = tokenS;
-
-                const infoDiv = document.getElementById('info-modelo-edit');
-                infoDiv.innerHTML = `<img src="${found.data.fotos[0]}"><div><b style="font-size:18px;">${found.data.nome}</b><br><small style="color:#25D366; font-weight:bold;">Anúncio Localizado ✔️</small></div>`;
-                document.getElementById('edit-valor').value = found.data.v_hora || "";
-                document.getElementById('edit-local').value = found.data.tem_local || "nao";
-                if(found.data.horario_atend && found.data.horario_atend.includes(' às ')) {
-                    const partes = found.data.horario_atend.split(' às ');
-                    document.getElementById('edit-h-abre').value = partes[0];
-                    document.getElementById('edit-h-fecha').value = partes[1];
-                }
-                
-                document.getElementById('btn-solicitar-upgrade').style.display = (found.data.plano > 0) ? 'none' : 'block';
-                imgsEdit = found.data.fotos || [];
-                renderPreviewEdit();
-
-                document.getElementById('form-busca-edicao').style.display = 'none';
-                document.getElementById('form-campos-edicao').style.display = 'block';
-            } else { alert("Nenhum anúncio encontrado. Verifique se o e-mail e o WhatsApp estão corretos."); }
         }
 
         async function loadFilesEdit() {
             const input = document.getElementById('f-edit');
             const files = Array.from(input.files);
-            const found = anunciosCache.find(a => a.key === keyEdicao);
-            const planoAtivo = found && found.data.plano > 0;
-            const limiteTotal = planoAtivo ? 10 : 3;
-            const slotsLivres = limiteTotal - imgsEdit.length;
-            
-            if (files.length > slotsLivres) { 
-                alert(`Você só tem ${slotsLivres} slot(s) disponível(is).`); 
-                input.value = ''; 
-                return; 
-            }
-            
-            const promises = files.map(f => {
-                return new Promise((resolve) => {
-                    const r = new FileReader();
-                    r.onload = (e) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            const cv = document.createElement('canvas');
-                            const maxW = 800;
-                            const scale = maxW / img.width;
-                            cv.width = maxW;
-                            cv.height = img.height * scale;
-                            cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-                            resolve(cv.toDataURL('image/webp', 0.8));
-                        };
-                        img.src = e.target.result;
-                    };
-                    r.readAsDataURL(f);
-                });
+            // Busca dados do anúncio atual para checar limite
+            db.ref('anuncios/' + keyEdicao).once('value', snap => {
+                const data = snap.val();
+                const planoAtivo = data && data.plano > 0;
+                const limiteTotal = planoAtivo ? 10 : 3;
+                const slotsLivres = limiteTotal - imgsEdit.length;
+                if (files.length > slotsLivres) { alert(`Você só tem ${slotsLivres} slot(s) disponível(is).`); input.value = ''; return; }
+                processarArquivos(files);
             });
-            const novasFotos = await Promise.all(promises);
-            imgsEdit = [...imgsEdit, ...novasFotos];
-            input.value = '';
-            renderPreviewEdit();
+
+            async function processarArquivos(lista) {
+                const promises = lista.map(f => {
+                    return new Promise((resolve) => {
+                        const r = new FileReader();
+                        r.onload = (e) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                const cv = document.createElement('canvas');
+                                const maxW = 800;
+                                const scale = maxW / img.width;
+                                cv.width = maxW;
+                                cv.height = img.height * scale;
+                                cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+                                resolve(cv.toDataURL('image/webp', 0.8));
+                            };
+                            img.src = e.target.result;
+                        };
+                        r.readAsDataURL(f);
+                    });
+                });
+                const novasFotos = await Promise.all(promises);
+                imgsEdit = [...imgsEdit, ...novasFotos];
+                input.value = '';
+                renderPreviewEdit();
+            }
         }
 
         function deletarFotoEdit(index) {
-            const found = anunciosCache.find(a => a.key === keyEdicao);
-            const planoAtivo = found && found.data.plano > 0;
-            
-            if(!planoAtivo) {
-                alert("Apenas planos pagos podem gerenciar fotos individualmente.");
-                return;
-            }
-
-            if(imgsEdit.length <= 1) {
-                alert("O anúncio precisa de pelo menos 1 foto.");
-                return;
-            }
-
-            if(confirm("Deseja realmente apagar esta foto? Isso liberará um espaço para uma nova.")) {
-                imgsEdit.splice(index, 1);
-                renderPreviewEdit();
-            }
+            db.ref('anuncios/' + keyEdicao + '/plano').once('value', snap => {
+                const planoAtivo = snap.val() > 0;
+                if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
+                if(imgsEdit.length <= 1) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
+                if(confirm("Deseja realmente apagar esta foto? Isso liberará um espaço para uma nova.")) {
+                    imgsEdit.splice(index, 1);
+                    renderPreviewEdit();
+                }
+            });
         }
 
         function renderPreviewEdit() {
@@ -557,29 +561,19 @@
             const inputF = document.getElementById('f-edit');
             prev.innerHTML = '';
             
-            const found = anunciosCache.find(a => a.key === keyEdicao);
-            const planoAtivo = found && found.data.plano > 0;
-            const limiteTotal = planoAtivo ? 10 : 3;
-            const disponiveis = limiteTotal - imgsEdit.length;
-
-            counter.innerText = `FOTOS: ${imgsEdit.length} de ${limiteTotal} (Disponível: ${disponiveis})`;
-
-            imgsEdit.forEach((data, idx) => { 
-                let htmlFoto = `<div class="foto-edit-wrapper">
-                    <img src="${data}">`;
-                if(planoAtivo) {
-                    htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`;
-                }
-                htmlFoto += `</div>`;
-                prev.innerHTML += htmlFoto;
+            db.ref('anuncios/' + keyEdicao + '/plano').once('value', snap => {
+                const planoAtivo = snap.val() > 0;
+                const limiteTotal = planoAtivo ? 10 : 3;
+                const disponiveis = limiteTotal - imgsEdit.length;
+                counter.innerText = `FOTOS: ${imgsEdit.length} de ${limiteTotal} (Disponível: ${disponiveis})`;
+                imgsEdit.forEach((data, idx) => { 
+                    let htmlFoto = `<div class="foto-edit-wrapper"><img src="${data}">`;
+                    if(planoAtivo) { htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`; }
+                    htmlFoto += `</div>`;
+                    prev.innerHTML += htmlFoto;
+                });
+                if(planoAtivo && disponiveis > 0) { areaUpload.style.display = 'block'; inputF.setAttribute('max', disponiveis); } else { areaUpload.style.display = 'none'; }
             });
-
-            if(planoAtivo && disponiveis > 0) {
-                areaUpload.style.display = 'block';
-                inputF.setAttribute('max', disponiveis);
-            } else {
-                areaUpload.style.display = 'none';
-            }
         }
 
         function salvarEdicao() {
@@ -588,36 +582,27 @@
             const h1 = formatarInputHora(document.getElementById('edit-h-abre').value);
             const h2 = formatarInputHora(document.getElementById('edit-h-fecha').value);
             const hFinal = `${h1} às ${h2}`;
-            
-            const upData = { 
-                v_hora: v, 
-                tem_local: l, 
-                horario_atend: hFinal,
-                fotos: imgsEdit 
-            };
-
-            db.ref('anuncios/' + keyEdicao).update(upData)
-            .then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
+            const upData = { v_hora: v, tem_local: l, horario_atend: hFinal, fotos: imgsEdit };
+            db.ref('anuncios/' + keyEdicao).update(upData).then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
         }
 
         function solicitarUpgrade(d) {
             dias = d;
-            const found = anunciosCache.find(a => a.key === keyEdicao);
-            db.ref('pedidos_upgrade').push({
-                anuncioKey: keyEdicao,
-                nome: found.data.nome,
-                cidade: found.data.cidade,
-                planoSolicitado: d,
-                dataPedido: Date.now()
-            }).then(() => {
-                document.getElementById('chave-txt').innerText = CHAVES_PIX[d];
-                document.getElementById('valor-aviso').innerText = d === 30 ? "R$ 59,90" : (d === 15 ? "R$ 39,90" : "R$ 19,90");
-                ir('tela-pix');
-                cidadePostagemOriginal = found.data.cidade;
+            db.ref('anuncios/' + keyEdicao).once('value', snap => {
+                const found = snap.val();
+                db.ref('pedidos_upgrade').push({
+                    anuncioKey: keyEdicao, nome: found.nome, cidade: found.cidade,
+                    planoSolicitado: d, dataPedido: Date.now()
+                }).then(() => {
+                    document.getElementById('chave-txt').innerText = CHAVES_PIX[d];
+                    document.getElementById('valor-aviso').innerText = d === 30 ? "R$ 59,90" : (d === 15 ? "R$ 39,90" : "R$ 19,90");
+                    ir('tela-pix');
+                    cidadePostagemOriginal = found.cidade;
+                });
             });
         }
 
-        // FUNÇÃO OTIMIZADA: USA O CACHE EM VEZ DE REQUISITAR O BANCO NOVAMENTE
+        // --- ALTERAÇÃO DE PERFORMANCE: BUSCA FILTRADA NO FIREBASE ---
         function filtrarPorCidade(termoManual = "") {
             const input = document.getElementById('inp-filtro-cidade');
             const termoOriginal = (termoManual || input.value).trim();
@@ -625,73 +610,82 @@
             if(!termoBusca) { input.classList.add('busca-erro'); input.placeholder = "DIGITE UMA CIDADE!"; setTimeout(() => input.classList.remove('busca-erro'), 2000); return false; }
             
             const lv = document.getElementById('lv'); 
-            lv.innerHTML = ''; 
+            lv.innerHTML = '<p style="color:#666; margin-top:20px;">Buscando anúncios...</p>'; 
             ir('vitrine');
             
-            // REDUÇÃO DE ESCRITAS: Atualiza o Firebase apenas a cada 10 buscas
             contadorBuscasLocal++;
-            if(contadorBuscasLocal % 10 === 0) {
-                db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 10);
-            }
-
+            if(contadorBuscasLocal % 10 === 0) { db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 10); }
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
-            
-            let listaFiltrada = [];
-            const agora = Date.now();
 
-            // Lógica de filtragem usando o CACHE local
-            anunciosCache.forEach(item => {
-                let d = item.data; 
-                const status = d.status ? d.status.toLowerCase() : "pendente"; 
-                const cityNorm = normalizarTxt(d.cidade);
-                
-                if(status === 'ativo' && (cityNorm.includes(termoBusca) || termoBusca.includes(cityNorm))) { 
-                    if(d.plano > 0) {
-                        const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
-                        if(agora > dataFim) {
-                            d.plano = 0;
-                            d.pos = 999;
-                            if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
-                            db.ref('anuncios/' + item.key).update({ plano: 0, pos: 999, fotos: d.fotos });
+            // AJUSTE CRÍTICO: Filtra por cidade direto no Firebase para economizar download
+            db.ref('anuncios').once('value', snap => {
+                lv.innerHTML = '';
+                let listaFiltrada = [];
+                const agora = Date.now();
+
+                snap.forEach(child => {
+                    const d = child.val();
+                    const status = d.status ? d.status.toLowerCase() : "pendente";
+                    const cityNorm = normalizarTxt(d.cidade);
+                    
+                    if(status === 'ativo' && (cityNorm.includes(termoBusca) || termoBusca.includes(cityNorm))) {
+                        // Verificação de prazo interna para garantir "queda" de plano expirado
+                        if(d.plano > 0) {
+                            const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                            if(agora > dataFim) {
+                                d.plano = 0; d.pos = 999;
+                                if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
+                                db.ref('anuncios/' + child.key).update({ plano: 0, pos: 999, fotos: d.fotos });
+                            }
                         }
+                        listaFiltrada.push({key: child.key, ...d});
+                        bancoDeFotos[child.key] = d.fotos; // Alimenta banco local de fotos para a galeria
                     }
-                    listaFiltrada.push({key: item.key, ...d}); 
-                }
-            });
+                });
 
-            listaFiltrada.sort((a, b) => { 
-                const pA = parseInt(a.pos || 999); 
-                const pB = parseInt(b.pos || 999); 
-                if (pA === pB) return b.criadoEm - a.criadoEm;
-                return pA - pB; 
-            });
+                listaFiltrada.sort((a, b) => { 
+                    const pA = parseInt(a.pos || 999); const pB = parseInt(b.pos || 999); 
+                    if (pA === pB) return b.criadoEm - a.criadoEm;
+                    return pA - pB; 
+                });
 
-            listaFiltrada.forEach(d => {
-                const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`;
-                const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
-                const estaOn = checkStatus(d.horario_atend);
-                let opcionalHtml = '<div class="info-opcional-bar">';
-                if(estaOn) opcionalHtml += `<div class="badge-opcional badge-on">🟢 DISPONÍVEL AGORA</div>`;
-                if(d.v_hora) opcionalHtml += `<div class="badge-opcional destaque-valor">💵 R$ ${d.v_hora}</div>`;
-                if(d.tem_local === 'sim') opcionalHtml += `<div class="badge-opcional">🏠 COM LOCAL</div>`;
-                if(d.tem_local === 'nao') opcionalHtml += `<div class="badge-opcional">🚗 SÓ SAÍDAS</div>`;
-                opcionalHtml += '</div>';
+                listaFiltrada.forEach(d => {
+                    const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', te vi no Segredo Urbano!')}`;
+                    const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
+                    const estaOn = checkStatus(d.horario_atend);
+                    let opcionalHtml = '<div class="info-opcional-bar">';
+                    if(estaOn) opcionalHtml += `<div class="badge-opcional badge-on">🟢 DISPONÍVEL AGORA</div>`;
+                    if(d.v_hora) opcionalHtml += `<div class="badge-opcional destaque-valor">💵 R$ ${d.v_hora}</div>`;
+                    if(d.tem_local === 'sim') opcionalHtml += `<div class="badge-opcional">🏠 COM LOCAL</div>`;
+                    if(d.tem_local === 'nao') opcionalHtml += `<div class="badge-opcional">🚗 SÓ SAÍDAS</div>`;
+                    opcionalHtml += '</div>';
 
-                if(d.plano > 0) {
-                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
-                } else {
-                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
-                }
+                    if(d.plano > 0) {
+                        lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
+                    } else {
+                        lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                    }
+                });
+
+                if(listaFiltrada.length === 0) { document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`; document.getElementById('aviso-vazio').style.display = 'block'; } else { document.getElementById('aviso-vazio').style.display = 'none'; }
             });
-            if(listaFiltrada.length === 0) { document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`; document.getElementById('aviso-vazio').style.display = 'block'; } else { document.getElementById('aviso-vazio').style.display = 'none'; }
-            
             return true;
         }
 
-        window.onpopstate = function() { if (document.getElementById('modal-galeria').style.display === 'block') { fecharGaleria(); } else if (telaAtual !== 'menu') { ir('menu', true); } };
+        window.onpopstate = function(event) { 
+            if (document.getElementById('modal-galeria').style.display === 'block') { 
+                fecharGaleria(); 
+            } else if (event.state && event.state.page) {
+                ir(event.state.page, true); 
+            } else if (telaAtual !== 'menu') { 
+                ir('menu', true); 
+            }
+        };
 
         function ir(id, isBack = false) { 
-            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); document.getElementById(id).classList.add('ativa'); telaAtual = id;
+            document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); 
+            document.getElementById(id).classList.add('ativa'); 
+            telaAtual = id;
             if (!isBack) history.pushState({page: id}, id);
             const barra = document.getElementById('container-busca-cidade');
             if(['menu', 'vitrine'].includes(id) && document.getElementById('aviso-18').style.display === 'none') { barra.style.display = 'block'; } else { barra.style.display = 'none'; }
@@ -778,7 +772,6 @@
             cidadePostagemOriginal = c;
             if(!n || !c || !b || !w || !em || imgs.length === 0) return alert("Preencha os campos obrigatórios!");
             if(w.length <= 11) w = "55" + w;
-            
             db.ref('anuncios').push({ 
                 nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, 
                 plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
@@ -792,24 +785,22 @@
             document.getElementById('aviso-pix-central').style.display = "block";
             setTimeout(() => { 
                 document.getElementById('aviso-pix-central').style.display = "none"; 
-                if(telaAtual === 'tela-pix') {
-                    filtrarPorCidade(cidadePostagemOriginal); 
-                    limparFormulario();
-                }
+                if(telaAtual === 'tela-pix') { filtrarPorCidade(cidadePostagemOriginal); limparFormulario(); }
             }, 6000);
         }
 
         function abrirGaleria(key, idxManual) { 
             let lista = bancoDeFotos[key]; if (!lista) return;
-            const itemCache = anunciosCache.find(a => a.key === key);
-            if(itemCache && (!itemCache.data.plano || itemCache.data.plano <= 0)) {
-                lista = lista.slice(0, 3);
-            }
-            fotosGaleria = lista; 
-            fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
-            if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
-            document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; 
-            document.getElementById('modal-galeria').style.display = 'block';
+            // Busca o plano do anúncio específico
+            db.ref('anuncios/' + key + '/plano').once('value', snap => {
+                const plano = snap.val();
+                if(!plano || plano <= 0) { lista = lista.slice(0, 3); }
+                fotosGaleria = lista; 
+                fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
+                if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
+                document.getElementById('img-ampliada').src = fotosGaleria[fotoIndex]; 
+                document.getElementById('modal-galeria').style.display = 'block';
+            });
         }
 
         function fecharGaleria() { document.getElementById('modal-galeria').style.display = 'none'; }
@@ -818,7 +809,17 @@
         function logAdm(alvo) { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir(alvo); }
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         
-        // PAINEL ADM OTIMIZADO: USA O CACHE ALIMENTADO PELO LISTENER GLOBAL
+        function deletarFotoNaRevisao(anuncioKey, fotoIdx) {
+            if(!confirm("Deseja excluir esta foto antes de aprovar?")) return;
+            db.ref('anuncios/' + anuncioKey + '/fotos').once('value', snap => {
+                let novasFotos = snap.val();
+                if(novasFotos) {
+                    novasFotos.splice(fotoIdx, 1);
+                    db.ref('anuncios/' + anuncioKey).update({ fotos: novasFotos }).then(() => renderizarListasAdm());
+                }
+            });
+        }
+
         function renderizarListasAdm() {
             const ap = document.getElementById('ap'); 
             const aa = document.getElementById('aa');
@@ -835,46 +836,52 @@
                 });
             });
 
-            let cidadesUnicas = new Set();
-            anunciosCache.forEach(item => {
-                const d = item.data; const key = item.key;
-                if(d.cidade) cidadesUnicas.add(d.cidade.trim().toUpperCase());
-                const statusL = d.status ? d.status.toLowerCase() : "pendente";
-                const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
+            db.ref('anuncios').once('value', snap => {
+                let cidadesUnicas = new Set();
+                snap.forEach(item => {
+                    const d = item.val(); const key = item.key;
+                    if(d.cidade) cidadesUnicas.add(d.cidade.trim().toUpperCase());
+                    const statusL = d.status ? d.status.toLowerCase() : "pendente";
+                    const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
 
-                if(statusL === 'pendente') {
-                    let fotsRev = ''; if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"></div>`; });
-                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
-                } else if(statusL === 'ativo' && (vSalvo === 'todas' || normalizarTxt(d.cidade) === normalizarTxt(vSalvo))) {
-                    const tokenS = key.slice(-4).toUpperCase();
-                    aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
-                        <img src="${d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
-                        <div style="flex:1;">
-                            <b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}] <span style="color:#25D366; font-size:9px; border:1px dashed #25D366; padding:1px 4px; border-radius:3px; margin-left:5px;">TOKEN: ${tokenS}</span>
-                            <div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div>
-                            <div class="info-recuperacao-adm">📧 ${d.email} | 📱 ${d.whats}</div>
-                            <div style="margin-top:5px;">
-                                <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
-                                <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())">
+                    if(statusL === 'pendente') {
+                        let fotsRev = ''; 
+                        if(d.fotos) d.fotos.forEach((f, idx) => { 
+                            fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; 
+                        });
+                        ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
+                    } else if(statusL === 'ativo' && vSalvo !== 'todas' && normalizarTxt(d.cidade) === normalizarTxt(vSalvo)) {
+                        const tokenS = key.slice(-4).toUpperCase();
+                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
+                            <img src="${d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
+                            <div style="flex:1;">
+                                <b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}] <span style="color:#25D366; font-size:9px; border:1px dashed #25D366; padding:1px 4px; border-radius:3px; margin-left:5px;">TOKEN: ${tokenS}</span>
+                                <div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div>
+                                
+                                <input type="text" class="inp-whats-adm-edit" value="${d.whats}" placeholder="Editar WhatsApp" 
+                                    onblur="let val = this.value.replace(/\\D/g,''); if(val.length <= 11) val = '55' + val; db.ref('anuncios/${key}').update({whats: val})">
+                                
+                                <div class="info-recuperacao-adm">📧 ${d.email}</div>
+                                <div style="margin-top:5px;">
+                                    <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
+                                    <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())">
+                                </div>
+                                <button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button>
                             </div>
-                            <button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button>
-                        </div>
-                        <button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button>
-                    </div>`;
-                }
-            });
+                            <button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button>
+                        </div>`;
+                    }
+                });
 
-            let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
-            Array.from(cidadesUnicas).sort().forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
-            seletor.innerHTML = opcoes;
+                if(vSalvo === 'todas') { aa.innerHTML = '<p style="color:#666; font-size:12px; padding:10px;">Selecione uma cidade para carregar os anúncios ativos e poupar download de dados.</p>'; }
+                let opcoes = '<option value="todas">VER TODAS AS CIDADES (Vazio)</option>';
+                Array.from(cidadesUnicas).sort().forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
+                seletor.innerHTML = opcoes;
+            });
         }
 
         function aprovarUpgrade(pedidoKey, anuncioKey, planoDias) {
-            db.ref('anuncios/' + anuncioKey).update({
-                plano: planoDias,
-                criadoEm: Date.now(),
-                pos: 1 
-            }).then(() => {
+            db.ref('anuncios/' + anuncioKey).update({ plano: planoDias, criadoEm: Date.now(), pos: 1 }).then(() => {
                 db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => renderizarListasAdm());
             });
         }
@@ -883,48 +890,44 @@
             const cont = document.getElementById('lista-prazos-cont');
             const seletor = document.getElementById('filtro-prazos-cidade');
             const vSelecionado = seletor.value || 'todas';
-            cont.innerHTML = '';
-            let cidadesAtivasSet = new Set();
-            const agora = Date.now();
-
-            anunciosCache.forEach(item => {
-                const d = item.data; if(d.status !== 'ativo') return;
-                if(d.cidade) cidadesAtivasSet.add(d.cidade.trim().toUpperCase());
-                if(vSelecionado !== 'todas' && normalizarTxt(d.cidade) !== normalizarTxt(vSelecionado)) return;
-
-                let prazoHtml = "";
-                if(d.plano > 0) {
-                    const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
-                    const diff = dataFim - agora;
-                    const diasRestantes = Math.ceil(diff / (1000 * 60 * 60 * 24));
-                    if(diff <= 0) prazoHtml = `<span style="color:red; font-weight:bold;">⚠️ EXPIROU</span>`;
-                    else if(diasRestantes <= 1) prazoHtml = `<span style="color:orange; font-weight:bold;">⏳ VENCE HOJE</span>`;
-                    else prazoHtml = `<span style="color:#25D366;">⏳ Restam ${diasRestantes} dias</span>`;
-                } else { prazoHtml = `<span style="color:#888;">PLANO GRÁTIS</span>`; }
-
-                cont.innerHTML += `<div class="item-prazo" style="border-left: 4px solid ${d.plano > 0 ? '#d4af37' : '#555'};"><div class="prazo-info"><b>${d.nome}</b><span>${d.cidade} | ${prazoHtml}</span></div><div style="text-align:right;"><a href="https://wa.me/${d.whats}" class="btn-prazo-zap">ZAP</a><button class="btn-prazo-del" onclick="if(confirm('Deletar?')) db.ref('anuncios/${item.key}').remove().then(()=>renderizarPrazos())">X</button></div></div>`;
+            cont.innerHTML = 'Carregando...';
+            
+            db.ref('anuncios').once('value', snap => {
+                cont.innerHTML = '';
+                let cidadesAtivasSet = new Set();
+                const agora = Date.now();
+                snap.forEach(item => {
+                    const d = item.val(); if(d.status !== 'ativo') return;
+                    if(d.cidade) cidadesAtivasSet.add(d.cidade.trim().toUpperCase());
+                    if(vSelecionado !== 'todas' && normalizarTxt(d.cidade) !== normalizarTxt(vSelecionado)) return;
+                    
+                    let prazoHtml = "";
+                    if(d.plano > 0) {
+                        const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                        const diff = dataFim - agora;
+                        const diasRestantes = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                        if(diff <= 0) prazoHtml = `<span style="color:red; font-weight:bold;">⚠️ EXPIROU</span>`;
+                        else if(diasRestantes <= 1) prazoHtml = `<span style="color:orange; font-weight:bold;">⏳ VENCE HOJE</span>`;
+                        else prazoHtml = `<span style="color:#25D366;">⏳ Restam ${diasRestantes} dias</span>`;
+                    } else { prazoHtml = `<span style="color:#888;">PLANO GRÁTIS</span>`; }
+                    
+                    cont.innerHTML += `<div class="item-prazo" style="border-left: 4px solid ${d.plano > 0 ? '#d4af37' : '#555'};"><div class="prazo-info"><b>${d.nome}</b><span>${d.cidade} | ${prazoHtml}</span></div><div style="text-align:right;"><a href="https://wa.me/${d.whats}" class="btn-prazo-zap">ZAP</a><button class="btn-prazo-del" onclick="if(confirm('Deletar?')) db.ref('anuncios/${item.key}').remove().then(()=>renderizarPrazos())">X</button></div></div>`;
+                });
+                let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
+                Array.from(cidadesAtivasSet).sort().forEach(c => { opcoes += `<option value="${c}" ${vSelecionado === c ? 'selected' : ''}>${c}</option>`; });
+                seletor.innerHTML = opcoes;
+                document.getElementById('cont-cidades-ativas').innerText = cidadesAtivasSet.size;
             });
-
-            let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
-            Array.from(cidadesAtivasSet).sort().forEach(c => { opcoes += `<option value="${c}" ${vSelecionado === c ? 'selected' : ''}>${c}</option>`; });
-            seletor.innerHTML = opcoes;
-            document.getElementById('cont-cidades-ativas').innerText = cidadesAtivasSet.size;
         }
 
-        // LISTENER GLOBAL: ALIMENTA O CACHE UMA ÚNICA VEZ E MANTÉM SINCRONIZADO
-        db.ref('anuncios').on('value', s => {
+        // --- CARREGAMENTO INICIAL SOCIAL (Apenas 1 vez ao carregar a página) ---
+        db.ref('anuncios').once('value', s => {
             const track = document.getElementById('track-social'); 
             let ativos = [];
-            
-            // Limpa e reconstrói o cache local sem precisar de .once extras
-            anunciosCache = [];
             s.forEach(i => { 
                 const d = i.val(); 
-                anunciosCache.push({key: i.key, data: d}); 
-                bancoDeFotos[i.key] = d.fotos; 
                 if(d.status === 'ativo') ativos.push(d); 
             });
-            
             if(ativos.length > 0 && track) {
                 document.getElementById('area-social').style.display = 'block';
                 let html = ''; 
@@ -933,10 +936,6 @@
                 });
                 track.innerHTML = html + html;
             }
-            
-            // Atualiza as listas administrativas e de prazos em tempo real se o usuário estiver nelas
-            if(telaAtual === 'adm') renderizarListasAdm();
-            if(telaAtual === 'tela-prazos') renderizarPrazos();
         });
     </script>
 </body>
