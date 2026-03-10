@@ -357,7 +357,10 @@
         let imgs = []; let imgsEdit = []; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
         let bancoDeFotos = {}; let sliderIndices = {}; 
         let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
-        let contadorBuscasLocal = 0;
+        
+        // --- MODIFICAÇÃO: CONTADOR DE BUSCAS POR LOTE (50) ---
+        let contadorBuscasAcumuladas = 0;
+        let inatividadeTimer;
 
         const CHAVES_PIX = {
             30: "00020126330014BR.GOV.BCB.PIX011100732941016520400005303986540559.905802BR5925EVERTON DE SOUZA FIGUEIRE6009SAO PAULO622605227djk5SnxUJ7kEYHCkck3Gr63049E8C",
@@ -367,11 +370,26 @@
 
         const normalizarTxt = (txt) => txt ? txt.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") : "";
 
+        // --- MODIFICAÇÃO: DESCONEXÃO POR INATIVIDADE (2 MINUTOS) ---
+        function resetarTimerInatividade() {
+            clearTimeout(inatividadeTimer);
+            // Se o Firebase estivesse desconectado, ele reconecta automaticamente ao fazer uma nova requisição
+            inatividadeTimer = setTimeout(() => {
+                console.log("Desconectando Firebase por inatividade...");
+                firebase.database().goOffline();
+            }, 120000); // 2 minutos
+            firebase.database().goOnline();
+        }
+
+        document.addEventListener('mousemove', resetarTimerInatividade);
+        document.addEventListener('keypress', resetarTimerInatividade);
+        document.addEventListener('scroll', resetarTimerInatividade);
+        document.addEventListener('touchstart', resetarTimerInatividade);
+        resetarTimerInatividade();
+
         function abrirListaCidades() {
             const container = document.getElementById('lista-todas-cidades');
             container.innerHTML = '';
-            
-            // BUSCA OTIMIZADA: Carrega apenas nomes de cidades dos anúncios ativos sem baixar todas as fotos
             db.ref('anuncios').once('value', snap => {
                 let cidadesSet = new Set();
                 snap.forEach(child => {
@@ -468,7 +486,6 @@
             if(!emailBusca || !whatsBusca) { alert("Por favor, preencha o E-mail e o WhatsApp cadastrados."); return; }
             if(whatsBusca.length === 11) whatsBusca = "55" + whatsBusca;
             
-            // BUSCA PONTUAL PARA EDIÇÃO: Não carrega todo o banco
             db.ref('anuncios').once('value', snap => {
                 let found = null;
                 snap.forEach(child => {
@@ -505,7 +522,6 @@
         async function loadFilesEdit() {
             const input = document.getElementById('f-edit');
             const files = Array.from(input.files);
-            // Busca dados do anúncio atual para checar limite
             db.ref('anuncios/' + keyEdicao).once('value', snap => {
                 const data = snap.val();
                 const planoAtivo = data && data.plano > 0;
@@ -602,7 +618,6 @@
             });
         }
 
-        // --- ALTERAÇÃO DE PERFORMANCE: BUSCA FILTRADA NO FIREBASE ---
         function filtrarPorCidade(termoManual = "") {
             const input = document.getElementById('inp-filtro-cidade');
             const termoOriginal = (termoManual || input.value).trim();
@@ -613,11 +628,15 @@
             lv.innerHTML = '<p style="color:#666; margin-top:20px;">Buscando anúncios...</p>'; 
             ir('vitrine');
             
-            contadorBuscasLocal++;
-            if(contadorBuscasLocal % 10 === 0) { db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 10); }
+            // --- MODIFICAÇÃO: CONTADOR DE BUSCAS POR LOTE (50) ---
+            contadorBuscasAcumuladas++;
+            if(contadorBuscasAcumuladas >= 50) { 
+                db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 50); 
+                contadorBuscasAcumuladas = 0;
+            }
+
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
 
-            // AJUSTE CRÍTICO: Filtra por cidade direto no Firebase para economizar download
             db.ref('anuncios').once('value', snap => {
                 lv.innerHTML = '';
                 let listaFiltrada = [];
@@ -629,7 +648,6 @@
                     const cityNorm = normalizarTxt(d.cidade);
                     
                     if(status === 'ativo' && (cityNorm.includes(termoBusca) || termoBusca.includes(cityNorm))) {
-                        // Verificação de prazo interna para garantir "queda" de plano expirado
                         if(d.plano > 0) {
                             const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
                             if(agora > dataFim) {
@@ -639,7 +657,7 @@
                             }
                         }
                         listaFiltrada.push({key: child.key, ...d});
-                        bancoDeFotos[child.key] = d.fotos; // Alimenta banco local de fotos para a galeria
+                        bancoDeFotos[child.key] = d.fotos;
                     }
                 });
 
@@ -791,7 +809,6 @@
 
         function abrirGaleria(key, idxManual) { 
             let lista = bancoDeFotos[key]; if (!lista) return;
-            // Busca o plano do anúncio específico
             db.ref('anuncios/' + key + '/plano').once('value', snap => {
                 const plano = snap.val();
                 if(!plano || plano <= 0) { lista = lista.slice(0, 3); }
@@ -920,20 +937,25 @@
             });
         }
 
-        // --- CARREGAMENTO INICIAL SOCIAL (Apenas 1 vez ao carregar a página) ---
+        // --- MODIFICAÇÃO: CARREGAMENTO INICIAL SOCIAL (10 ALEATÓRIOS FIXOS NA SESSÃO) ---
         db.ref('anuncios').once('value', s => {
             const track = document.getElementById('track-social'); 
             let ativos = [];
             s.forEach(i => { 
                 const d = i.val(); 
-                if(d.status === 'ativo') ativos.push(d); 
+                // Baixa apenas foto e cidade
+                if(d.status === 'ativo') {
+                    ativos.push({ foto: d.fotos[0], cidade: d.cidade });
+                }
             });
             if(ativos.length > 0 && track) {
                 document.getElementById('area-social').style.display = 'block';
                 let html = ''; 
-                ativos.sort(() => Math.random() - 0.5).slice(0, 15).forEach(m => { 
-                    html += `<div class="item-social"><img src="${m.fotos[0]}" loading="lazy"><span>${m.cidade}</span></div>`; 
+                // Sorteia 10 e mantém fixo na sessão
+                ativos.sort(() => Math.random() - 0.5).slice(0, 10).forEach(m => { 
+                    html += `<div class="item-social"><img src="${m.foto}" loading="lazy"><span>${m.cidade}</span></div>`; 
                 });
+                // Duplica para o efeito de scroll infinito visual
                 track.innerHTML = html + html;
             }
         });
