@@ -140,6 +140,11 @@
         #slot-counter { font-size: 11px; color: gold; font-weight: bold; margin-bottom: 10px; display: block; }
 
         .inp-whats-adm-edit { width: 95% !important; background: #111 !important; border: 1px solid #2ecc71 !important; color: #2ecc71 !important; padding: 6px !important; font-size: 12px !important; border-radius: 4px !important; margin-top: 5px !important; font-weight: bold !important; text-align: center !important; }
+        
+        /* NOVOS ESTILOS PARA TROCA DE NÚMERO */
+        .alerta-troca-tel { background: #1a1a00; border: 1px solid gold; padding: 12px; border-radius: 8px; margin: 15px 0; text-align: left; }
+        .alerta-troca-tel p { font-size: 11px; color: #fff; margin: 0 0 8px; line-height: 1.4; }
+        .alerta-troca-tel b { color: gold; }
     </style>
 </head>
 <body>
@@ -241,6 +246,14 @@
             <div class="identificacao-modelo" id="info-modelo-edit"></div>
             
             <button class="btn btn-upgrade" id="btn-solicitar-upgrade" onclick="ir('planos-upgrade')">FAZER UPGRADE DE PLANO 🚀</button>
+            
+            <div class="alerta-troca-tel">
+                <p>Precisa trocar seu WhatsApp ou Telefone? <b>Custo: R$ 19,90.</b></p>
+                <p>🎁 Você ganha <b>+7 dias de destaque</b> ao realizar a troca.</p>
+                <input type="tel" id="novo-whats-edit" placeholder="Novo WhatsApp (DDD + Número)" autocomplete="tel-national" inputmode="numeric" maxlength="15">
+                <button class="btn btn-whats" style="margin-top:10px; font-size:12px;" onclick="solicitarTrocaTel()">SOLICITAR TROCA DE WHATSAPP</button>
+            </div>
+
             <hr style="border-color:#222; margin: 20px 0;">
 
             <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">VALOR POR HORA:</p>
@@ -340,6 +353,10 @@
             <option value="todas">VER TODAS AS CIDADES (Vazio)</option>
         </select>
 
+        <h4 style="text-align:left; color:#25D366;">🔄 PEDIDOS DE TROCA DE NÚMERO:</h4>
+        <div id="lista-troca-tel"></div>
+        <hr style="border-color:#333;">
+
         <h4 style="text-align:left; color:gold;">🚀 PEDIDOS DE UPGRADE:</h4>
         <div id="lista-upgrades"></div>
         <hr style="border-color:#333;">
@@ -358,9 +375,8 @@
         let bancoDeFotos = {}; let sliderIndices = {}; 
         let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
         
-        // --- MODIFICAÇÃO: CONTADOR DE BUSCAS POR LOTE (50) ---
-        let contadorBuscasAcumuladas = 0;
-        let inatividadeTimer;
+        let contadorBuscasAcumuladas = 0; // Buffer de métricas
+        let inatividadeTimer; // Timer para goOffline
 
         const CHAVES_PIX = {
             30: "00020126330014BR.GOV.BCB.PIX011100732941016520400005303986540559.905802BR5925EVERTON DE SOUZA FIGUEIRE6009SAO PAULO622605227djk5SnxUJ7kEYHCkck3Gr63049E8C",
@@ -370,12 +386,10 @@
 
         const normalizarTxt = (txt) => txt ? txt.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") : "";
 
-        // --- MODIFICAÇÃO: DESCONEXÃO POR INATIVIDADE (2 MINUTOS) ---
+        // MELHORIA 1: DESCONEXÃO AUTOMÁTICA
         function resetarTimerInatividade() {
             clearTimeout(inatividadeTimer);
-            // Se o Firebase estivesse desconectado, ele reconecta automaticamente ao fazer uma nova requisição
             inatividadeTimer = setTimeout(() => {
-                console.log("Desconectando Firebase por inatividade...");
                 firebase.database().goOffline();
             }, 120000); // 2 minutos
             firebase.database().goOnline();
@@ -439,6 +453,7 @@
 
         aplicarMascaraTelefone(document.getElementById('whats-busca-edit'));
         aplicarMascaraTelefone(document.getElementById('w'));
+        aplicarMascaraTelefone(document.getElementById('novo-whats-edit'));
 
         function formatarInputHora(valor) {
             let n = valor.toString().toLowerCase().replace(/[^0-9]/g, '');
@@ -499,6 +514,7 @@
 
                 if(found) {
                     keyEdicao = found.key;
+                    cidadePostagemOriginal = found.data.cidade; 
                     const tokenS = found.key.slice(-4).toUpperCase();
                     document.getElementById('token-anunciante-edit').innerText = tokenS;
                     const infoDiv = document.getElementById('info-modelo-edit');
@@ -519,20 +535,18 @@
             });
         }
 
+        // MELHORIA 5: COMPRESSÃO EM EDIÇÃO
         async function loadFilesEdit() {
             const input = document.getElementById('f-edit');
             const files = Array.from(input.files);
-            db.ref('anuncios/' + keyEdicao).once('value', snap => {
+            db.ref('anuncios/' + keyEdicao).once('value', async snap => {
                 const data = snap.val();
                 const planoAtivo = data && data.plano > 0;
                 const limiteTotal = planoAtivo ? 10 : 3;
                 const slotsLivres = limiteTotal - imgsEdit.length;
                 if (files.length > slotsLivres) { alert(`Você só tem ${slotsLivres} slot(s) disponível(is).`); input.value = ''; return; }
-                processarArquivos(files);
-            });
-
-            async function processarArquivos(lista) {
-                const promises = lista.map(f => {
+                
+                const promises = files.map(f => {
                     return new Promise((resolve) => {
                         const r = new FileReader();
                         r.onload = (e) => {
@@ -555,7 +569,7 @@
                 imgsEdit = [...imgsEdit, ...novasFotos];
                 input.value = '';
                 renderPreviewEdit();
-            }
+            });
         }
 
         function deletarFotoEdit(index) {
@@ -588,7 +602,7 @@
                     htmlFoto += `</div>`;
                     prev.innerHTML += htmlFoto;
                 });
-                if(planoAtivo && disponiveis > 0) { areaUpload.style.display = 'block'; inputF.setAttribute('max', disponiveis); } else { areaUpload.style.display = 'none'; }
+                if(planoAtivo && disponiveis > 0) { areaUpload.style.display = 'block'; } else { areaUpload.style.display = 'none'; }
             });
         }
 
@@ -613,7 +627,29 @@
                     document.getElementById('chave-txt').innerText = CHAVES_PIX[d];
                     document.getElementById('valor-aviso').innerText = d === 30 ? "R$ 59,90" : (d === 15 ? "R$ 39,90" : "R$ 19,90");
                     ir('tela-pix');
-                    cidadePostagemOriginal = found.cidade;
+                });
+            });
+        }
+
+        function solicitarTrocaTel() {
+            let novoW = document.getElementById('novo-whats-edit').value.replace(/\D/g, '');
+            if(novoW.length < 10) return alert("Informe o novo número completo com DDD.");
+            if(novoW.length === 11) novoW = "55" + novoW;
+
+            db.ref('anuncios/' + keyEdicao).once('value', snap => {
+                const found = snap.val();
+                db.ref('pedidos_troca_tel').push({
+                    anuncioKey: keyEdicao, 
+                    nome: found.nome, 
+                    cidade: found.cidade,
+                    numeroAtual: found.whats,
+                    numeroNovo: novoW,
+                    dataPedido: Date.now()
+                }).then(() => {
+                    dias = 7; 
+                    document.getElementById('chave-txt').innerText = CHAVES_PIX[7];
+                    document.getElementById('valor-aviso').innerText = "R$ 19,90";
+                    ir('tela-pix');
                 });
             });
         }
@@ -628,7 +664,7 @@
             lv.innerHTML = '<p style="color:#666; margin-top:20px;">Buscando anúncios...</p>'; 
             ir('vitrine');
             
-            // --- MODIFICAÇÃO: CONTADOR DE BUSCAS POR LOTE (50) ---
+            // MELHORIA 2: MÉTRICAS EM LOTE (BUFFER 50)
             contadorBuscasAcumuladas++;
             if(contadorBuscasAcumuladas >= 50) { 
                 db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 50); 
@@ -637,6 +673,7 @@
 
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
 
+            // MELHORIA 6: USO DE ONCE
             db.ref('anuncios').once('value', snap => {
                 lv.innerHTML = '';
                 let listaFiltrada = [];
@@ -717,7 +754,9 @@
         }
 
         function trackZap(key) { db.ref('anuncios/' + key + '/cliquesZap').transaction((atual) => (atual || 0) + 1); }
-        db.ref('cliques_vitrine').on('value', s => { if(document.getElementById('display-cliques')) document.getElementById('display-cliques').innerText = s.val() || 0; });
+        
+        // MELHORIA 6: ONCE PARA MÉTRICAS INICIAIS
+        db.ref('cliques_vitrine').once('value', s => { if(document.getElementById('display-cliques')) document.getElementById('display-cliques').innerText = s.val() || 0; });
 
         function trocarFotoCard(key, dir) {
             const fotos = bancoDeFotos[key]; if (!fotos) return;
@@ -739,6 +778,7 @@
             ir('cad'); 
         }
 
+        // MELHORIA 5: COMPRESSÃO WEBP NO UPLOAD (CADASTRO)
         async function loadFiles() {
             const input = document.getElementById('f');
             const files = Array.from(input.files);
@@ -751,12 +791,12 @@
                         const img = new Image();
                         img.onload = () => {
                             const cv = document.createElement('canvas');
-                            const maxW = 800;
+                            const maxW = 800; // 800px de largura
                             const scale = maxW / img.width;
                             cv.width = maxW;
                             cv.height = img.height * scale;
                             cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-                            resolve(cv.toDataURL('image/webp', 0.8));
+                            resolve(cv.toDataURL('image/webp', 0.8)); // 80% qualidade
                         };
                         img.src = e.target.result;
                     };
@@ -803,7 +843,10 @@
             document.getElementById('aviso-pix-central').style.display = "block";
             setTimeout(() => { 
                 document.getElementById('aviso-pix-central').style.display = "none"; 
-                if(telaAtual === 'tela-pix') { filtrarPorCidade(cidadePostagemOriginal); limparFormulario(); }
+                if(telaAtual === 'tela-pix' && cidadePostagemOriginal) { 
+                    filtrarPorCidade(cidadePostagemOriginal); 
+                    limparFormulario(); 
+                }
             }, 6000);
         }
 
@@ -841,10 +884,19 @@
             const ap = document.getElementById('ap'); 
             const aa = document.getElementById('aa');
             const upList = document.getElementById('lista-upgrades');
+            const trList = document.getElementById('lista-troca-tel');
             const seletor = document.getElementById('filtro-adm-cidade'); 
             const vSalvo = seletor.value || 'todas'; 
             
-            ap.innerHTML = ''; aa.innerHTML = ''; upList.innerHTML = '';
+            ap.innerHTML = ''; aa.innerHTML = ''; upList.innerHTML = ''; trList.innerHTML = '';
+
+            // MELHORIA 6: ONCE EM TODAS AS LISTAGENS
+            db.ref('pedidos_troca_tel').once('value', snap => {
+                snap.forEach(ped => {
+                    const p = ped.val();
+                    trList.innerHTML += `<div class="item-adm" style="border-left: 5px solid #25D366;"><b>${p.nome}</b> (${p.cidade})<br>Número Atual: ${p.numeroAtual}<br>Solicitou mudar para: <b>${p.numeroNovo}</b><div style="margin-top:10px;"><button onclick="aprovarTrocaTel('${ped.key}', '${p.anuncioKey}', '${p.numeroNovo}')" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR E DAR 7 DIAS</button> <button onclick="db.ref('pedidos_troca_tel/${ped.key}').remove().then(()=>renderizarListasAdm())" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
+                });
+            });
 
             db.ref('pedidos_upgrade').once('value', snap => {
                 snap.forEach(ped => {
@@ -868,16 +920,15 @@
                         });
                         ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
                     } else if(statusL === 'ativo' && vSalvo !== 'todas' && normalizarTxt(d.cidade) === normalizarTxt(vSalvo)) {
+                        // MELHORIA 3: LAZY LOAD - DADOS SÓ BAIXAM SE CIDADE FOR SELECIONADA
                         const tokenS = key.slice(-4).toUpperCase();
                         aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:center; gap:10px;">
                             <img src="${d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
                             <div style="flex:1;">
                                 <b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}] <span style="color:#25D366; font-size:9px; border:1px dashed #25D366; padding:1px 4px; border-radius:3px; margin-left:5px;">TOKEN: ${tokenS}</span>
                                 <div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div>
-                                
                                 <input type="text" class="inp-whats-adm-edit" value="${d.whats}" placeholder="Editar WhatsApp" 
                                     onblur="let val = this.value.replace(/\\D/g,''); if(val.length <= 11) val = '55' + val; db.ref('anuncios/${key}').update({whats: val})">
-                                
                                 <div class="info-recuperacao-adm">📧 ${d.email}</div>
                                 <div style="margin-top:5px;">
                                     <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
@@ -890,7 +941,7 @@
                     }
                 });
 
-                if(vSalvo === 'todas') { aa.innerHTML = '<p style="color:#666; font-size:12px; padding:10px;">Selecione uma cidade para carregar os anúncios ativos e poupar download de dados.</p>'; }
+                if(vSalvo === 'todas') { aa.innerHTML = '<p style="color:#666; font-size:12px; padding:10px;">Selecione uma cidade no filtro para carregar os anúncios ativos.</p>'; }
                 let opcoes = '<option value="todas">VER TODAS AS CIDADES (Vazio)</option>';
                 Array.from(cidadesUnicas).sort().forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
                 seletor.innerHTML = opcoes;
@@ -900,6 +951,17 @@
         function aprovarUpgrade(pedidoKey, anuncioKey, planoDias) {
             db.ref('anuncios/' + anuncioKey).update({ plano: planoDias, criadoEm: Date.now(), pos: 1 }).then(() => {
                 db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => renderizarListasAdm());
+            });
+        }
+
+        function aprovarTrocaTel(pedidoKey, anuncioKey, novoNumero) {
+            db.ref('anuncios/' + anuncioKey).update({ 
+                whats: novoNumero,
+                plano: 7, 
+                criadoEm: Date.now(), 
+                pos: 1 
+            }).then(() => {
+                db.ref('pedidos_troca_tel/' + pedidoKey).remove().then(() => renderizarListasAdm());
             });
         }
 
@@ -937,13 +999,12 @@
             });
         }
 
-        // --- MODIFICAÇÃO: CARREGAMENTO INICIAL SOCIAL (10 ALEATÓRIOS FIXOS NA SESSÃO) ---
+        // MELHORIA 4: FIXAÇÃO DA VITRINE SOCIAL (SESSÃO ÚNICA)
         db.ref('anuncios').once('value', s => {
             const track = document.getElementById('track-social'); 
             let ativos = [];
             s.forEach(i => { 
                 const d = i.val(); 
-                // Baixa apenas foto e cidade
                 if(d.status === 'ativo') {
                     ativos.push({ foto: d.fotos[0], cidade: d.cidade });
                 }
@@ -951,11 +1012,10 @@
             if(ativos.length > 0 && track) {
                 document.getElementById('area-social').style.display = 'block';
                 let html = ''; 
-                // Sorteia 10 e mantém fixo na sessão
+                // Seleciona 10 e fixa
                 ativos.sort(() => Math.random() - 0.5).slice(0, 10).forEach(m => { 
                     html += `<div class="item-social"><img src="${m.foto}" loading="lazy"><span>${m.cidade}</span></div>`; 
                 });
-                // Duplica para o efeito de scroll infinito visual
                 track.innerHTML = html + html;
             }
         });
