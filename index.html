@@ -658,7 +658,7 @@
         function deletarFotoEdit(index) {
             db.ref('anuncios/' + keyEdicao + '/plano').once('value', snap => {
                 const planoAtivo = snap.val() > 0;
-                if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
+                if(!planoAtivo) { alert("Apenas planos planos pagos podem gerenciar fotos individualmente."); return; }
                 if(imgsEdit.length <= 1) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
                 if(confirm("Deseja realmente apagar esta foto? Isso liberará um espaço para uma nova.")) {
                     imgsEdit.splice(index, 1);
