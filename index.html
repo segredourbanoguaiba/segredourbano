@@ -164,7 +164,7 @@
 
         .inp-whats-adm-edit { width: 95% !important; background: #111 !important; border: 1px solid #2ecc71 !important; color: #2ecc71 !important; padding: 6px !important; font-size: 12px !important; border-radius: 4px !important; margin-top: 5px !important; font-weight: bold !important; text-align: center !important; }
         
-        .alerta-troca-tel { background: #1a1a00; border: 1px solid gold; padding: 12px; border-radius: 8px; margin: 15px 0; text-align: left; }
+        .alerta-troca-tel { background: #1a1a1a00; border: 1px solid gold; padding: 12px; border-radius: 8px; margin: 15px 0; text-align: left; background-color: #1a1a00; }
         .alerta-troca-tel p { font-size: 11px; color: #fff; margin: 0 0 8px; line-height: 1.4; }
         .alerta-troca-tel b { color: gold; }
 
@@ -432,7 +432,6 @@
         let contadorBuscasAcumuladas = 0; 
         let inatividadeTimer; 
 
-        // TRAVA DE 2 MINUTOS - REFORÇADA
         function resetarTimerInatividade() {
             clearTimeout(inatividadeTimer);
             firebase.database().goOnline();
@@ -587,7 +586,6 @@
             if(!emailBusca || !whatsBusca) { alert("Por favor, preencha o E-mail e o WhatsApp cadastrados."); return; }
             if(whatsBusca.length === 11) whatsBusca = "55" + whatsBusca;
             
-            // Busca filtrada por email para economizar downloads
             db.ref('anuncios').orderByChild('email').equalTo(emailBusca).once('value', snap => {
                 let found = null;
                 snap.forEach(child => {
@@ -738,7 +736,6 @@
             });
         }
 
-        // VITRINE OTIMIZADA: BUSCA APENAS UMA CIDADE NO FIREBASE
         function filtrarPorCidade(termoManual = "") {
             const input = document.getElementById('inp-filtro-cidade');
             const termoOriginal = (termoManual || input.value).trim();
@@ -756,8 +753,6 @@
 
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
 
-            // Busca cirúrgica por cidade (usando campo 'city' ou 'cidade' dependendo do seu esquema)
-            // Aqui buscamos apenas onde o status é ativo.
             db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
                 lv.innerHTML = '';
                 let listaFiltrada = [];
@@ -766,10 +761,9 @@
 
                 snap.forEach(child => {
                     const d = child.val();
-                    const cityNorm = normalizarTxt(d.cidade || d.city);
+                    const cityNorm = normalizarTxt(d.cidade);
                     
                     if(cityNorm === termoNormal || cityNorm.includes(termoNormal)) {
-                        // Verificação de validade de plano
                         if(d.plano > 0) {
                             const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
                             if(agora > dataFim) {
@@ -1043,7 +1037,6 @@
             });
         }
 
-        // ADM OTIMIZADO: SÓ BAIXA A CIDADE ESCOLHIDA
         function renderizarListasAdm() {
             const ap = document.getElementById('ap'); 
             const aa = document.getElementById('aa');
@@ -1054,7 +1047,6 @@
             
             ap.innerHTML = ''; aa.innerHTML = ''; upList.innerHTML = ''; trList.innerHTML = '';
 
-            // Pedidos Globais (Sempre pequenos)
             db.ref('pedidos_troca_tel').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
@@ -1069,7 +1061,6 @@
                 });
             });
 
-            // NOVOS PENDENTES (Apenas onde status é pendente)
             db.ref('anuncios').orderByChild('status').equalTo('pendente').once('value', snap => {
                 snap.forEach(item => {
                     const d = item.val(); const key = item.key;
@@ -1082,7 +1073,6 @@
                 });
             });
 
-            // ATIVOS DA CIDADE ESPECÍFICA (Download cirúrgico)
             if(vSalvo !== 'todas') {
                 aa.innerHTML = 'Carregando cidade...';
                 db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
@@ -1119,7 +1109,6 @@
                 aa.innerHTML = '<p style="color:#666; font-size:12px; padding:10px;">Selecione uma cidade no filtro para carregar os anúncios ativos.</p>';
             }
 
-            // Popula o seletor apenas com cidades que possuem anúncios
             db.ref('anuncios').once('value', snap => {
                 let cidadesUnicas = new Set();
                 snap.forEach(item => { if(item.val().cidade) cidadesUnicas.add(item.val().cidade.trim().toUpperCase()); });
@@ -1146,7 +1135,6 @@
             });
         }
 
-        // PRAZOS OTIMIZADO: SÓ BAIXA A CIDADE ESCOLHIDA
         function renderizarPrazos() {
             const cont = document.getElementById('lista-prazos-cont');
             const seletor = document.getElementById('filtro-prazos-cidade');
@@ -1185,7 +1173,6 @@
             });
         }
 
-        // Galeria social (Download mínimo de 10 itens aleatórios)
         db.ref('anuncios').orderByChild('status').equalTo('ativo').limitToFirst(20).once('value', s => {
             const track = document.getElementById('track-social'); 
             let ativos = [];
