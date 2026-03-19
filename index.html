@@ -29,15 +29,26 @@
         
         header { border-bottom: 2px solid red; padding: 50px 20px 30px; background: linear-gradient(to bottom, #1a0000, #000); position: relative; }
         .loc-badge-header { display: inline-block; background: #222; border: 1px solid red; color: red; padding: 5px 15px; border-radius: 20px; font-size: 11px; margin-bottom: 35px; font-weight: bold; letter-spacing: 1px; }
+        
+        /* Container da Logo com o brilho conforme solicitado */
         .logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid red; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         
+        /* Nome da marca estilizado */
+        .brand-name-aviso {
+            color: red; 
+            font-size: 26px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-family: 'Playfair Display', serif;
+            display: block;
+            font-weight: 900;
+        }
+
         #btn-prazos-esq { position: absolute; top: 0; left: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: default; }
         #btn-adm-dir { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: default; }
         
         #aviso-18 { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; background: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat; }
         #aviso-18::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: -1; }
-        
-        #aviso-18 h1 { color: #fff; font-family: 'Playfair Display'; font-size: 42px; font-weight: 900; margin-bottom: 40px; letter-spacing: 2px; }
         
         .btn-grande { width: 100%; max-width: 350px; border-radius: 12px; border: none; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.2s; }
         .btn-grande:active { transform: scale(0.98); }
@@ -179,7 +190,14 @@
 <body>
 
     <div id="aviso-18">
-        <h1>SEGREDO URBANO</h1>
+        <div class="logo-container">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+                <path d="M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z" fill="rgba(255,0,0,0.15)" />
+                <text x="50%" y="62%" text-anchor="middle" font-family="'Playfair Display', serif" font-size="45" fill="white">S</text>
+                <text x="68%" y="72%" text-anchor="middle" font-family="'Playfair Display', serif" font-size="25" fill="red" font-weight="900">U</text>
+            </svg>
+        </div>
+        <b class="brand-name-aviso" style="margin-bottom: 30px;">Segredo Urbano</b>
         
         <button class="btn-grande btn-facial-novo" onclick="ativarReconhecimento()">
             <span class="titulo-btn">
@@ -447,7 +465,7 @@
         document.addEventListener('touchstart', resetarTimerInatividade);
         resetarTimerInatividade();
 
-        async function ativarReconhecimento() {
+        async function ativarreconhecimento() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 const video = document.getElementById('video-facial');
