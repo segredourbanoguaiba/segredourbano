@@ -30,10 +30,8 @@
         header { border-bottom: 2px solid red; padding: 50px 20px 30px; background: linear-gradient(to bottom, #1a0000, #000); position: relative; }
         .loc-badge-header { display: inline-block; background: #222; border: 1px solid red; color: red; padding: 5px 15px; border-radius: 20px; font-size: 11px; margin-bottom: 35px; font-weight: bold; letter-spacing: 1px; }
         
-        /* Container da Logo com o brilho conforme solicitado */
         .logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid red; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         
-        /* Nome da marca estilizado */
         .brand-name-aviso {
             color: red; 
             font-size: 26px; 
@@ -68,7 +66,8 @@
 
         .tela { display: none; padding: 20px; }
         .ativa { display: block !important; }
-        .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 8px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; }
+        .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 8px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
         .btn small { display: block; font-size: 10px; text-transform: none; font-weight: normal; margin-top: 3px; }
         .btn-whats { background: #25D366 !important; }
         .btn-upgrade { background: gold !important; color: #000 !important; }
@@ -137,7 +136,8 @@
         #container-busca-cidade { display: none; padding: 15px; background: #000; }
         .caixa-busca-moderna { display: flex; max-width: 400px; margin: 0 auto; gap: 8px; }
         .inp-busca-txt { flex: 1; background: #111; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 25px; outline: none; font-size: 14px; transition: border-color 0.3s; }
-        .btn-busca-lupa { background: red; border: none; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .btn-busca-lupa { background: red; border: none; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .btn-busca-lupa:active { transform: scale(0.9); }
         .seletor-cidade-adm { background: #000; color: red; border: 1px solid red; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 15px; font-weight: bold; }
         .busca-erro { border-color: red !important; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
         #aviso-vazio { display: none; background: #1a0000; border: 1px dashed red; padding: 25px; border-radius: 12px; margin: 30px auto; max-width: 300px; }
@@ -160,7 +160,8 @@
         .btn-todas-cidades:hover { color: red; border-color: red; }
         #modal-cidades { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000002; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .lista-cidades-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
-        .item-cidade-link { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; text-decoration: none; text-transform: uppercase; font-weight: bold; }
+        .item-cidade-link { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; text-decoration: none; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
+        .item-cidade-link:active { transform: scale(0.95); border-color: red; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
 
         .card-token-seguranca { background: #1a0000; border: 2px solid #ff0000; border-radius: 12px; padding: 15px; margin: 15px auto; max-width: 90%; text-align: center; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
         .token-display { background: #000; border: 1px dashed #ff0000; color: #ff0000; font-family: 'Courier New', monospace; font-size: 32px; font-weight: 900; padding: 10px; margin: 10px 0; border-radius: 6px; letter-spacing: 5px; }
@@ -265,19 +266,54 @@
     </div>
 
     <div id="modal-cidades" class="tela" style="position: fixed; z-index: 1000002; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; height: 100%; top: 0; left: 0;">
-        <h2 style="color:red; font-family:'Playfair Display';">SELECIONE SUA CIDADE</h2>
-        <div id="lista-todas-cidades" class="lista-cidades-grid"></div>
+        <div id="etapa-estado">
+            <h2 style="color:red; font-family:'Playfair Display';">SELECIONE SEU ESTADO</h2>
+            <div class="lista-cidades-grid">
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('AC', this)">ACRE (AC)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('AL', this)">ALAGOAS (AL)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('AP', this)">AMAPÁ (AP)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('AM', this)">AMAZONAS (AM)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('BA', this)">BAHIA (BA)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('CE', this)">CEARÁ (CE)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('DF', this)">DISTRITO FEDERAL (DF)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('ES', this)">ESPÍRITO SANTO (ES)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('GO', this)">GOIÁS (GO)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('MA', this)">MARANHÃO (MA)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('MT', this)">MATO GROSSO (MT)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('MS', this)">MATO GROSSO DO SUL (MS)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('MG', this)">MINAS GERAIS (MG)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('PA', this)">PARÁ (PA)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('PB', this)">PARAÍBA (PB)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('PR', this)">PARANÁ (PR)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('PE', this)">PERNAMBUCO (PE)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('PI', this)">PIAUÍ (PI)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('RJ', this)">RIO DE JANEIRO (RJ)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('RN', this)">RIO GRANDE DO NORTE (RN)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('RS', this)">RIO GRANDE DO SUL (RS)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('RO', this)">RONDÔNIA (RO)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('RR', this)">RORAIMA (RR)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('SC', this)">SANTA CATARINA (SC)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('SP', this)">SÃO PAULO (SP)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('SE', this)">SERGIPE (SE)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('TO', this)">TOCANTINS (TO)</button>
+            </div>
+        </div>
+        <div id="etapa-cidade" style="display:none;">
+            <h2 style="color:red; font-family:'Playfair Display';" id="titulo-estado-sel">CIDADES</h2>
+            <div id="lista-todas-cidades" class="lista-cidades-grid"></div>
+            <button class="btn" style="margin-top:20px; background:#333;" onclick="voltarParaEstados()">VOLTAR AOS ESTADOS</button>
+        </div>
         <button class="btn" style="margin-top:30px; background:none; border:1px solid #333;" onclick="document.getElementById('modal-cidades').style.display='none'">FECHAR</button>
     </div>
 
     <div id="container-busca-cidade">
         <div class="caixa-busca-moderna">
             <input type="text" id="inp-filtro-cidade" class="inp-busca-txt" placeholder="Digite sua cidade..." onkeydown="if(event.key==='Enter'){ filtrarPorCidade(); this.blur(); }">
-            <button class="btn-busca-lupa" onclick="filtrarPorCidade()">
+            <button class="btn-busca-lupa" id="btn-lupa-busca" onclick="filtrarPorCidade()">
                 <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
             </button>
         </div>
-        <button class="btn-todas-cidades" onclick="abrirListaCidades()">VER TODAS CIDADES</button>
+        <button class="btn-todas-cidades" onclick="abrirListaCidades()">SELECIONE SEU ESTADO</button>
     </div>
 
     <div id="modal-galeria">
@@ -288,7 +324,7 @@
     </div>
 
     <div id="menu" class="tela ativa">
-        <button class="btn" onclick="document.getElementById('inp-filtro-cidade').focus();">VER ANÚNCIOS</button>
+        <button class="btn" id="btn-ver-anuncios" onclick="document.getElementById('inp-filtro-cidade').focus();">VER ANÚNCIOS</button>
         <button class="btn" style="background:#fff; color:#000" onclick="ir('planos')">ANUNCIAR AGORA</button>
         <button class="btn" style="background:none; border: 1px solid #333; font-size:10px;" onclick="abrirEdicao()">SOMENTE PARA ANUNCIANTES, EDITAR MEU ANÚNCIO</button>
         <div class="galeria-social" id="area-social" style="display:none;">
@@ -379,6 +415,37 @@
         <h3 style="font-family:'Playfair Display';">CADASTRO</h3>
         <p id="aviso-limite" style="color:red; font-size:11px; margin-bottom:10px; font-weight:bold;"></p>
         <input type="text" id="n" placeholder="Nome Artístico">
+        
+        <select id="est_cad">
+            <option value="">Selecione seu Estado</option>
+            <option value="AC">Acre (AC)</option>
+            <option value="AL">Alagoas (AL)</option>
+            <option value="AP">Amapá (AP)</option>
+            <option value="AM">Amazonas (AM)</option>
+            <option value="BA">Bahia (BA)</option>
+            <option value="CE">Ceará (CE)</option>
+            <option value="DF">Distrito Federal (DF)</option>
+            <option value="ES">Espírito Santo (ES)</option>
+            <option value="GO">Goiás (GO)</option>
+            <option value="MA">Maranhão (MA)</option>
+            <option value="MT">Mato Grosso (MT)</option>
+            <option value="MS">Mato Grosso do Sul (MS)</option>
+            <option value="MG">Minas Gerais (MG)</option>
+            <option value="PA">Pará (PA)</option>
+            <option value="PB">Paraíba (PB)</option>
+            <option value="PR">Paraná (PR)</option>
+            <option value="PE">Pernambuco (PE)</option>
+            <option value="PI">Piauí (PI)</option>
+            <option value="RJ">Rio de Janeiro (RJ)</option>
+            <option value="RN">Rio Grande do Norte (RN)</option>
+            <option value="RS">Rio Grande do Sul (RS)</option>
+            <option value="RO">Rondônia (RO)</option>
+            <option value="RR">Roraima (RR)</option>
+            <option value="SC">Santa Catarina (SC)</option>
+            <option value="SP">São Paulo (SP)</option>
+            <option value="SE">Sergipe (SE)</option>
+            <option value="TO">Tocantins (TO)</option>
+        </select>
         <input type="text" id="cid" placeholder="Cidade">
         <input type="text" id="bai" placeholder="Bairro (Obrigatório)">
         <input type="text" id="v_hora" placeholder="Valor p/ Hora (ex: 150) - Opcional">
@@ -398,7 +465,7 @@
         <input type="tel" id="w" placeholder="WhatsApp (DDD + Número)" autocomplete="tel-national" inputmode="numeric" maxlength="15">
         <input type="file" id="f" accept="image/*" multiple onchange="loadFiles()">
         <div id="preview" style="display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:15px;"></div>
-        <button class="btn" onclick="enviar()">ENVIAR ANÚNCIO</button>
+        <button class="btn" id="btn-enviar-cad" onclick="enviar()">ENVIAR ANÚNCIO</button>
     </div>
 
     <div id="tela-pix" class="tela">
@@ -504,37 +571,60 @@
         const normalizarTxt = (txt) => txt ? txt.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") : "";
 
         function abrirListaCidades() {
+            document.getElementById('etapa-estado').style.display = 'block';
+            document.getElementById('etapa-cidade').style.display = 'none';
+            document.getElementById('modal-cidades').style.display = 'block';
+        }
+
+        function voltarParaEstados() {
+            document.getElementById('etapa-cidade').style.display = 'none';
+            document.getElementById('etapa-estado').style.display = 'block';
+        }
+
+        function carregarCidadesEstado(uf, btnElement) {
+            const originalText = btnElement.innerText;
+            btnElement.innerText = "BUSCANDO...";
+            btnElement.style.boxShadow = "0 0 15px red";
+            
             const container = document.getElementById('lista-todas-cidades');
-            container.innerHTML = '<p style="color:#666;">Carregando cidades...</p>';
-            db.ref('anuncios').once('value', snap => {
+            document.getElementById('titulo-estado-sel').innerText = "CIDADES EM " + uf;
+            
+            db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
                 let cidadesSet = new Set();
                 snap.forEach(child => {
                     const d = child.val();
-                    if(d.status === 'ativo' && d.cidade) {
+                    if(d.estado === uf && d.cidade) {
                         cidadesSet.add(d.cidade.trim().toUpperCase());
                     }
                 });
+                
                 const listaOrdenada = Array.from(cidadesSet).sort();
                 container.innerHTML = '';
+                
                 if(listaOrdenada.length === 0) {
-                    container.innerHTML = '<p style="grid-column: 1/-1; color:#555;">Nenhuma cidade com anúncios ativos.</p>';
+                    container.innerHTML = '<p style="grid-column: 1/-1; color:#555; padding: 20px;">Nenhuma cidade ativa neste estado ainda.</p>';
                 } else {
                     listaOrdenada.forEach(cid => {
-                        const btn = document.createElement('a');
-                        btn.href = "#";
+                        const btn = document.createElement('button');
                         btn.className = 'item-cidade-link';
                         btn.innerText = cid;
                         btn.onclick = (e) => {
-                            e.preventDefault();
-                            document.getElementById('modal-cidades').style.display = 'none';
-                            document.getElementById('inp-filtro-cidade').value = cid;
-                            filtrarPorCidade(cid);
+                            e.target.innerText = "BUSCANDO...";
+                            e.target.style.boxShadow = "0 0 15px red";
+                            setTimeout(() => {
+                                document.getElementById('modal-cidades').style.display = 'none';
+                                document.getElementById('inp-filtro-cidade').value = cid;
+                                filtrarPorCidade(cid);
+                            }, 300);
                         };
                         container.appendChild(btn);
                     });
                 }
+                btnElement.innerText = originalText;
+                btnElement.style.boxShadow = "none";
+                document.getElementById('etapa-estado').style.display = 'none';
+                document.getElementById('etapa-cidade').style.display = 'block';
             });
-            document.getElementById('modal-cidades').style.display = 'block';
         }
 
         function aplicarMascaraTelefone(el) {
@@ -755,9 +845,19 @@
         }
 
         function filtrarPorCidade(termoManual = "") {
+            const btnBusca = document.getElementById('btn-lupa-busca');
+            const originalIcon = btnBusca.innerHTML;
+            btnBusca.innerHTML = "⌛";
+            
             const input = document.getElementById('inp-filtro-cidade');
             const termoOriginal = (termoManual || input.value).trim();
-            if(!termoOriginal) { input.classList.add('busca-erro'); input.placeholder = "DIGITE UMA CIDADE!"; setTimeout(() => input.classList.remove('busca-erro'), 2000); return false; }
+            if(!termoOriginal) { 
+                input.classList.add('busca-erro'); 
+                input.placeholder = "DIGITE UMA CIDADE!"; 
+                setTimeout(() => input.classList.remove('busca-erro'), 2000); 
+                btnBusca.innerHTML = originalIcon;
+                return false; 
+            }
             
             const lv = document.getElementById('lv'); 
             lv.innerHTML = '<p style="color:#666; margin-top:20px;">Buscando anúncios...</p>'; 
@@ -823,6 +923,7 @@
                     }
                 });
 
+                btnBusca.innerHTML = originalIcon;
                 if(listaFiltrada.length === 0) { document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`; document.getElementById('aviso-vazio').style.display = 'block'; } else { document.getElementById('aviso-vazio').style.display = 'none'; }
             });
             return true;
@@ -919,12 +1020,19 @@
             document.getElementById('h_abre').value = ''; document.getElementById('h_fecha').value = '';
             document.getElementById('email_user').value = ''; document.getElementById('w').value = ''; document.getElementById('f').value = ''; 
             document.getElementById('preview').innerHTML = ''; imgs = [];
+            document.getElementById('est_cad').value = '';
         }
 
         function enviar() {
+            const btn = document.getElementById('btn-enviar-cad');
+            const originalText = btn.innerText;
+            btn.innerText = "ENVIANDO...";
+            btn.style.boxShadow = "0 0 15px white";
+            
             const n = document.getElementById('n').value.trim(); 
             const c = document.getElementById('cid').value.trim(); 
             const b = document.getElementById('bai').value.trim(); 
+            const st = document.getElementById('est_cad').value;
             const em = document.getElementById('email_user').value.trim().toLowerCase(); 
             const vh = document.getElementById('v_hora').value.trim(); 
             const loc = document.getElementById('tem_local').value;
@@ -933,13 +1041,23 @@
             const hr = `${h1} às ${h2}`;
             let w = document.getElementById('w').value.replace(/\D/g,''); 
             cidadePostagemOriginal = c;
-            if(!n || !c || !b || !w || !em || imgs.length === 0) return alert("Preencha os campos obrigatórios!");
+            
+            if(!n || !c || !b || !w || !em || !st || imgs.length === 0) {
+                btn.innerText = originalText;
+                btn.style.boxShadow = "none";
+                return alert("Preencha todos os campos, inclusive o Estado!");
+            }
+            
             if(w.length <= 11) w = "55" + w;
             db.ref('anuncios').push({ 
-                nome:n, cidade:c, bairro:b, email:em, whats:w, fotos:imgs, 
+                nome:n, cidade:c, estado:st, bairro:b, email:em, whats:w, fotos:imgs, 
                 plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
                 v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: []
-            }).then(() => { if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); filtrarPorCidade(cidadePostagemOriginal); limparFormulario(); } });
+            }).then(() => { 
+                btn.innerText = originalText;
+                btn.style.boxShadow = "none";
+                if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); filtrarPorCidade(cidadePostagemOriginal); limparFormulario(); } 
+            });
         }
 
         function copiarPix() { 
@@ -1087,7 +1205,7 @@
                     if(d.fotos) d.fotos.forEach((f, idx) => { 
                         fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; 
                     });
-                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
+                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
                 });
             });
 
@@ -1102,6 +1220,9 @@
                         if(cityNorm === termoNormal) {
                             const tokenS = key.slice(-4).toUpperCase();
                             const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
+                            const ufs = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+                            let optionsUF = ufs.map(uf => `<option value="${uf}" ${d.estado === uf ? 'selected' : ''}>${uf}</option>`).join('');
+                            
                             aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;">
                                 <img src="${d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
                                 <div style="flex:1;">
@@ -1113,6 +1234,10 @@
                                     <div style="margin-top:5px;">
                                         <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
                                         <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())">
+                                        <select class="inp-cidade-adm-edit" style="width:60px !important;" onchange="db.ref('anuncios/${key}').update({estado:this.value}).then(()=>renderizarListasAdm())">
+                                            <option value="">UF</option>
+                                            ${optionsUF}
+                                        </select>
                                     </div>
                                     <button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button>
                                     <button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button>
