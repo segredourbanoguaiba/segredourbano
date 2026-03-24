@@ -186,6 +186,10 @@
         .item-foto-blur img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.3s; }
         .foto-borrada { filter: blur(8px) grayscale(100%); }
         .badge-borrada { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255,0,0,0.8); color: #fff; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 3px; pointer-events: none; }
+
+        /* Estilos Novos Canais de Conteúdo */
+        .btn-privacy { background: #fff !important; color: #ff6600 !important; border: 1px solid #ff6600 !important; font-weight: 900 !important; }
+        .btn-onlyfans { background: #fff !important; color: #0088ff !important; border: 1px solid #0088ff !important; font-weight: 900 !important; }
     </style>
 </head>
 <body>
@@ -379,6 +383,10 @@
                 <input type="text" id="edit-h-fecha" placeholder="Fim (Ex: 22)">
             </div>
 
+            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">CANAL DE CONTEÚDO (OPCIONAL):</p>
+            <input type="url" id="edit-privacy" placeholder="Link do seu Privacy">
+            <input type="url" id="edit-onlyfans" placeholder="Link do seu OnlyFans">
+
             <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">GERENCIAR FOTOS:</p>
             <span id="slot-counter">Calculando slots...</span>
             <div id="container-fotos-edit" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin:15px 0;"></div>
@@ -440,7 +448,7 @@
             <option value="RN">Rio Grande do Norte (RN)</option>
             <option value="RS">Rio Grande do Sul (RS)</option>
             <option value="RO">Rondônia (RO)</option>
-            <option value="RR">Roraima (RR)</option>
+            <option value="RR">Roraíma (RR)</option>
             <option value="SC">Santa Catarina (SC)</option>
             <option value="SP">São Paulo (SP)</option>
             <option value="SE">Sergipe (SE)</option>
@@ -460,6 +468,10 @@
             <input type="text" id="h_abre" placeholder="Início (Ex: 09)">
             <input type="text" id="h_fecha" placeholder="Fim (Ex: 23)">
         </div>
+
+        <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%; margin-top: 10px;">CONTEÚDO PRIVADO (OPCIONAL):</p>
+        <input type="url" id="link_privacy" placeholder="Link do Privacy">
+        <input type="url" id="link_onlyfans" placeholder="Link do OnlyFans">
 
         <input type="email" id="email_user" placeholder="Seu E-mail">
         <input type="tel" id="w" placeholder="WhatsApp (DDD + Número)" autocomplete="tel-national" inputmode="numeric" maxlength="15">
@@ -713,6 +725,11 @@
                     infoDiv.innerHTML = `<img src="${found.data.fotos[0]}"><div><b style="font-size:18px;">${found.data.nome}</b><br><small style="color:#25D366; font-weight:bold;">Anúncio Localizado ✔️</small></div>`;
                     document.getElementById('edit-valor').value = found.data.v_hora || "";
                     document.getElementById('edit-local').value = found.data.tem_local || "nao";
+                    
+                    // Preenchimento dos links na edição
+                    document.getElementById('edit-privacy').value = found.data.privacyLink || "";
+                    document.getElementById('edit-onlyfans').value = found.data.onlyfansLink || "";
+
                     if(found.data.horario_atend && found.data.horario_atend.includes(' às ')) {
                         const partes = found.data.horario_atend.split(' às ');
                         document.getElementById('edit-h-abre').value = partes[0];
@@ -766,7 +783,7 @@
         function deletarFotoEdit(index) {
             db.ref('anuncios/' + keyEdicao + '/plano').once('value', snap => {
                 const planoAtivo = snap.val() > 0;
-                if(!planoAtivo) { alert("Apenas planos planos pagos podem gerenciar fotos individualmente."); return; }
+                if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
                 if(imgsEdit.length <= 1) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
                 if(confirm("Deseja realmente apagar esta foto? Isso liberará um espaço para uma nova.")) {
                     imgsEdit.splice(index, 1);
@@ -799,10 +816,21 @@
         function salvarEdicao() {
             const v = document.getElementById('edit-valor').value;
             const l = document.getElementById('edit-local').value;
+            const pLink = document.getElementById('edit-privacy').value.trim();
+            const oLink = document.getElementById('edit-onlyfans').value.trim();
             const h1 = formatarInputHora(document.getElementById('edit-h-abre').value);
             const h2 = formatarInputHora(document.getElementById('edit-h-fecha').value);
             const hFinal = `${h1} às ${h2}`;
-            const upData = { v_hora: v, tem_local: l, horario_atend: hFinal, fotos: imgsEdit };
+            
+            const upData = { 
+                v_hora: v, 
+                tem_local: l, 
+                horario_atend: hFinal, 
+                fotos: imgsEdit,
+                privacyLink: pLink,
+                onlyfansLink: oLink
+            };
+            
             db.ref('anuncios/' + keyEdicao).update(upData).then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
         }
 
@@ -912,11 +940,22 @@
                     if(d.tem_local === 'nao') opcionalHtml += `<div class="badge-opcional">🚗 SÓ SAÍDAS</div>`;
                     opcionalHtml += '</div>';
 
+                    // Lógica Adicional: Botões Privacy e OnlyFans (Exibição apenas para planos ativos)
+                    let conteudosHtml = '';
+                    if(d.plano > 0) {
+                        if(d.privacyLink) {
+                            conteudosHtml += `<a href="${d.privacyLink}" target="_blank" class="btn btn-privacy">Conteúdos PRIVACY</a>`;
+                        }
+                        if(d.onlyfansLink) {
+                            conteudosHtml += `<a href="${d.onlyfansLink}" target="_blank" class="btn btn-onlyfans">Conteúdos ONLYFANS</a>`;
+                        }
+                    }
+
                     const borradas = d.fotosBorradas || [];
 
                     if(d.plano > 0) {
                         const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%);' : '';
-                        lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a></div>`;
+                        lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
                     } else {
                         const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%)' : '';
                         lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
@@ -1021,6 +1060,7 @@
             document.getElementById('email_user').value = ''; document.getElementById('w').value = ''; document.getElementById('f').value = ''; 
             document.getElementById('preview').innerHTML = ''; imgs = [];
             document.getElementById('est_cad').value = '';
+            document.getElementById('link_privacy').value = ''; document.getElementById('link_onlyfans').value = '';
         }
 
         function enviar() {
@@ -1036,6 +1076,8 @@
             const em = document.getElementById('email_user').value.trim().toLowerCase(); 
             const vh = document.getElementById('v_hora').value.trim(); 
             const loc = document.getElementById('tem_local').value;
+            const pLink = document.getElementById('link_privacy').value.trim();
+            const oLink = document.getElementById('link_onlyfans').value.trim();
             const h1 = formatarInputHora(document.getElementById('h_abre').value);
             const h2 = formatarInputHora(document.getElementById('h_fecha').value);
             const hr = `${h1} às ${h2}`;
@@ -1052,7 +1094,8 @@
             db.ref('anuncios').push({ 
                 nome:n, cidade:c, estado:st, bairro:b, email:em, whats:w, fotos:imgs, 
                 plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
-                v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: []
+                v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: [],
+                privacyLink: pLink, onlyfansLink: oLink
             }).then(() => { 
                 btn.innerText = originalText;
                 btn.style.boxShadow = "none";
