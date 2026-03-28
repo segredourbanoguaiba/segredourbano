@@ -24,46 +24,26 @@
     
     <style>
         body { background: #000; color: #fff; font-family: 'Montserrat', sans-serif; margin: 0; text-align: center; overflow-x: hidden; }
-        
         body.facial-verificado img { filter: none !important; }
-        
         header { border-bottom: 2px solid red; padding: 50px 20px 30px; background: linear-gradient(to bottom, #1a0000, #000); position: relative; }
         .loc-badge-header { display: inline-block; background: #222; border: 1px solid red; color: red; padding: 5px 15px; border-radius: 20px; font-size: 11px; margin-bottom: 35px; font-weight: bold; letter-spacing: 1px; }
-        
         .logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid red; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        
-        .brand-name-aviso {
-            color: red; 
-            font-size: 26px; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            font-family: 'Playfair Display', serif;
-            display: block;
-            font-weight: 900;
-        }
-
+        .brand-name-aviso { color: red; font-size: 26px; text-transform: uppercase; letter-spacing: 2px; font-family: 'Playfair Display', serif; display: block; font-weight: 900; }
         #btn-prazos-esq { position: absolute; top: 0; left: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: default; }
         #btn-adm-dir { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: default; }
-        
         #aviso-18 { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; background: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat; }
         #aviso-18::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: -1; }
-        
         .btn-grande { width: 100%; max-width: 350px; border-radius: 12px; border: none; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.2s; }
         .btn-grande:active { transform: scale(0.98); }
-        
         .btn-grande .titulo-btn { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
         .btn-grande .subtitulo-btn { font-size: 11px; font-weight: 400; margin-top: 4px; opacity: 0.9; }
-
         .btn-facial-novo { background: red; color: white; box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3); }
         .btn-visitante-novo { background: #1a1a1a; color: white; border: 1px solid #333; }
         .btn-sair-novo { background: #333; color: #fff; width: 100%; max-width: 350px; border-radius: 12px; border: none; padding: 15px; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 14px; margin-top: 10px; }
-
         .falsidade-alerta { color: red; font-weight: 900; font-size: 14px; margin-top: 30px; letter-spacing: 1px; }
         #aviso-18 .lei { font-size: 10px; color: #777; max-width: 300px; line-height: 1.4; margin-top: 20px; }
-
         #camera-container { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 280px; border-radius: 50%; border: 3px solid red; overflow: hidden; background: #000; z-index: 1000000; box-shadow: 0 0 50px red; }
         #video-facial { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-
         .tela { display: none; padding: 20px; }
         .ativa { display: block !important; }
         .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 8px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; transition: 0.2s; }
@@ -71,10 +51,8 @@
         .btn small { display: block; font-size: 10px; text-transform: none; font-weight: normal; margin-top: 3px; }
         .btn-whats { background: #25D366 !important; }
         .btn-upgrade { background: gold !important; color: #000 !important; }
-        
         #btn-suporte-fixo { position: fixed; bottom: 70px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid red; z-index: 1000; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
         #btn-suporte-fixo-2 { position: fixed; bottom: 30px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid #25D366; z-index: 1000; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
-
         .cidade-txt { text-align: left; font-size: 10px; color: #ff0000; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .bairro-txt { color: #888; font-size: 10px; margin-left: 5px; text-transform: uppercase; font-weight: normal; }
         .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; }
@@ -84,18 +62,15 @@
         .btn-seta { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.7); color: white; border: none; padding: 20px 12px; font-size: 24px; cursor: pointer; z-index: 20; border-radius: 5px; }
         .seta-esq { left: 5px; }
         .seta-dir { right: 5px; }
-        
         .info-opcional-bar { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
         .badge-opcional { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
         .badge-opcional.destaque-valor { border-color: gold; color: gold; }
         .badge-on { background: #25D366; color: #000; border: none; }
-
         .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; }
         .card-gratis-flex { display: flex; align-items: center; }
         .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; transition: filter 0.3s; }
         .card-gratis b { font-size: 18px; }
-        
         .galeria-social { width: 100%; overflow: hidden; margin-top: 15px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
         .social-track { display: flex; width: max-content; animation: scroll-social 30s linear infinite; gap: 15px; padding-left: 15px; }
         .item-social { width: 70px; text-align: center; flex-shrink: 0; }
@@ -103,14 +78,11 @@
         .item-social span { display: block; font-size: 8px; color: #888; text-transform: uppercase; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         @keyframes scroll-social { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .badge-fotos { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; z-index: 10; }
-        
         #modal-galeria { display: none; position: fixed; z-index: 1000000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); }
         .btn-fechar-galeria { position: absolute; top: 20px; right: 25px; color: white; font-size: 50px; cursor: pointer; z-index: 1000005; font-weight: bold; }
         .modal-cont { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; }
         .btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,0,0,0.7); color: white; border: none; font-size: 28px; padding: 18px; border-radius: 5px; z-index: 1000004; }
-        
         select, input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
-        
         #aviso-pix-central { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
         .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; position: relative; }
         .badge-plano-adm { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 5px; background: #333; color: #fff; }
@@ -119,18 +91,12 @@
         .grade-fotos-adm { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .foto-revisao { position: relative; width: 65px; height: 85px; cursor: pointer; }
         .foto-revisao img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #444; }
-        
         .btn-del-foto-revisao { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; font-weight: bold; cursor: pointer; align-items: center; justify-content: center; z-index: 10; }
-
         .metric-card { background: #1a0000; border: 1px solid red; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-        
         .inp-pos { width: 45px !important; background: #000 !important; border: 1px solid red !important; color: #fff !important; padding: 4px !important; text-align: center !important; border-radius: 4px !important; font-weight: bold !important; display: inline-block !important; }
         .inp-cidade-adm-edit { width: 120px !important; background: #222 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; margin-left: 5px !important; }
-
         .marcador-cliques-zap { background: #2ecc71; color: #000; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: 900; margin-left: 10px; display: inline-flex; align-items: center; gap: 3px; }
-        
         .info-recuperacao-adm { font-size: 10px; color: #888; margin-top: 8px; background: #1a1a1a; padding: 5px; border-radius: 4px; border: 1px solid #222; }
-
         .btn-toggle-plano { background: #333; color: #fff; border: 1px solid #555; font-size: 9px; padding: 5px; border-radius: 4px; cursor: pointer; margin-top: 8px; text-transform: uppercase; font-weight: bold; width: 100%; }
         .btn-toggle-plano:hover { background: gold; color: #000; }
         #container-busca-cidade { display: none; padding: 15px; background: #000; }
@@ -142,52 +108,41 @@
         .busca-erro { border-color: red !important; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
         #aviso-vazio { display: none; background: #1a0000; border: 1px dashed red; padding: 25px; border-radius: 12px; margin: 30px auto; max-width: 300px; }
         #aviso-vazio p { color: #ff0000; font-size: 14px; font-weight: bold; margin: 0; line-height: 1.4; }
-
         .item-prazo { background: #111; padding: 12px; border-radius: 10px; border: 1px solid #333; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
         .prazo-info { text-align: left; flex: 1; }
         .prazo-info b { display: block; font-size: 14px; }
         .prazo-info span { font-size: 10px; color: #888; text-transform: uppercase; }
         .btn-prazo-zap { background: #25D366; color: #000; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 10px; text-decoration: none; margin-right: 5px; }
         .btn-prazo-del { background: red; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 10px; cursor: pointer; }
-
         .identificacao-modelo { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; text-align: left; }
         .identificacao-modelo img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid red; }
-
         .grid-horarios { display: flex; gap: 10px; width: 90%; margin: 8px auto; }
         .grid-horarios input { width: 100% !important; margin: 0 !important; }
-
         .btn-todas-cidades { background: transparent; color: #888; border: 1px solid #222; padding: 8px 15px; border-radius: 20px; font-size: 10px; font-weight: bold; margin: 10px auto; cursor: pointer; display: block; transition: 0.3s; }
         .btn-todas-cidades:hover { color: red; border-color: red; }
-        #modal-cidades { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000002; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        #modal-cidades { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000002; padding: 20px; box-sizing: border-box; overflow-y: auto; height: 100%; top: 0; left: 0; }
         .lista-cidades-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
         .item-cidade-link { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; text-decoration: none; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
         .item-cidade-link:active { transform: scale(0.95); border-color: red; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
-
         .card-token-seguranca { background: #1a0000; border: 2px solid #ff0000; border-radius: 12px; padding: 15px; margin: 15px auto; max-width: 90%; text-align: center; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
         .token-display { background: #000; border: 1px dashed #ff0000; color: #ff0000; font-family: 'Courier New', monospace; font-size: 32px; font-weight: 900; padding: 10px; margin: 10px 0; border-radius: 6px; letter-spacing: 5px; }
         .alerta-seguranca { background: #222; border-radius: 8px; padding: 10px; margin-top: 10px; }
         .alerta-seguranca p { color: #fff; font-size: 11px; font-weight: bold; margin: 0; line-height: 1.4; }
         .alerta-seguranca b { color: #ff0000; text-transform: uppercase; }
-
         .foto-edit-wrapper { position: relative; width: 80px; height: 110px; }
         .foto-edit-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
         .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
         #slot-counter { font-size: 11px; color: gold; font-weight: bold; margin-bottom: 10px; display: block; }
-
         .inp-whats-adm-edit { width: 95% !important; background: #111 !important; border: 1px solid #2ecc71 !important; color: #2ecc71 !important; padding: 6px !important; font-size: 12px !important; border-radius: 4px !important; margin-top: 5px !important; font-weight: bold !important; text-align: center !important; }
-        
         .alerta-troca-tel { background: #1a1a1a00; border: 1px solid gold; padding: 12px; border-radius: 8px; margin: 15px 0; text-align: left; background-color: #1a1a00; }
         .alerta-troca-tel p { font-size: 11px; color: #fff; margin: 0 0 8px; line-height: 1.4; }
         .alerta-troca-tel b { color: gold; }
-
         .btn-edit-fotos-adm { background: #fff; color: #000; border: 1px solid red; font-size: 9px; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 5px; text-transform: uppercase; font-weight: 900; width: 100%; display: block; }
         .grade-blur-adm { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; background: #000; padding: 10px; border: 1px dashed #333; border-radius: 8px; }
         .item-foto-blur { position: relative; width: 60px; height: 80px; cursor: pointer; overflow: hidden; border-radius: 4px; border: 1px solid #222; }
         .item-foto-blur img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.3s; }
         .foto-borrada { filter: blur(8px) grayscale(100%); }
         .badge-borrada { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255,0,0,0.8); color: #fff; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 3px; pointer-events: none; }
-
-        /* Estilos Novos Canais de Conteúdo */
         .btn-privacy { background: #fff !important; color: #ff6600 !important; border: 1px solid #ff6600 !important; font-weight: 900 !important; }
         .btn-onlyfans { background: #fff !important; color: #0088ff !important; border: 1px solid #0088ff !important; font-weight: 900 !important; }
     </style>
@@ -822,16 +777,20 @@
             const h2 = formatarInputHora(document.getElementById('edit-h-fecha').value);
             const hFinal = `${h1} às ${h2}`;
             
-            const upData = { 
-                v_hora: v, 
-                tem_local: l, 
-                horario_atend: hFinal, 
-                fotos: imgsEdit,
-                privacyLink: pLink,
-                onlyfansLink: oLink
-            };
-            
-            db.ref('anuncios/' + keyEdicao).update(upData).then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
+            // OTIMIZAÇÃO: Atualiza a chave composta ao salvar edições
+            db.ref('anuncios/' + keyEdicao).once('value', snap => {
+                const data = snap.val();
+                const upData = { 
+                    v_hora: v, 
+                    tem_local: l, 
+                    horario_atend: hFinal, 
+                    fotos: imgsEdit,
+                    privacyLink: pLink,
+                    onlyfansLink: oLink,
+                    status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`
+                };
+                db.ref('anuncios/' + keyEdicao).update(upData).then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
+            });
         }
 
         function solicitarUpgrade(d) {
@@ -872,6 +831,7 @@
             });
         }
 
+        // ECONOMIA REAL: Função de busca modificada para filtrar no servidor
         function filtrarPorCidade(termoManual = "") {
             const btnBusca = document.getElementById('btn-lupa-busca');
             const originalIcon = btnBusca.innerHTML;
@@ -899,73 +859,89 @@
 
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
 
-            db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
+            const termoNormal = normalizarTxt(termoOriginal);
+            const buscaChave = "ativo_" + termoNormal;
+
+            // NOVA LÓGICA DE ECONOMIA: Filtra por status_cidade diretamente no Firebase
+            db.ref('anuncios').orderByChild('status_cidade').equalTo(buscaChave).once('value', snap => {
                 lv.innerHTML = '';
                 let listaFiltrada = [];
                 const agora = Date.now();
-                const termoNormal = normalizarTxt(termoOriginal);
 
-                snap.forEach(child => {
-                    const d = child.val();
-                    const cityNorm = normalizarTxt(d.cidade);
-                    
-                    if(cityNorm === termoNormal || cityNorm.includes(termoNormal)) {
-                        if(d.plano > 0) {
-                            const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
-                            if(agora > dataFim) {
-                                d.plano = 0; d.pos = 999;
-                                if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
-                                db.ref('anuncios/' + child.key).update({ plano: 0, pos: 999, fotos: d.fotos });
+                // Lógica de processamento
+                const processarItem = (childSnap) => {
+                    const d = childSnap.val();
+                    if(d.plano > 0) {
+                        const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                        if(agora > dataFim) {
+                            d.plano = 0; d.pos = 999;
+                            if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
+                            db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999, fotos: d.fotos });
+                        }
+                    }
+                    listaFiltrada.push({key: childSnap.key, ...d});
+                    bancoDeFotos[childSnap.key] = d.fotos;
+                };
+
+                // Se não encontrar nada na nova chave, faz busca antiga para compatibilidade (Fallback)
+                if(!snap.exists()) {
+                    db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', fallbackSnap => {
+                        fallbackSnap.forEach(child => {
+                            const d = child.val();
+                            if(normalizarTxt(d.cidade) === termoNormal || normalizarTxt(d.cidade).includes(termoNormal)) {
+                                processarItem(child);
                             }
-                        }
-                        listaFiltrada.push({key: child.key, ...d});
-                        bancoDeFotos[child.key] = d.fotos;
-                    }
-                });
-
-                listaFiltrada.sort((a, b) => { 
-                    const pA = parseInt(a.pos || 999); const pB = parseInt(b.pos || 999); 
-                    if (pA === pB) return b.criadoEm - a.criadoEm;
-                    return pA - pB; 
-                });
-
-                listaFiltrada.forEach(d => {
-                    const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', vi seu anuncio no Segredo Urbano e gostaria de mais informações!')}`;
-                    const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
-                    const estaOn = checkStatus(d.horario_atend);
-                    let opcionalHtml = '<div class="info-opcional-bar">';
-                    if(estaOn) opcionalHtml += `<div class="badge-opcional badge-on">🟢 DISPONÍVEL AGORA</div>`;
-                    if(d.v_hora) opcionalHtml += `<div class="badge-opcional destaque-valor">💵 R$ ${d.v_hora}</div>`;
-                    if(d.tem_local === 'sim') opcionalHtml += `<div class="badge-opcional">🏠 COM LOCAL</div>`;
-                    if(d.tem_local === 'nao') opcionalHtml += `<div class="badge-opcional">🚗 SÓ SAÍDAS</div>`;
-                    opcionalHtml += '</div>';
-
-                    // Lógica Adicional: Botões Privacy e OnlyFans (Exibição apenas para planos ativos)
-                    let conteudosHtml = '';
-                    if(d.plano > 0) {
-                        if(d.privacyLink) {
-                            conteudosHtml += `<a href="${d.privacyLink}" target="_blank" class="btn btn-privacy">Conteúdos PRIVACY</a>`;
-                        }
-                        if(d.onlyfansLink) {
-                            conteudosHtml += `<a href="${d.onlyfansLink}" target="_blank" class="btn btn-onlyfans">Conteúdos ONLYFANS</a>`;
-                        }
-                    }
-
-                    const borradas = d.fotosBorradas || [];
-
-                    if(d.plano > 0) {
-                        const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%);' : '';
-                        lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
-                    } else {
-                        const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%)' : '';
-                        lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
-                    }
-                });
-
-                btnBusca.innerHTML = originalIcon;
-                if(listaFiltrada.length === 0) { document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termoOriginal.toUpperCase()}.`; document.getElementById('aviso-vazio').style.display = 'block'; } else { document.getElementById('aviso-vazio').style.display = 'none'; }
+                        });
+                        finalizarRenderizacao(listaFiltrada, btnBusca, originalIcon, termoOriginal);
+                    });
+                } else {
+                    snap.forEach(processarItem);
+                    finalizarRenderizacao(listaFiltrada, btnBusca, originalIcon, termoOriginal);
+                }
             });
             return true;
+        }
+
+        function finalizarRenderizacao(listaFiltrada, btnBusca, icon, termo) {
+            const lv = document.getElementById('lv');
+            listaFiltrada.sort((a, b) => { 
+                const pA = parseInt(a.pos || 999); const pB = parseInt(b.pos || 999); 
+                if (pA === pB) return b.criadoEm - a.criadoEm;
+                return pA - pB; 
+            });
+
+            listaFiltrada.forEach(d => {
+                const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', vi seu anuncio no Segredo Urbano e gostaria de mais informações!')}`;
+                const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
+                const estaOn = checkStatus(d.horario_atend);
+                let opcionalHtml = '<div class="info-opcional-bar">';
+                if(estaOn) opcionalHtml += `<div class="badge-opcional badge-on">🟢 DISPONÍVEL AGORA</div>`;
+                if(d.v_hora) opcionalHtml += `<div class="badge-opcional destaque-valor">💵 R$ ${d.v_hora}</div>`;
+                if(d.tem_local === 'sim') opcionalHtml += `<div class="badge-opcional">🏠 COM LOCAL</div>`;
+                if(d.tem_local === 'nao') opcionalHtml += `<div class="badge-opcional">🚗 SÓ SAÍDAS</div>`;
+                opcionalHtml += '</div>';
+
+                let conteudosHtml = '';
+                if(d.plano > 0) {
+                    if(d.privacyLink) conteudosHtml += `<a href="${d.privacyLink}" target="_blank" class="btn btn-privacy">Conteúdos PRIVACY</a>`;
+                    if(d.onlyfansLink) conteudosHtml += `<a href="${d.onlyfansLink}" target="_blank" class="btn btn-onlyfans">Conteúdos ONLYFANS</a>`;
+                }
+
+                const borradas = d.fotosBorradas || [];
+                if(d.plano > 0) {
+                    const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%);' : '';
+                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
+                } else {
+                    const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%)' : '';
+                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                }
+            });
+
+            btnBusca.innerHTML = icon;
+            if(listaFiltrada.length === 0) { 
+                document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termo.toUpperCase()}.`; 
+                document.getElementById('aviso-vazio').style.display = 'block'; 
+            } else { document.getElementById('aviso-vazio').style.display = 'none'; }
         }
 
         window.onpopstate = function(event) { 
@@ -1091,11 +1067,14 @@
             }
             
             if(w.length <= 11) w = "55" + w;
+            
+            // OTIMIZAÇÃO: Adicionado o campo status_cidade no cadastro
             db.ref('anuncios').push({ 
                 nome:n, cidade:c, estado:st, bairro:b, email:em, whats:w, fotos:imgs, 
                 plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
                 v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: [],
-                privacyLink: pLink, onlyfansLink: oLink
+                privacyLink: pLink, onlyfansLink: oLink,
+                status_cidade: `pendente_${normalizarTxt(c)}`
             }).then(() => { 
                 btn.innerText = originalText;
                 btn.style.boxShadow = "none";
@@ -1248,7 +1227,8 @@
                     if(d.fotos) d.fotos.forEach((f, idx) => { 
                         fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; 
                     });
-                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now()}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
+                    // OTIMIZAÇÃO: Ao aprovar, já cria a status_cidade
+                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now(), status_cidade:'ativo_'+normalizarTxt('${d.cidade}')}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
                 });
             });
 
@@ -1276,7 +1256,7 @@
                                     <div class="info-recuperacao-adm">📧 ${d.email}</div>
                                     <div style="margin-top:5px;">
                                         <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
-                                        <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value}).then(()=>renderizarListasAdm())">
+                                        <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value, status_cidade: (d.status||'ativo')+'_'+normalizarTxt(this.value)}).then(()=>renderizarListasAdm())">
                                         <select class="inp-cidade-adm-edit" style="width:60px !important;" onchange="db.ref('anuncios/${key}').update({estado:this.value}).then(()=>renderizarListasAdm())">
                                             <option value="">UF</option>
                                             ${optionsUF}
