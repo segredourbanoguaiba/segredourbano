@@ -72,7 +72,7 @@
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; transition: filter 0.3s; }
         .card-gratis b { font-size: 18px; }
         .galeria-social { width: 100%; overflow: hidden; margin-top: 15px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
-        .social-track { display: flex; width: max-content; animation: scroll-social 30s linear infinite; gap: 15px; padding-left: 15px; }
+        .social-track { display: flex; width: max-content; animation: scroll-social 40s linear infinite; gap: 15px; padding-left: 15px; }
         .item-social { width: 70px; text-align: center; flex-shrink: 0; }
         .item-social img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid #333; transition: filter 0.3s; }
         .item-social span { display: block; font-size: 8px; color: #888; text-transform: uppercase; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -134,7 +134,7 @@
         .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
         #slot-counter { font-size: 11px; color: gold; font-weight: bold; margin-bottom: 10px; display: block; }
         .inp-whats-adm-edit { width: 95% !important; background: #111 !important; border: 1px solid #2ecc71 !important; color: #2ecc71 !important; padding: 6px !important; font-size: 12px !important; border-radius: 4px !important; margin-top: 5px !important; font-weight: bold !important; text-align: center !important; }
-        .alerta-troca-tel { background: #1a1a1a00; border: 1px solid gold; padding: 12px; border-radius: 8px; margin: 15px 0; text-align: left; background-color: #1a1a00; }
+        .alerta-troca-tel { background: #1a1a1a00; border: 1px solid gold; padding: 12px; border-radius: 8px; margin: 15px 0; text-align: left; background-color: #1a1a1a00; }
         .alerta-troca-tel p { font-size: 11px; color: #fff; margin: 0 0 8px; line-height: 1.4; }
         .alerta-troca-tel b { color: gold; }
         .btn-edit-fotos-adm { background: #fff; color: #000; border: 1px solid red; font-size: 9px; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 5px; text-transform: uppercase; font-weight: 900; width: 100%; display: block; }
@@ -332,7 +332,7 @@
                 <option value="nao">Apenas Saídas</option>
             </select>
             
-            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">HORÁRIO DE ATENDIMENTO:</p>
+            <p style="font-size: 11px; text-align: left; color: #888; margin-top: 15px; margin-left: 5%;">HORÁRIO DE ATENDIMENTO:</p>
             <div class="grid-horarios">
                 <input type="text" id="edit-h-abre" placeholder="Início (Ex: 08)">
                 <input type="text" id="edit-h-fecha" placeholder="Fim (Ex: 22)">
@@ -784,6 +784,7 @@
                     tem_local: l, 
                     horario_atend: hFinal, 
                     fotos: imgsEdit,
+                    foto_capa: imgsEdit[0], 
                     privacyLink: pLink,
                     onlyfansLink: oLink,
                     status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`
@@ -830,7 +831,6 @@
             });
         }
 
-        // ECONOMIA REAL: Somando 1 por 1 em tempo real com custo zero
         function filtrarPorCidade(termoManual = "") {
             const btnBusca = document.getElementById('btn-lupa-busca');
             const originalIcon = btnBusca.innerHTML;
@@ -850,7 +850,6 @@
             lv.innerHTML = '<p style="color:#666; margin-top:20px;">Buscando anúncios...</p>'; 
             ir('vitrine');
             
-            // CONTADOR REAL 1 POR 1
             db.ref('cliques_vitrine').transaction((atual) => (atual || 0) + 1);
 
             document.getElementById('badge-local-topo').innerText = "📍 " + termoOriginal.toUpperCase();
@@ -861,7 +860,8 @@
                 lv.innerHTML = '';
                 let listaFiltrada = [];
                 const agora = Date.now();
-                const processarItem = (childSnap) => {
+                
+                snap.forEach(childSnap => {
                     const d = childSnap.val();
                     if(d.plano > 0) {
                         const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
@@ -872,23 +872,9 @@
                         }
                     }
                     listaFiltrada.push({key: childSnap.key, ...d});
-                    bancoDeFotos[childSnap.key] = d.fotos;
-                };
-
-                if(!snap.exists()) {
-                    db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', fallbackSnap => {
-                        fallbackSnap.forEach(child => {
-                            const d = child.val();
-                            if(normalizarTxt(d.cidade) === termoNormal || normalizarTxt(d.cidade).includes(termoNormal)) {
-                                processarItem(child);
-                            }
-                        });
-                        finalizarRenderizacao(listaFiltrada, btnBusca, originalIcon, termoOriginal);
-                    });
-                } else {
-                    snap.forEach(processarItem);
-                    finalizarRenderizacao(listaFiltrada, btnBusca, originalIcon, termoOriginal);
-                }
+                    bancoDeFotos[childSnap.key] = d.fotos; // CACHE DAS FOTOS CRIADO AQUI
+                });
+                finalizarRenderizacao(listaFiltrada, btnBusca, originalIcon, termoOriginal);
             });
             return true;
         }
@@ -921,10 +907,10 @@
                 const borradas = d.fotosBorradas || [];
                 if(d.plano > 0) {
                     const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%);' : '';
-                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.fotos[0]}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
+                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.foto_capa || d.fotos[0]}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
                 } else {
                     const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%)' : '';
-                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.fotos[0]}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.foto_capa || d.fotos[0]}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
                 }
             });
 
@@ -1058,6 +1044,7 @@
             
             db.ref('anuncios').push({ 
                 nome:n, cidade:c, estado:st, bairro:b, email:em, whats:w, fotos:imgs, 
+                foto_capa: imgs[0],
                 plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
                 v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: [],
                 privacyLink: pLink, onlyfansLink: oLink,
@@ -1082,23 +1069,34 @@
             }, 6000);
         }
 
+        // GALERIA ULTRA ECONÔMICA COM CACHE LOCAL
         function abrirGaleria(key, idxManual) { 
+            let lista = bancoDeFotos[key]; 
+            if (lista) {
+                processarGaleriaLocal(key, lista, idxManual);
+            } else {
+                db.ref('anuncios/' + key).once('value', snap => {
+                    const data = snap.val();
+                    if(!data) return;
+                    bancoDeFotos[key] = data.fotos;
+                    processarGaleriaLocal(key, data.fotos, idxManual);
+                });
+            }
+        }
+
+        function processarGaleriaLocal(key, lista, idxManual) {
             db.ref('anuncios/' + key).once('value', snap => {
                 const data = snap.val();
-                let lista = data.fotos; 
                 const plano = data.plano;
                 const borradas = data.fotosBorradas || [];
-                if(!plano || plano <= 0) { lista = lista.slice(0, 3); }
-                fotosGaleria = lista; 
+                let fotosExibir = (plano > 0) ? lista : lista.slice(0, 3);
+                fotosGaleria = fotosExibir; 
                 fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
                 if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
-                
                 const imgEl = document.getElementById('img-ampliada');
                 imgEl.src = fotosGaleria[fotoIndex]; 
-                
                 const isFacialOk = document.body.classList.contains('facial-verificado');
                 imgEl.style.filter = (!isFacialOk && borradas.includes(fotoIndex)) ? 'blur(15px) grayscale(100%)' : '';
-                
                 document.getElementById('modal-galeria').setAttribute('data-current-key', key);
                 document.getElementById('modal-galeria').style.display = 'block';
             });
@@ -1111,12 +1109,10 @@
             fotoIndex += dir; 
             if(fotoIndex >= fotosGaleria.length) fotoIndex = 0; 
             if(fotoIndex < 0) fotoIndex = fotosGaleria.length - 1; 
-            
             db.ref('anuncios/' + key + '/fotosBorradas').once('value', snap => {
                 const borradas = snap.val() || [];
                 const modalImg = document.getElementById('img-ampliada');
                 modalImg.src = fotosGaleria[fotoIndex];
-                
                 const isFacialOk = document.body.classList.contains('facial-verificado');
                 modalImg.style.filter = (!isFacialOk && borradas.includes(fotoIndex)) ? 'blur(15px) grayscale(100%)' : '';
             });
@@ -1131,7 +1127,7 @@
                 let novasFotos = snap.val();
                 if(novasFotos) {
                     novasFotos.splice(fotoIdx, 1);
-                    db.ref('anuncios/' + anuncioKey).update({ fotos: novasFotos }).then(() => renderizarListasAdm());
+                    db.ref('anuncios/' + anuncioKey).update({ fotos: novasFotos, foto_capa: novasFotos[0] }).then(() => renderizarListasAdm());
                 }
             });
         }
@@ -1165,7 +1161,6 @@
             }
             divGrade.innerHTML = 'Carregando...';
             divGrade.style.display = 'flex';
-
             db.ref('anuncios/' + key).once('value', snap => {
                 const d = snap.val();
                 const borradas = d.fotosBorradas || [];
@@ -1189,29 +1184,23 @@
             const trList = document.getElementById('lista-troca-tel');
             const seletor = document.getElementById('filtro-adm-cidade'); 
             const vSalvo = seletor.value || 'todas'; 
-            
             ap.innerHTML = ''; aa.innerHTML = ''; upList.innerHTML = ''; trList.innerHTML = '';
-
-            // LEITURA ÚNICA E ECONÔMICA DO CONTADOR NO ADM
             db.ref('cliques_vitrine').once('value', s => { 
                 if(document.getElementById('display-cliques')) 
                    document.getElementById('display-cliques').innerText = s.val() || 0; 
             });
-
             db.ref('pedidos_troca_tel').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
                     trList.innerHTML += `<div class="item-adm" style="border-left: 5px solid #25D366;"><b>${p.nome}</b> (${p.cidade})<br>Número Atual: ${p.numeroAtual}<br>Solicitou mudar para: <b>${p.numeroNovo}</b><div style="margin-top:10px;"><button onclick="aprovarTrocaTel('${ped.key}', '${p.anuncioKey}', '${p.numeroNovo}')" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR E DAR 7 DIAS</button> <button onclick="db.ref('pedidos_troca_tel/${ped.key}').remove().then(()=>renderizarListasAdm())" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
-
             db.ref('pedidos_upgrade').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
                     upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="db.ref('pedidos_upgrade/${ped.key}').remove().then(()=>renderizarListasAdm())" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
-
             db.ref('anuncios').orderByChild('status').equalTo('pendente').once('value', snap => {
                 snap.forEach(item => {
                     const d = item.val(); const key = item.key;
@@ -1220,10 +1209,9 @@
                     if(d.fotos) d.fotos.forEach((f, idx) => { 
                         fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; 
                     });
-                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', criadoEm:Date.now(), status_cidade:'ativo_'+normalizarTxt('${d.cidade}')}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
+                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', foto_capa: '${d.fotos[0]}', criadoEm:Date.now(), status_cidade:'ativo_'+normalizarTxt('${d.cidade}')}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
                 });
             });
-
             if(vSalvo !== 'todas') {
                 aa.innerHTML = 'Carregando cidade...';
                 db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
@@ -1237,9 +1225,8 @@
                             const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
                             const ufs = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
                             let optionsUF = ufs.map(uf => `<option value="${uf}" ${d.estado === uf ? 'selected' : ''}>${uf}</option>`).join('');
-                            
                             aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;">
-                                <img src="${d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
+                                <img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
                                 <div style="flex:1;">
                                     <b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}] <span style="color:#25D366; font-size:9px; border:1px dashed #25D366; padding:1px 4px; border-radius:3px; margin-left:5px;">TOKEN: ${tokenS}</span>
                                     <div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div>
@@ -1266,7 +1253,6 @@
             } else {
                 aa.innerHTML = '<p style="color:#666; font-size:12px; padding:10px;">Selecione uma cidade no filtro para carregar os anúncios ativos.</p>';
             }
-
             db.ref('anuncios').once('value', snap => {
                 let cidadesUnicas = new Set();
                 snap.forEach(item => { if(item.val().cidade) cidadesUnicas.add(item.val().cidade.trim().toUpperCase()); });
@@ -1298,19 +1284,15 @@
             const seletor = document.getElementById('filtro-prazos-cidade');
             const vSelecionado = seletor.value || 'todas';
             cont.innerHTML = 'Carregando...';
-            
             db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
                 cont.innerHTML = '';
                 let cidadesAtivasSet = new Set();
                 const agora = Date.now();
                 const termoNormal = normalizarTxt(vSelecionado);
-
                 snap.forEach(item => {
                     const d = item.val();
                     if(d.cidade) cidadesAtivasSet.add(d.cidade.trim().toUpperCase());
-                    
                     if(vSelecionado !== 'todas' && normalizarTxt(d.cidade) !== termoNormal) return;
-                    
                     let prazoHtml = "";
                     if(d.plano > 0) {
                         const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
@@ -1320,10 +1302,8 @@
                         else if(diasRestantes <= 1) prazoHtml = `<span style="color:orange; font-weight:bold;">⏳ VENCE HOJE</span>`;
                         else prazoHtml = `<span style="color:#25D366;">⏳ Restam ${diasRestantes} dias</span>`;
                     } else { prazoHtml = `<span style="color:#888;">PLANO GRÁTIS</span>`; }
-                    
                     cont.innerHTML += `<div class="item-prazo" style="border-left: 4px solid ${d.plano > 0 ? '#d4af37' : '#555'};"><div class="prazo-info"><b>${d.nome}</b><span>${d.cidade} | ${prazoHtml}</span></div><div style="text-align:right;"><a href="https://wa.me/${d.whats}" class="btn-prazo-zap">ZAP</a><button class="btn-prazo-del" onclick="if(confirm('Deletar?')) db.ref('anuncios/${item.key}').remove().then(()=>renderizarPrazos())">X</button></div></div>`;
                 });
-                
                 let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
                 Array.from(cidadesAtivasSet).sort().forEach(c => { opcoes += `<option value="${c}" ${vSelecionado === c ? 'selected' : ''}>${c}</option>`; });
                 seletor.innerHTML = opcoes;
@@ -1333,19 +1313,16 @@
 
         db.ref('anuncios').orderByChild('status').equalTo('ativo').limitToFirst(20).once('value', s => {
             const track = document.getElementById('track-social'); 
-            let ativos = [];
+            let html = '';
             s.forEach(i => { 
                 const d = i.val(); 
                 const borrada = (d.fotosBorradas || []).includes(0);
-                ativos.push({ foto: d.fotos[0], cidade: d.cidade, borrada: borrada });
+                const capa = d.foto_capa || d.fotos[0];
+                const style = borrada ? 'style="filter: blur(8px) grayscale(100%);"' : '';
+                html += `<div class="item-social"><img src="${capa}" ${style} loading="lazy"><span>${d.cidade}</span></div>`; 
             });
-            if(ativos.length > 0 && track) {
+            if(html !== '' && track) {
                 document.getElementById('area-social').style.display = 'block';
-                let html = ''; 
-                ativos.sort(() => Math.random() - 0.5).slice(0, 10).forEach(m => { 
-                    const style = m.borrada ? 'filter: blur(8px) grayscale(100%);' : '';
-                    html += `<div class="item-social"><img src="${m.foto}" style="${style}" loading="lazy"><span>${m.cidade}</span></div>`; 
-                });
                 track.innerHTML = html + html;
             }
         });
