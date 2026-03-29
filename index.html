@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+Revise o código e<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -485,6 +485,14 @@
         
         let inatividadeTimer; 
 
+        function avisarTelegram(nome, cidade, acao = "NOVO ANÚNCIO") {
+            const token = "8707535433:AAH-p0ZELjRJnlSipHKNMD_aP-_XfNyY1NE";
+            const chatId = "7105173459";
+            const msg = `🔔 *${acao}!*%0A---------------------------%0A👤 *Nome:* ${nome}%0A📍 *Cidade:* ${cidade}%0A%0A🚀 _Acesse o Painel ADM para conferir._`;
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${msg}&parse_mode=Markdown`;
+            fetch(url).catch(e => console.error("Erro Telegram"));
+        }
+
         function resetarTimerInatividade() {
             clearTimeout(inatividadeTimer);
             firebase.database().goOnline();
@@ -789,7 +797,11 @@
                     onlyfansLink: oLink,
                     status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`
                 };
-                db.ref('anuncios/' + keyEdicao).update(upData).then(() => { alert("Dados atualizados com sucesso!"); ir('menu'); });
+                db.ref('anuncios/' + keyEdicao).update(upData).then(() => { 
+                    avisarTelegram(data.nome, data.cidade, "ANÚNCIO EDITADO");
+                    alert("Dados atualizados com sucesso!"); 
+                    ir('menu'); 
+                });
             });
         }
 
@@ -801,6 +813,7 @@
                     anuncioKey: keyEdicao, nome: found.nome, cidade: found.cidade,
                     planoSolicitado: d, dataPedido: Date.now()
                 }).then(() => {
+                    avisarTelegram(found.nome, found.cidade, `PEDIDO DE UPGRADE (${d} DIAS)`);
                     document.getElementById('chave-txt').innerText = CHAVES_PIX[d];
                     document.getElementById('valor-aviso').innerText = d === 30 ? "R$ 59,90" : (d === 15 ? "R$ 39,90" : "R$ 19,90");
                     ir('tela-pix');
@@ -823,6 +836,7 @@
                     numeroNovo: novoW,
                     dataPedido: Date.now()
                 }).then(() => {
+                    avisarTelegram(found.nome, found.cidade, "PEDIDO TROCA WHATSAPP");
                     dias = 7; 
                     document.getElementById('chave-txt').innerText = CHAVES_PIX[7];
                     document.getElementById('valor-aviso').innerText = "R$ 19,90";
@@ -872,7 +886,7 @@
                         }
                     }
                     listaFiltrada.push({key: childSnap.key, ...d});
-                    bancoDeFotos[childSnap.key] = d.fotos; // CACHE DAS FOTOS CRIADO AQUI
+                    bancoDeFotos[childSnap.key] = d.fotos;
                 });
                 finalizarRenderizacao(listaFiltrada, btnBusca, originalIcon, termoOriginal);
             });
@@ -1052,6 +1066,7 @@
             }).then(() => { 
                 btn.innerText = originalText;
                 btn.style.boxShadow = "none";
+                avisarTelegram(n, c, "NOVO ANÚNCIO NO SITE");
                 if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); filtrarPorCidade(cidadePostagemOriginal); limparFormulario(); } 
             });
         }
@@ -1069,7 +1084,6 @@
             }, 6000);
         }
 
-        // GALERIA ULTRA ECONÔMICA COM CACHE LOCAL
         function abrirGaleria(key, idxManual) { 
             let lista = bancoDeFotos[key]; 
             if (lista) {
@@ -1192,13 +1206,13 @@
             db.ref('pedidos_troca_tel').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
-                    trList.innerHTML += `<div class="item-adm" style="border-left: 5px solid #25D366;"><b>${p.nome}</b> (${p.cidade})<br>Número Atual: ${p.numeroAtual}<br>Solicitou mudar para: <b>${p.numeroNovo}</b><div style="margin-top:10px;"><button onclick="aprovarTrocaTel('${ped.key}', '${p.anuncioKey}', '${p.numeroNovo}')" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR E DAR 7 DIAS</button> <button onclick="db.ref('pedidos_troca_tel/${ped.key}').remove().then(()=>renderizarListasAdm())" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
+                    trList.innerHTML += `<div class="item-adm" style="border-left: 5px solid #25D366;"><b>${p.nome}</b> (${p.cidade})<br>Número Atual: ${p.numeroAtual}<br>Solicitou mudar para: <b>${p.numeroNovo}</b><div style="margin-top:10px;"><button onclick="aprovarTrocaTel('${ped.key}', '${p.anuncioKey}', '${p.numeroNovo}')" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR E DAR 7 DIAS</button> <button onclick="ignorarPedido('pedidos_troca_tel', '${ped.key}')" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
             db.ref('pedidos_upgrade').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
-                    upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="db.ref('pedidos_upgrade/${ped.key}').remove().then(()=>renderizarListasAdm())" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
+                    upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="ignorarPedido('pedidos_upgrade', '${ped.key}')" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
             db.ref('anuncios').orderByChild('status').equalTo('pendente').once('value', snap => {
@@ -1262,10 +1276,18 @@
             });
         }
 
+        // FUNÇÕES DE APROVAÇÃO BLINDADAS
         function aprovarUpgrade(pedidoKey, anuncioKey, planoDias) {
-            db.ref('anuncios/' + anuncioKey).update({ plano: planoDias, criadoEm: Date.now(), pos: 1 }).then(() => {
-                db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => renderizarListasAdm());
-            });
+            db.ref('anuncios/' + anuncioKey).update({ 
+                plano: parseInt(planoDias), 
+                criadoEm: Date.now(), 
+                pos: 1 
+            }).then(() => {
+                db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => {
+                    alert("Upgrade aprovado com sucesso!");
+                    renderizarListasAdm();
+                });
+            }).catch(e => alert("Erro ao aprovar upgrade."));
         }
 
         function aprovarTrocaTel(pedidoKey, anuncioKey, novoNumero) {
@@ -1275,8 +1297,17 @@
                 criadoEm: Date.now(), 
                 pos: 1 
             }).then(() => {
-                db.ref('pedidos_troca_tel/' + pedidoKey).remove().then(() => renderizarListasAdm());
-            });
+                db.ref('pedidos_troca_tel/' + pedidoKey).remove().then(() => {
+                    alert("Troca de número aprovada!");
+                    renderizarListasAdm();
+                });
+            }).catch(e => alert("Erro ao trocar número."));
+        }
+
+        function ignorarPedido(caminho, key) {
+            if(confirm("Deseja realmente ignorar este pedido?")) {
+                db.ref(caminho + '/' + key).remove().then(() => renderizarListasAdm());
+            }
         }
 
         function renderizarPrazos() {
