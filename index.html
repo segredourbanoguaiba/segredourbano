@@ -246,7 +246,7 @@
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('PR', this)">PARANÁ (PR)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('PE', this)">PERNAMBUCO (PE)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('PI', this)">PIAUÍ (PI)</button>
-                <button class="item-cidade-link" onclick="carregarCidadesEstado('RJ', this)">RIO DE JANEIRO (RJ)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('RJ', 'this')">RIO DE JANEIRO (RJ)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('RN', this)">RIO GRANDE DO NORTE (RN)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('RS', this)">RIO GRANDE DO SUL (RS)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('RO', this)">RONDÔNIA (RO)</button>
@@ -1217,7 +1217,7 @@
             db.ref('pedidos_upgrade').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
-                    upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="ignorarPedido('pedidos_upgrade', '${ped.key}')" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
+                    upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="ignorarPedido('pedidos_upgrade', '${ped.key}')" style="background:#444; color:white; border:none; padding:10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
             db.ref('anuncios').orderByChild('status').equalTo('pendente').once('value', snap => {
@@ -1341,7 +1341,7 @@
             s.forEach(i => { 
                 const d = i.val(); 
                 const borrada = (d.fotosBorradas || []).includes(0);
-                const capa = d.foto_capa || d.fotos[0];
+                const capa = d.foto_carrocel || d.fotos[0];
                 const style = borrada ? 'style="filter: blur(8px) grayscale(100%);"' : '';
                 html += `<div class="item-social"><img src="${capa}" ${style} loading="lazy"><span>${d.cidade}</span></div>`; 
             });
