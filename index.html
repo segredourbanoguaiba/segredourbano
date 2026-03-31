@@ -145,6 +145,11 @@
         .badge-borrada { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(255,0,0,0.8); color: #fff; font-size: 8px; font-weight: bold; padding: 2px 4px; border-radius: 3px; pointer-events: none; }
         .btn-privacy { background: #fff !important; color: #ff6600 !important; border: 1px solid #ff6600 !important; font-weight: 900 !important; }
         .btn-onlyfans { background: #fff !important; color: #0088ff !important; border: 1px solid #0088ff !important; font-weight: 900 !important; }
+        
+        /* Novas Classes para Área do Anunciante Multinível */
+        .card-selecao-anuncio { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid red; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; }
+        .card-selecao-anuncio:hover { background: #220000; transform: scale(1.02); }
+        .card-selecao-anuncio img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid red; }
     </style>
 </head>
 <body>
@@ -293,12 +298,20 @@
 
     <div id="edicao" class="tela">
         <h2 style="color:red; font-family:'Playfair Display';">ÁREA DO ANUNCIANTE</h2>
+        
         <div id="form-busca-edicao">
             <p style="font-size:13px; color:#888;">Para sua segurança, informe os dados idênticos ao cadastro:</p>
             <input type="email" id="email-busca-edit" placeholder="E-mail cadastrado">
             <input type="tel" id="whats-busca-edit" placeholder="WhatsApp (DDD + Número)" autocomplete="tel-national" inputmode="numeric" maxlength="15">
             <button class="btn" onclick="buscarParaEditar()">LOCALIZAR MEU ANÚNCIO</button>
         </div>
+
+        <div id="selecao-perfil-edicao" style="display:none; padding-bottom: 20px;">
+            <p style="font-size:12px; color:gold; margin-bottom: 15px;">Encontramos mais de um anúncio vinculado aos seus dados. Qual você deseja editar?</p>
+            <div id="lista-perfis-encontrados"></div>
+            <button class="btn" style="background:none; border: 1px solid #444;" onclick="abrirEdicao()">VOLTAR</button>
+        </div>
+
         <div id="form-campos-edicao" style="display:none;">
             
             <div class="card-token-seguranca">
@@ -353,6 +366,7 @@
             </div>
 
             <button class="btn" onclick="salvarEdicao()">SALVAR ALTERAÇÕES</button>
+            <button class="btn" style="background:none; border:1px solid #444;" onclick="abrirEdicao()">VOLTAR PARA MEUS ANÚNCIOS</button>
         </div>
         <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('menu')">VOLTAR AO INÍCIO</button>
     </div>
@@ -486,7 +500,6 @@
         let inatividadeTimer; 
 
         function avisarTelegram(nome, cidade, acao = "NOVO ANÚNCIO") {
-            // Reconstrução camuflada do Token para evitar leitura de robôs do GitHub
             const _p1 = "8707535433:AAH-";
             const _p2 = "p0ZELjRJnlSipHKNMD_";
             const _p3 = "aP-_XfNyY1NE";
@@ -663,6 +676,7 @@
 
         function abrirEdicao() { 
             document.getElementById('form-busca-edicao').style.display = 'block';
+            document.getElementById('selecao-perfil-edicao').style.display = 'none';
             document.getElementById('form-campos-edicao').style.display = 'none';
             document.getElementById('email-busca-edit').value = "";
             document.getElementById('whats-busca-edit').value = "";
@@ -676,40 +690,68 @@
             if(whatsBusca.length === 11) whatsBusca = "55" + whatsBusca;
             
             db.ref('anuncios').orderByChild('email').equalTo(emailBusca).once('value', snap => {
-                let found = null;
+                let foundList = [];
                 snap.forEach(child => {
                     const d = child.val();
                     const whatsDb = (d.whats || "").toString().replace(/\D/g, '');
                     if(whatsDb === whatsBusca) {
-                        found = { key: child.key, data: d };
+                        foundList.push({ key: child.key, data: d });
                     }
                 });
 
-                if(found) {
-                    keyEdicao = found.key;
-                    cidadePostagemOriginal = found.data.cidade; 
-                    const tokenS = found.key.slice(-4).toUpperCase();
-                    document.getElementById('token-anunciante-edit').innerText = tokenS;
-                    const infoDiv = document.getElementById('info-modelo-edit');
-                    infoDiv.innerHTML = `<img src="${found.data.fotos[0]}"><div><b style="font-size:18px;">${found.data.nome}</b><br><small style="color:#25D366; font-weight:bold;">Anúncio Localizado ✔️</small></div>`;
-                    document.getElementById('edit-valor').value = found.data.v_hora || "";
-                    document.getElementById('edit-local').value = found.data.tem_local || "nao";
-                    
-                    document.getElementById('edit-privacy').value = found.data.privacyLink || "";
-                    document.getElementById('edit-onlyfans').value = found.data.onlyfansLink || "";
-
-                    if(found.data.horario_atend && found.data.horario_atend.includes(' às ')) {
-                        const partes = found.data.horario_atend.split(' às ');
-                        document.getElementById('edit-h-abre').value = partes[0];
-                        document.getElementById('edit-h-fecha').value = partes[1];
-                    }
-                    document.getElementById('btn-solicitar-upgrade').style.display = (found.data.plano > 0) ? 'none' : 'block';
-                    imgsEdit = found.data.fotos || [];
-                    renderPreviewEdit();
-                    document.getElementById('form-busca-edicao').style.display = 'none';
-                    document.getElementById('form-campos-edicao').style.display = 'block';
-                } else { alert("Nenhum anúncio encontrado. Verifique se o e-mail e o WhatsApp estão corretos."); }
+                if(foundList.length === 0) {
+                    alert("Nenhum anúncio encontrado. Verifique se o e-mail e o WhatsApp estão corretos.");
+                } else if(foundList.length === 1) {
+                    carregarPerfilParaEditar(foundList[0].key, foundList[0].data);
+                } else {
+                    mostrarOpcoesPerfil(foundList);
+                }
             });
+        }
+
+        function mostrarOpcoesPerfil(perfis) {
+            document.getElementById('form-busca-edicao').style.display = 'none';
+            const listaCont = document.getElementById('lista-perfis-encontrados');
+            listaCont.innerHTML = '';
+            perfis.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'card-selecao-anuncio';
+                card.onclick = () => carregarPerfilParaEditar(p.key, p.data);
+                card.innerHTML = `
+                    <img src="${p.data.fotos[0]}">
+                    <div style="text-align:left;">
+                        <b style="color:white;">${p.data.nome}</b><br>
+                        <small style="color:red;">CIDADE: ${p.data.cidade}</small>
+                    </div>
+                `;
+                listaCont.appendChild(card);
+            });
+            document.getElementById('selecao-perfil-edicao').style.display = 'block';
+        }
+
+        function carregarPerfilParaEditar(key, data) {
+            keyEdicao = key;
+            cidadePostagemOriginal = data.cidade; 
+            const tokenS = key.slice(-4).toUpperCase();
+            document.getElementById('token-anunciante-edit').innerText = tokenS;
+            const infoDiv = document.getElementById('info-modelo-edit');
+            infoDiv.innerHTML = `<img src="${data.fotos[0]}"><div><b style="font-size:18px;">${data.nome}</b><br><small style="color:#25D366; font-weight:bold;">📍 ${data.cidade} ✔️</small></div>`;
+            document.getElementById('edit-valor').value = data.v_hora || "";
+            document.getElementById('edit-local').value = data.tem_local || "nao";
+            document.getElementById('edit-privacy').value = data.privacyLink || "";
+            document.getElementById('edit-onlyfans').value = data.onlyfansLink || "";
+
+            if(data.horario_atend && data.horario_atend.includes(' às ')) {
+                const partes = data.horario_atend.split(' às ');
+                document.getElementById('edit-h-abre').value = partes[0];
+                document.getElementById('edit-h-fecha').value = partes[1];
+            }
+            document.getElementById('btn-solicitar-upgrade').style.display = (data.plano > 0) ? 'none' : 'block';
+            imgsEdit = data.fotos || [];
+            renderPreviewEdit();
+            document.getElementById('selecao-perfil-edicao').style.display = 'none';
+            document.getElementById('form-busca-edicao').style.display = 'none';
+            document.getElementById('form-campos-edicao').style.display = 'block';
         }
 
         async function loadFilesEdit() {
@@ -1036,8 +1078,6 @@
         function enviar() {
             const btn = document.getElementById('btn-enviar-cad');
             const originalText = btn.innerText;
-            btn.innerText = "ENVIANDO...";
-            btn.style.boxShadow = "0 0 15px white";
             
             const n = document.getElementById('n').value.trim(); 
             const c = document.getElementById('cid').value.trim(); 
@@ -1052,27 +1092,47 @@
             const h2 = formatarInputHora(document.getElementById('h_fecha').value);
             const hr = `${h1} às ${h2}`;
             let w = document.getElementById('w').value.replace(/\D/g,''); 
-            cidadePostagemOriginal = c;
             
             if(!n || !c || !b || !w || !em || !st || imgs.length === 0) {
-                btn.innerText = originalText;
-                btn.style.boxShadow = "none";
                 return alert("Preencha todos os campos, inclusive o Estado!");
             }
-            if(w.length <= 11) w = "55" + w;
+            if(w.length === 11) w = "55" + w;
             
-            db.ref('anuncios').push({ 
-                nome:n, cidade:c, estado:st, bairro:b, email:em, whats:w, fotos:imgs, 
-                foto_capa: imgs[0],
-                plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
-                v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: [],
-                privacyLink: pLink, onlyfansLink: oLink,
-                status_cidade: `pendente_${normalizarTxt(c)}`
-            }).then(() => { 
-                btn.innerText = originalText;
-                btn.style.boxShadow = "none";
-                avisarTelegram(n, c, "NOVO ANÚNCIO NO SITE");
-                if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); filtrarPorCidade(cidadePostagemOriginal); limparFormulario(); } 
+            btn.innerText = "VERIFICANDO...";
+            btn.style.boxShadow = "0 0 15px white";
+
+            // NOVA REGRA DE BLOQUEIO DE DUPLICIDADE
+            const cidadeNormalizada = normalizarTxt(c);
+            db.ref('anuncios').orderByChild('email').equalTo(em).once('value', snap => {
+                let duplicado = false;
+                snap.forEach(child => {
+                    const d = child.val();
+                    const whatsDb = (d.whats || "").toString().replace(/\D/g, '');
+                    if((whatsDb === w || d.email === em) && normalizarTxt(d.cidade) === cidadeNormalizada) {
+                        duplicado = true;
+                    }
+                });
+
+                if(duplicado) {
+                    btn.innerText = originalText;
+                    btn.style.boxShadow = "none";
+                    return alert("Não é possível criar dois anúncios na mesma cidade. Para subir de posição, você deve escolher um plano.");
+                }
+
+                // Se não for duplicado, envia
+                db.ref('anuncios').push({ 
+                    nome:n, cidade:c, estado:st, bairro:b, email:em, whats:w, fotos:imgs, 
+                    foto_capa: imgs[0],
+                    plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
+                    v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: [],
+                    privacyLink: pLink, onlyfansLink: oLink,
+                    status_cidade: `pendente_${cidadeNormalizada}`
+                }).then(() => { 
+                    btn.innerText = originalText;
+                    btn.style.boxShadow = "none";
+                    avisarTelegram(n, c, "NOVO ANÚNCIO NO SITE");
+                    if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); filtrarPorCidade(c); limparFormulario(); } 
+                });
             });
         }
 
@@ -1254,7 +1314,9 @@
                                     <div class="info-recuperacao-adm">📧 ${d.email}</div>
                                     <div style="margin-top:5px;">
                                         <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
-                                        <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value, status_cidade: (d.status||'ativo')+'_'+normalizarTxt(this.value)}).then(()=>renderizarListasAdm())">
+                                        
+                                        <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="const novaCidade = this.value; db.ref('anuncios/${key}').update({cidade:novaCidade, status_cidade: (d.status||'ativo')+'_'+normalizarTxt(novaCidade)}).then(()=>renderizarListasAdm())">
+                                        
                                         <select class="inp-cidade-adm-edit" style="width:60px !important;" onchange="db.ref('anuncios/${key}').update({estado:this.value}).then(()=>renderizarListasAdm())">
                                             <option value="">UF</option>
                                             ${optionsUF}
