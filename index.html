@@ -1317,7 +1317,7 @@
                                     <div style="margin-top:5px;">
                                         <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
                                         
-                                        <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="const novaCidade = this.value; db.ref('anuncios/${key}').update({cidade:novaCidade, status_cidade: (d.status||'ativo')+'_'+normalizarTxt(novaCidade)}).then(()=>renderizarListasAdm())">
+                                        <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="const novaCidade = this.value; db.ref('anuncios/${key}').update({cidade:novaCidade, status_cidade: 'ativo_' + normalizarTxt(novaCidade)}).then(()=>renderizarListasAdm())">
                                         
                                         <select class="inp-cidade-adm-edit" style="width:60px !important;" onchange="db.ref('anuncios/${key}').update({estado:this.value}).then(()=>renderizarListasAdm())">
                                             <option value="">UF</option>
