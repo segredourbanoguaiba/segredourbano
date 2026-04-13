@@ -1133,6 +1133,7 @@
                     btn.innerText = originalText;
                     btn.style.boxShadow = "none";
                     avisarTelegram(n, c, "NOVO ANÚNCIO NO SITE");
+                    cidadePostagemOriginal = c;
                     if(dias > 0) { ir('tela-pix'); } else { alert("Sucesso! Aguarde aprovação."); filtrarPorCidade(c); limparFormulario(); } 
                 });
             });
@@ -1145,6 +1146,7 @@
             setTimeout(() => { 
                 document.getElementById('aviso-pix-central').style.display = "none"; 
                 if(telaAtual === 'tela-pix' && cidadePostagemOriginal) { 
+                    ir('vitrine');
                     filtrarPorCidade(cidadePostagemOriginal); 
                     limparFormulario(); 
                 }
