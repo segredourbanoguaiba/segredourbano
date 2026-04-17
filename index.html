@@ -46,13 +46,29 @@
         #video-facial { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
         .tela { display: none; padding: 20px; }
         .ativa { display: block !important; }
-        .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 8px auto; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; transition: 0.2s; }
+        .btn { background: red; color: #fff; border: none; padding: 16px; width: 100%; max-width: 300px; margin: 0 auto 8px; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; display: block; font-family: 'Montserrat'; text-decoration: none; transition: 0.2s; }
         .btn:active { transform: scale(0.95); }
         .btn small { display: block; font-size: 10px; text-transform: none; font-weight: normal; margin-top: 3px; }
         .btn-whats { background: #25D366 !important; }
         .btn-upgrade { background: gold !important; color: #000 !important; }
-        #btn-suporte-fixo { position: fixed; bottom: 70px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid red; z-index: 1000; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
-        #btn-suporte-fixo-2 { position: fixed; bottom: 30px; left: 15px; background: #fff; color: #000; padding: 8px 15px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 10px; border: 1px solid #25D366; z-index: 1000; display: none; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
+
+        /* NOVOS ESTILOS ISOLADOS - CHAT DE SUPORTE */
+        #btn-suporte-fixo, #btn-suporte-fixo-2 { display: none !important; } /* Ocultando botões antigos via CSS */
+        .btn-suporte-exclusivo { position: fixed; bottom: 15px; left: 15px; background: red; color: #fff; padding: 6px 10px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 9px; border: 1px solid #fff; z-index: 10000; box-shadow: 0 0 20px rgba(255,0,0,0.6); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .btn-suporte-exclusivo svg { width: 12px; height: 12px; }
+        #janela-chat-suporte { display: none; position: fixed; bottom: 50px; left: 15px; width: 310px; height: 450px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); border: 2px solid red; border-radius: 15px; z-index: 10001; flex-direction: column; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.9); }
+        .chat-header { background: red; color: white; padding: 12px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+        .chat-body { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-footer { padding: 10px; border-top: 1px solid #333; display: flex; gap: 5px; }
+        .chat-input { flex: 1; background: #111; border: 1px solid #444; color: white; padding: 10px; border-radius: 5px; font-size: 12px; margin: 0 !important; width: auto !important; }
+        .chat-btn-enviar { background: red; border: none; color: white; padding: 0 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .msg-bolha { padding: 8px 12px; border-radius: 10px; font-size: 12px; max-width: 80%; line-height: 1.4; }
+        .msg-suporte { background: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg-anunciante { background: red; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-valida-form { padding: 25px; text-align: center; }
+        .chat-valida-form p { font-size: 12px; color: #ccc; margin-bottom: 20px; }
+        .badge-atendimento { background: #25D366; color: #000; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
+
         .cidade-txt { text-align: left; font-size: 10px; color: #ff0000; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         .bairro-txt { color: #888; font-size: 10px; margin-left: 5px; text-transform: uppercase; font-weight: normal; }
         .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; }
@@ -71,7 +87,7 @@
         .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; transition: filter 0.3s; }
         .card-gratis b { font-size: 18px; }
-        .galeria-social { width: 100%; overflow: hidden; margin-top: 15px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
+        .galeria-social { width: 100%; overflow: hidden; margin-top: 5px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
         .social-track { display: flex; width: max-content; animation: scroll-social 40s linear infinite; gap: 15px; padding-left: 15px; }
         .item-social { width: 70px; text-align: center; flex-shrink: 0; }
         .item-social img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid #333; transition: filter 0.3s; }
@@ -99,7 +115,7 @@
         .info-recuperacao-adm { font-size: 10px; color: #888; margin-top: 8px; background: #1a1a1a; padding: 5px; border-radius: 4px; border: 1px solid #222; }
         .btn-toggle-plano { background: #333; color: #fff; border: 1px solid #555; font-size: 9px; padding: 5px; border-radius: 4px; cursor: pointer; margin-top: 8px; text-transform: uppercase; font-weight: bold; width: 100%; }
         .btn-toggle-plano:hover { background: gold; color: #000; }
-        #container-busca-cidade { display: none; padding: 15px; background: #000; }
+        #container-busca-cidade { display: none; padding: 15px 15px 0px; background: #000; }
         .caixa-busca-moderna { display: flex; max-width: 400px; margin: 0 auto; gap: 8px; }
         .inp-busca-txt { flex: 1; background: #111; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 25px; outline: none; font-size: 14px; transition: border-color 0.3s; }
         .btn-busca-lupa { background: red; border: none; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
@@ -118,7 +134,7 @@
         .identificacao-modelo img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid red; }
         .grid-horarios { display: flex; gap: 10px; width: 90%; margin: 8px auto; }
         .grid-horarios input { width: 100% !important; margin: 0 !important; }
-        .btn-todas-cidades { background: transparent; color: #888; border: 1px solid #222; padding: 8px 15px; border-radius: 20px; font-size: 10px; font-weight: bold; margin: 10px auto; cursor: pointer; display: block; transition: 0.3s; }
+        .btn-todas-cidades { background: transparent; color: #888; border: 1px solid #222; padding: 8px 15px; border-radius: 20px; font-size: 10px; font-weight: bold; margin: 5px auto 0; cursor: pointer; display: block; transition: 0.3s; }
         .btn-todas-cidades:hover { color: red; border-color: red; }
         #modal-cidades { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000002; padding: 20px; box-sizing: border-box; overflow-y: auto; height: 100%; top: 0; left: 0; }
         .lista-cidades-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
@@ -150,6 +166,12 @@
         .card-selecao-anuncio { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid red; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; }
         .card-selecao-anuncio:hover { background: #220000; transform: scale(1.02); }
         .card-selecao-anuncio img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid red; }
+
+        /* ESTILOS DOS BOTÕES DE GÊNERO */
+        .container-genero-filtros { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        .btn-filtro-genero { background: #111; color: #fff; border: 1px solid #333; padding: 8px 15px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-filtro-genero:active, .btn-filtro-genero.ativo { background: red; border-color: red; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
+        .inp-genero-adm { background: #111 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; width: 100% !important; margin-top: 5px !important; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -203,6 +225,34 @@
 
     <a href="https://wa.me/5551981833377?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo">● SUPORTE 1</a>
     <a href="https://wa.me/5551981521281?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo-2">● SUPORTE 2</a>
+
+    <div id="btn-suporte-novissimo" class="btn-suporte-exclusivo" onclick="abrirSuporteNovo()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20,2H4C2.9,2,2,2.9,2,4v18l4-4h14c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z"/></svg>
+        Suporte Exclusivo
+    </div>
+
+    <div id="janela-chat-suporte">
+        <div class="chat-header">
+            <span>SUPORTE EXCLUSIVO</span>
+            <span style="cursor:pointer;" onclick="fecharSuporteNovo()">&times;</span>
+        </div>
+        
+        <div id="chat-form-valida" class="chat-valida-form">
+            <p>Olá! Confirme seus dados de anunciante para iniciar o chat em tempo real.</p>
+            <input type="email" id="chat-val-email" placeholder="Seu E-mail cadastrado">
+            <input type="tel" id="chat-val-tel" placeholder="WhatsApp (DDD + Número)" maxlength="15">
+            <button class="btn" onclick="validarAnuncianteParaChat()" id="chat-btn-validar">VERIFICAR E INICIAR</button>
+        </div>
+
+        <div id="chat-interface-ativa" style="display:none; flex-direction:column; height:100%;">
+            <div id="chat-mensagens-area" class="chat-body"></div>
+            <div class="chat-footer">
+                <input type="text" id="chat-input-msg" class="chat-input" placeholder="Escreva aqui..." onkeydown="if(event.key==='Enter') enviarMensagemSuporte()">
+                <button class="chat-btn-enviar" onclick="enviarMensagemSuporte()">></button>
+            </div>
+            <button onclick="encerrarChatSuporte()" style="background:none; border:none; color:#777; font-size:9px; padding:5px; cursor:pointer;">Encerrar Conversa</button>
+        </div>
+    </div>
 
     <header style="padding-top:20px;">
         <button id="btn-prazos-esq" onclick="logAdm('tela-prazos')"></button>
@@ -340,6 +390,13 @@
 
             <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">VALOR POR HORA:</p>
             <input type="text" id="edit-valor" placeholder="Ex: 250">
+
+            <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">MEU GÊNERO:</p>
+            <select id="edit-genero">
+                <option value="Feminino">Feminino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Trans">Trans</option>
+            </select>
             
             <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">LOCAL DE ATENDIMENTO:</p>
             <select id="edit-local">
@@ -396,6 +453,13 @@
         <p id="aviso-limite" style="color:red; font-size:11px; margin-bottom:10px; font-weight:bold;"></p>
         <input type="text" id="n" placeholder="Nome Artístico">
         
+        <select id="gen_cad">
+            <option value="">Selecione seu Gênero</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Trans">Trans</option>
+        </select>
+
         <select id="est_cad">
             <option value="">Selecione seu Estado</option>
             <option value="AC">Acre (AC)</option>
@@ -463,6 +527,11 @@
     </div>
 
     <div id="vitrine" class="tela">
+        <div class="container-genero-filtros">
+            <button class="btn-filtro-genero ativo" onclick="filtrarPorGenero('Feminino', this)">MULHERES</button>
+            <button class="btn-filtro-genero" onclick="filtrarPorGenero('Masculino', this)">HOMENS</button>
+            <button class="btn-filtro-genero" onclick="filtrarPorGenero('Trans', this)">TRANS</button>
+        </div>
         <div id="aviso-vazio">
             <p id="txt-aviso-vazio"></p>
         </div>
@@ -476,6 +545,10 @@
         <select id="filtro-adm-cidade" class="seletor-cidade-adm" onchange="renderizarListasAdm()">
             <option value="todas">SELECIONE UMA CIDADE PARA CARREGAR</option>
         </select>
+
+        <h4 style="text-align:left; color:red;">💬 CHATS DE SUPORTE ATIVOS:</h4>
+        <div id="lista-adm-suporte-chats"></div>
+        <hr style="border-color:#333;">
 
         <h4 style="text-align:left; color:#25D366;">🔄 PEDIDOS DE TROCA DE NÚMERO:</h4>
         <div id="lista-troca-tel"></div>
@@ -501,6 +574,9 @@
         
         let inatividadeTimer; 
 
+        // VARIÁVEIS ISOLADAS DO CHAT
+        let chatGlobalId = null;
+
         function avisarTelegram(nome, cidade, acao = "NOVO ANÚNCIO") {
             const _p1 = "8707535433:AAH-";
             const _p2 = "p0ZELjRJnlSipHKNMD_";
@@ -511,6 +587,97 @@
             const msg = `🔔 *${acao}!*%0A---------------------------%0A👤 *Nome:* ${nome}%0A📍 *Cidade:* ${cidade}%0A%0A🚀 _Acesse o Painel ADM para conferir._`;
             const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${msg}&parse_mode=Markdown`;
             fetch(url).catch(e => console.error("Erro Telegram"));
+        }
+
+        // NOVAS FUNÇÕES ISOLADAS DO SUPORTE NOVO
+        function abrirSuporteNovo() { document.getElementById('janela-chat-suporte').style.display = 'flex'; }
+        
+        // CORREÇÃO: Função fecharSuporteNovo agora chama encerrarChatSuporte DIRETAMENTE sem confirm para a anunciante
+        function fecharSuporteNovo() { 
+            if(chatGlobalId) {
+                encerrarChatSuporte();
+            } else {
+                document.getElementById('janela-chat-suporte').style.display = 'none';
+            }
+        }
+
+        function validarAnuncianteParaChat() {
+            const email = document.getElementById('chat-val-email').value.trim().toLowerCase();
+            let tel = document.getElementById('chat-val-tel').value.replace(/\D/g, '');
+            if(!email || !tel) return alert("Informe e-mail e Whats para continuar.");
+            if(tel.length === 11) tel = "55" + tel;
+
+            const btnVal = document.getElementById('chat-btn-validar');
+            btnVal.innerText = "VERIFICANDO...";
+
+            db.ref('anuncios').orderByChild('email').equalTo(email).once('value', snap => {
+                let check = false; let nomeAn = ""; let cidAn = "";
+                snap.forEach(child => {
+                    const d = child.val();
+                    if(d.whats === tel) { check = true; nomeAn = d.nome; cidAn = d.cidade; }
+                });
+
+                if(check) {
+                    chatGlobalId = tel;
+                    document.getElementById('chat-form-valida').style.display = 'none';
+                    document.getElementById('chat-interface-ativa').style.display = 'flex';
+                    iniciarMonitoramentoChat(nomeAn, cidAn);
+                } else {
+                    alert("Dados não conferem com nenhum anúncio ativo.");
+                    btnVal.innerText = "VERIFICAR E INICIAR";
+                }
+            });
+        }
+
+        function iniciarMonitoramentoChat(nome, cidade) {
+            const refChat = db.ref('suporte_conversas/' + chatGlobalId);
+            refChat.on('value', snap => {
+                const area = document.getElementById('chat-mensagens-area');
+                area.innerHTML = `<div class="msg-bolha msg-suporte">Olá <b>${nome}</b>!<br>Como podemos te ajudar?</div>`;
+                const data = snap.val();
+                if(data && data.mensagens) {
+                    Object.values(data.mensagens).forEach(m => {
+                        const css = m.origem === 'adm' ? 'msg-suporte' : 'msg-anunciante';
+                        area.innerHTML += `<div class="msg-bolha ${css}">${m.texto}</div>`;
+                    });
+                }
+                area.scrollTop = area.scrollHeight;
+            });
+        }
+
+        function enviarMensagemSuporte() {
+            const input = document.getElementById('chat-input-msg');
+            const txt = input.value.trim();
+            if(!txt) return;
+
+            db.ref('suporte_conversas/' + chatGlobalId).once('value', snap => {
+                if(!snap.val()) {
+                    db.ref('anuncios').orderByChild('whats').equalTo(chatGlobalId).once('value', s => {
+                        let n = "Modelo"; let c = "RS";
+                        s.forEach(ch => { n = ch.val().nome; c = ch.val().cidade; });
+                        avisarTelegram(n, c, "NOVA CONVERSA NO CHAT DE SUPORTE");
+                        db.ref('suporte_conversas/' + chatGlobalId).update({ nome: n, cidade: c, start: Date.now() });
+                    });
+                }
+                db.ref('suporte_conversas/' + chatGlobalId + '/mensagens').push({ texto: txt, origem: 'user', time: Date.now() });
+                input.value = '';
+            });
+        }
+
+        function encerrarChatSuporte() {
+            if(chatGlobalId) {
+                const idParaApagar = chatGlobalId;
+                db.ref('suporte_conversas/' + idParaApagar).off(); // Desliga escuta
+                db.ref('suporte_conversas/' + idParaApagar).set(null).then(() => {
+                    chatGlobalId = null;
+                    document.getElementById('chat-mensagens-area').innerHTML = '';
+                    document.getElementById('chat-interface-ativa').style.display = 'none';
+                    document.getElementById('chat-form-valida').style.display = 'block';
+                    document.getElementById('chat-val-email').value = '';
+                    document.getElementById('chat-val-tel').value = '';
+                    document.getElementById('janela-chat-suporte').style.display = 'none';
+                });
+            }
         }
 
         function resetarTimerInatividade() {
@@ -643,6 +810,7 @@
         aplicarMascaraTelefone(document.getElementById('whats-busca-edit'));
         aplicarMascaraTelefone(document.getElementById('w'));
         aplicarMascaraTelefone(document.getElementById('novo-whats-edit'));
+        aplicarMascaraTelefone(document.getElementById('chat-val-tel'));
 
         function formatarInputHora(valor) {
             let n = valor.toString().toLowerCase().replace(/[^0-9]/g, '');
@@ -742,6 +910,7 @@
             document.getElementById('edit-local').value = data.tem_local || "nao";
             document.getElementById('edit-privacy').value = data.privacyLink || "";
             document.getElementById('edit-onlyfans').value = data.onlyfansLink || "";
+            document.getElementById('edit-genero').value = data.genero || "Feminino";
 
             if(data.horario_atend && data.horario_atend.includes(' às ')) {
                 const partes = data.horario_atend.split(' às ');
@@ -828,6 +997,7 @@
         function salvarEdicao() {
             const v = document.getElementById('edit-valor').value;
             const l = document.getElementById('edit-local').value;
+            const g = document.getElementById('edit-genero').value;
             const pLink = document.getElementById('edit-privacy').value.trim();
             const oLink = document.getElementById('edit-onlyfans').value.trim();
             const h1 = formatarInputHora(document.getElementById('edit-h-abre').value);
@@ -839,6 +1009,7 @@
                 const upData = { 
                     v_hora: v, 
                     tem_local: l, 
+                    genero: g,
                     horario_atend: hFinal, 
                     fotos: imgsEdit,
                     foto_capa: imgsEdit[0], 
@@ -937,9 +1108,44 @@
                     listaFiltrada.push({key: childSnap.key, ...d});
                     bancoDeFotos[childSnap.key] = d.fotos;
                 });
-                finalizarRenderizacao(listaFiltrada, btnBusca, originalIcon, termoOriginal);
+                
+                // Padrão: Filtrar por Mulheres ao buscar cidade
+                const btnMulher = document.querySelector('.btn-filtro-genero[onclick*="Feminino"]');
+                filtrarPorGenero('Feminino', btnMulher, listaFiltrada);
             });
+            btnBusca.innerHTML = originalIcon;
             return true;
+        }
+
+        // FILTRO POR GÊNERO COMBINADO COM CIDADE
+        function filtrarPorGenero(genero, btn, listaPreCarregada = null) {
+            document.querySelectorAll('.btn-filtro-genero').forEach(b => b.classList.remove('ativo'));
+            btn.classList.add('ativo');
+
+            const lv = document.getElementById('lv');
+            const termoCidade = normalizarTxt(document.getElementById('inp-filtro-cidade').value);
+            if(!termoCidade) return;
+
+            const processarLista = (snap) => {
+                lv.innerHTML = '';
+                let listaFinal = [];
+                snap.forEach(child => {
+                    const d = child.val ? child.val() : child;
+                    if(d.genero === genero) {
+                        listaFinal.push({key: child.key, ...d});
+                        bancoDeFotos[child.key] = d.fotos;
+                    }
+                });
+                const btnBusca = document.getElementById('btn-lupa-busca');
+                finalizarRenderizacao(listaFinal, btnBusca, btnBusca.innerHTML, document.getElementById('inp-filtro-cidade').value);
+            };
+
+            if(listaPreCarregada) {
+                processarLista(listaPreCarregada);
+            } else {
+                lv.innerHTML = '<p style="color:#666; margin-top:20px;">Filtrando...</p>';
+                db.ref('anuncios').orderByChild('status_cidade').equalTo("ativo_" + termoCidade).once('value', processarLista);
+            }
         }
 
         function finalizarRenderizacao(listaFiltrada, btnBusca, icon, termo) {
@@ -979,7 +1185,7 @@
 
             btnBusca.innerHTML = icon;
             if(listaFiltrada.length === 0) { 
-                document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios em ${termo.toUpperCase()}.`; 
+                document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios nesta categoria em ${termo.toUpperCase()}.`; 
                 document.getElementById('aviso-vazio').style.display = 'block'; 
             } else { document.getElementById('aviso-vazio').style.display = 'none'; }
         }
@@ -1002,8 +1208,7 @@
             const barra = document.getElementById('container-busca-cidade');
             if(['menu', 'vitrine'].includes(id) && document.getElementById('aviso-18').style.display === 'none') { barra.style.display = 'block'; } else { barra.style.display = 'none'; }
             const isMenu = (id === 'menu');
-            document.getElementById('btn-suporte-fixo').style.display = isMenu ? 'block' : 'none';
-            document.getElementById('btn-suporte-fixo-2').style.display = isMenu ? 'block' : 'none';
+            document.getElementById('btn-suporte-novissimo').style.display = isMenu ? 'flex' : 'none';
             document.getElementById('btn-adm-dir').style.display = isMenu ? 'block' : 'none';
             document.getElementById('btn-prazos-esq').style.display = isMenu ? 'block' : 'none';
             if(id === 'adm') renderizarListasAdm();
@@ -1075,6 +1280,7 @@
             document.getElementById('preview').innerHTML = ''; imgs = [];
             document.getElementById('est_cad').value = '';
             document.getElementById('link_privacy').value = ''; document.getElementById('link_onlyfans').value = '';
+            document.getElementById('gen_cad').value = '';
         }
 
         function enviar() {
@@ -1085,6 +1291,7 @@
             const c = document.getElementById('cid').value.trim(); 
             const b = document.getElementById('bai').value.trim(); 
             const st = document.getElementById('est_cad').value;
+            const gn = document.getElementById('gen_cad').value;
             const em = document.getElementById('email_user').value.trim().toLowerCase(); 
             const vh = document.getElementById('v_hora').value.trim(); 
             const loc = document.getElementById('tem_local').value;
@@ -1095,15 +1302,14 @@
             const hr = `${h1} às ${h2}`;
             let w = document.getElementById('w').value.replace(/\D/g,''); 
             
-            if(!n || !c || !b || !w || !em || !st || imgs.length === 0) {
-                return alert("Preencha todos os campos, inclusive o Estado!");
+            if(!n || !c || !b || !w || !em || !st || !gn || imgs.length === 0) {
+                return alert("Preencha todos os campos, inclusive o Estado e Gênero!");
             }
             if(w.length === 11) w = "55" + w;
             
             btn.innerText = "VERIFICANDO...";
             btn.style.boxShadow = "0 0 15px white";
 
-            // NOVA REGRA DE BLOQUEIO DE DUPLICIDADE
             const cidadeNormalizada = normalizarTxt(c);
             db.ref('anuncios').orderByChild('email').equalTo(em).once('value', snap => {
                 let duplicado = false;
@@ -1121,9 +1327,8 @@
                     return alert("Não é possível criar dois anúncios na mesma cidade. Para subir de posição, você deve escolher um plano.");
                 }
 
-                // Se não for duplicado, envia
                 db.ref('anuncios').push({ 
-                    nome:n, cidade:c, estado:st, bairro:b, email:em, whats:w, fotos:imgs, 
+                    nome:n, cidade:c, estado:st, genero:gn, bairro:b, email:em, whats:w, fotos:imgs, 
                     foto_capa: imgs[0],
                     plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
                     v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: [],
@@ -1205,7 +1410,7 @@
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         
         function deletarFotoNaRevisao(anuncioKey, fotoIdx) {
-            if(!confirm("Deseja excluir esta foto antes de aprovar?")) return;
+            if(!confirm("Deseja excluir esta foto?")) return;
             db.ref('anuncios/' + anuncioKey + '/fotos').once('value', snap => {
                 let novasFotos = snap.val();
                 if(novasFotos) {
@@ -1265,9 +1470,18 @@
             const aa = document.getElementById('aa');
             const upList = document.getElementById('lista-upgrades');
             const trList = document.getElementById('lista-troca-tel');
+            const admSupList = document.getElementById('lista-adm-suporte-chats');
             const seletor = document.getElementById('filtro-adm-cidade'); 
             const vSalvo = seletor.value || 'todas'; 
-            ap.innerHTML = ''; aa.innerHTML = ''; upList.innerHTML = ''; trList.innerHTML = '';
+            ap.innerHTML = ''; aa.innerHTML = ''; upList.innerHTML = ''; trList.innerHTML = ''; admSupList.innerHTML = '';
+
+            db.ref('suporte_conversas').once('value', snap => {
+                snap.forEach(chat => {
+                    const c = chat.val();
+                    admSupList.innerHTML += `<div class="item-adm" style="border-left: 5px solid red;"><span class="badge-atendimento">CHAMADO ATIVO</span><br><b>${c.nome}</b> (${c.cidade})<br><button onclick="abrirAtendimentoADM('${chat.key}')" style="background:red; color:white; border:none; border-radius:4px; padding:5px 10px; margin-top:8px; cursor:pointer; font-weight:bold;">ABRIR E RESPONDER</button></div>`;
+                });
+            });
+
             db.ref('cliques_vitrine').once('value', s => { 
                 if(document.getElementById('display-cliques')) 
                    document.getElementById('display-cliques').innerText = s.val() || 0; 
@@ -1289,9 +1503,7 @@
                     const d = item.val(); const key = item.key;
                     const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
                     let fotsRev = ''; 
-                    if(d.fotos) d.fotos.forEach((f, idx) => { 
-                        fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; 
-                    });
+                    if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; });
                     ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', foto_capa: '${d.fotos[0]}', criadoEm:Date.now(), status_cidade:'ativo_'+normalizarTxt('${d.cidade}')}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
                 });
             });
@@ -1302,41 +1514,12 @@
                     const termoNormal = normalizarTxt(vSalvo);
                     snap.forEach(item => {
                         const d = item.val(); const key = item.key;
-                        const cityNorm = normalizarTxt(d.cidade);
-                        if(cityNorm === termoNormal) {
-                            const tokenS = key.slice(-4).toUpperCase();
+                        if(normalizarTxt(d.cidade) === termoNormal) {
                             const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
-                            const ufs = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
-                            let optionsUF = ufs.map(uf => `<option value="${uf}" ${d.estado === uf ? 'selected' : ''}>${uf}</option>`).join('');
-                            aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;">
-                                <img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)">
-                                <div style="flex:1;">
-                                    <b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}] <span style="color:#25D366; font-size:9px; border:1px dashed #25D366; padding:1px 4px; border-radius:3px; margin-left:5px;">TOKEN: ${tokenS}</span>
-                                    <div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div>
-                                    <input type="text" class="inp-whats-adm-edit" value="${d.whats}" placeholder="Editar WhatsApp" 
-                                        onblur="let val = this.value.replace(/\\D/g,''); if(val.length <= 11) val = '55' + val; db.ref('anuncios/${key}').update({whats: val})">
-                                    <div class="info-recuperacao-adm">📧 ${d.email}</div>
-                                    <div style="margin-top:5px;">
-                                        <input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})">
-                                        
-                                        <input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="const novaCidade = this.value; db.ref('anuncios/${key}').update({cidade:novaCidade, status_cidade: 'ativo_' + normalizarTxt(novaCidade)}).then(()=>renderizarListasAdm())">
-                                        
-                                        <select class="inp-cidade-adm-edit" style="width:60px !important;" onchange="db.ref('anuncios/${key}').update({estado:this.value}).then(()=>renderizarListasAdm())">
-                                            <option value="">UF</option>
-                                            ${optionsUF}
-                                        </select>
-                                    </div>
-                                    <button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button>
-                                    <button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button>
-                                    <div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div>
-                                </div>
-                                <button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button>
-                            </div>`;
+                            aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}]<div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                         }
                     });
                 });
-            } else {
-                aa.innerHTML = '<p style="color:#666; font-size:12px; padding:10px;">Selecione uma cidade no filtro para carregar os anúncios ativos.</p>';
             }
             db.ref('anuncios').once('value', snap => {
                 let cidadesUnicas = new Set();
@@ -1347,21 +1530,42 @@
             });
         }
 
+        function abrirAtendimentoADM(whatsId) {
+            chatGlobalId = whatsId;
+            ir('menu'); abrirSuporteNovo();
+            document.getElementById('chat-form-valida').style.display = 'none';
+            document.getElementById('chat-interface-ativa').style.display = 'flex';
+            
+            db.ref('suporte_conversas/' + whatsId).on('value', snap => {
+                const area = document.getElementById('chat-mensagens-area');
+                area.innerHTML = `<div class="msg-bolha msg-suporte"><b>ATENDIMENTO ADM INICIADO</b></div>`;
+                const data = snap.val();
+                if(data && data.mensagens) {
+                    Object.values(data.mensagens).forEach(m => {
+                        const css = m.origem === 'adm' ? 'msg-suporte' : 'msg-anunciante';
+                        area.innerHTML += `<div class="msg-bolha ${css}">${m.texto}</div>`;
+                    });
+                }
+                area.scrollTop = area.scrollHeight;
+            });
+
+            window.enviarMensagemSuporte = function() {
+                const inp = document.getElementById('chat-input-msg');
+                const t = inp.value.trim(); if(!t) return;
+                db.ref('suporte_conversas/' + chatGlobalId + '/mensagens').push({ texto: t, origem: 'adm', time: Date.now() });
+                inp.value = '';
+            };
+        }
+
         function aprovarUpgrade(pedidoKey, anuncioKey, planoDias) {
             db.ref('anuncios/' + anuncioKey).update({ plano: parseInt(planoDias), criadoEm: Date.now(), pos: 1 }).then(() => {
-                db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => {
-                    alert("Upgrade aprovado!");
-                    renderizarListasAdm();
-                });
+                db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => { alert("Upgrade aprovado!"); renderizarListasAdm(); });
             });
         }
 
         function aprovarTrocaTel(pedidoKey, anuncioKey, novoNumero) {
             db.ref('anuncios/' + anuncioKey).update({ whats: novoNumero, plano: 7, criadoEm: Date.now(), pos: 1 }).then(() => {
-                db.ref('pedidos_troca_tel/' + pedidoKey).remove().then(() => {
-                    alert("Troca aprovada!");
-                    renderizarListasAdm();
-                });
+                db.ref('pedidos_troca_tel/' + pedidoKey).remove().then(() => { alert("Troca aprovada!"); renderizarListasAdm(); });
             });
         }
 
