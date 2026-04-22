@@ -171,7 +171,11 @@
         .container-genero-filtros { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
         .btn-filtro-genero { background: #111; color: #fff; border: 1px solid #333; padding: 8px 15px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-filtro-genero:active, .btn-filtro-genero.ativo { background: red; border-color: red; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
-        .inp-genero-adm { background: #111 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px 8px !important; font-size: 11px !important; border-radius: 4px !important; width: 100% !important; margin-top: 5px !important; cursor: pointer; }
+        .inp-genero-adm { background: #111 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px !important; font-size: 11px !important; border-radius: 4px !important; width: 100% !important; margin-top: 5px !important; cursor: pointer; }
+
+        /* NOVO ESTILO: BADGE DE PONTOS NO ADM */
+        .badge-pontos-adm { background: #3498db; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 5px; }
+        .info-pontos-visib { font-size: 10px; color: #3498db; font-weight: bold; margin-bottom: 10px; display: block; text-align: left; margin-left: 5%; }
     </style>
 </head>
 <body>
@@ -376,6 +380,8 @@
             </div>
 
             <div class="identificacao-modelo" id="info-modelo-edit"></div>
+
+            <span id="info-pontos-visib" class="info-pontos-visib">Pontos de Visibilidade: 0</span>
             
             <button class="btn btn-upgrade" id="btn-solicitar-upgrade" onclick="ir('planos-upgrade')">FAZER UPGRADE DE PLANO 🚀</button>
             
@@ -425,9 +431,9 @@
             </div>
 
             <button class="btn" onclick="salvarEdicao()">SALVAR ALTERAÇÕES</button>
-            <button class="btn" style="background:none; border:1px solid #444;" onclick="abrirEdicao()">VOLTAR PARA MEUS ANÚNCIOS</button>
+            <button class="btn" style="background:none; border: 1px solid #444;" onclick="abrirEdicao()">VOLTAR PARA MEUS ANÚNCIOS</button>
         </div>
-        <button class="btn" style="background:none; border:1px solid #333;" onclick="ir('menu')">VOLTAR AO INÍCIO</button>
+        <button class="btn" style="background:none; border: 1px solid #333;" onclick="ir('menu')">VOLTAR AO INÍCIO</button>
     </div>
 
     <div id="planos-upgrade" class="tela">
@@ -577,6 +583,20 @@
         // VARIÁVEIS ISOLADAS DO CHAT
         let chatGlobalId = null;
 
+        // ESTRUTURA PARA PONTUAÇÃO (HASH)
+        let hashesNovasFotos = [];
+
+        function generatePhotoHash(base64) {
+            let hash = 0;
+            if (base64.length === 0) return hash;
+            for (let i = 0; i < 500; i++) { // Amostragem rápida para performance
+                let char = base64.charCodeAt(Math.floor(Math.random() * base64.length));
+                hash = ((hash << 5) - hash) + char;
+                hash |= 0;
+            }
+            return hash.toString();
+        }
+
         function avisarTelegram(nome, cidade, acao = "NOVO ANÚNCIO") {
             const _p1 = "8707535433:AAH-";
             const _p2 = "p0ZELjRJnlSipHKNMD_";
@@ -592,7 +612,6 @@
         // NOVAS FUNÇÕES ISOLADAS DO SUPORTE NOVO
         function abrirSuporteNovo() { document.getElementById('janela-chat-suporte').style.display = 'flex'; }
         
-        // CORREÇÃO: Função fecharSuporteNovo agora chama encerrarChatSuporte DIRETAMENTE sem confirm para a anunciante
         function fecharSuporteNovo() { 
             if(chatGlobalId) {
                 encerrarChatSuporte();
@@ -911,6 +930,9 @@
             document.getElementById('edit-privacy').value = data.privacyLink || "";
             document.getElementById('edit-onlyfans').value = data.onlyfansLink || "";
             document.getElementById('edit-genero').value = data.genero || "Feminino";
+            
+            // ATUALIZA DISPLAY DE PONTOS
+            document.getElementById('info-pontos-visib').innerText = `Pontos de Visibilidade: ${data.pontos_atividade || 0}`;
 
             if(data.horario_atend && data.horario_atend.includes(' às ')) {
                 const partes = data.horario_atend.split(' às ');
@@ -919,6 +941,7 @@
             }
             document.getElementById('btn-solicitar-upgrade').style.display = (data.plano > 0) ? 'none' : 'block';
             imgsEdit = data.fotos || [];
+            hashesNovasFotos = []; // Limpa hashes temporários
             renderPreviewEdit();
             document.getElementById('selecao-perfil-edicao').style.display = 'none';
             document.getElementById('form-busca-edicao').style.display = 'none';
@@ -947,15 +970,23 @@
                                 cv.width = maxW;
                                 cv.height = img.height * scale;
                                 cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-                                resolve(cv.toDataURL('image/webp', 0.8));
+                                const base64 = cv.toDataURL('image/webp', 0.8);
+                                // GERA HASH PARA CHECAR SE É NOVA
+                                const h = generatePhotoHash(base64);
+                                resolve({base64, hash: h});
                             };
                             img.src = e.target.result;
                         };
                         r.readAsDataURL(f);
                     });
                 });
-                const novasFotos = await Promise.all(promises);
-                imgsEdit = [...imgsEdit, ...novasFotos];
+                const resultados = await Promise.all(promises);
+                
+                resultados.forEach(res => {
+                    imgsEdit.push(res.base64);
+                    hashesNovasFotos.push(res.hash);
+                });
+                
                 input.value = '';
                 renderPreviewEdit();
             });
@@ -1006,6 +1037,21 @@
             
             db.ref('anuncios/' + keyEdicao).once('value', snap => {
                 const data = snap.val();
+                let ptsAtuais = data.pontos_atividade || 0;
+                let historico = data.historico_fotos || [];
+                let novosPontos = 0;
+
+                // LOGICA DE PONTUAÇÃO POR FOTO NOVA
+                hashesNovasFotos.forEach(h => {
+                    if(!historico.includes(h)) {
+                        novosPontos += 1;
+                        historico.push(h);
+                    }
+                });
+
+                // Mantém histórico limpo (últimas 30 fotos)
+                if(historico.length > 30) historico = historico.slice(-30);
+
                 const upData = { 
                     v_hora: v, 
                     tem_local: l, 
@@ -1015,11 +1061,15 @@
                     foto_capa: imgsEdit[0], 
                     privacyLink: pLink,
                     onlyfansLink: oLink,
+                    pontos_atividade: ptsAtuais + novosPontos,
+                    historico_fotos: historico,
                     status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`
                 };
+                
                 db.ref('anuncios/' + keyEdicao).update(upData).then(() => { 
+                    hashesNovasFotos = [];
                     avisarTelegram(data.nome, data.cidade, "ANÚNCIO EDITADO");
-                    alert("Dados atualizados com sucesso!"); 
+                    alert(`Dados atualizados! ${novosPontos > 0 ? '+'+novosPontos+' pontos de visibilidade ganhos.' : ''}`); 
                     ir('menu'); 
                 });
             });
@@ -1097,19 +1147,29 @@
                 
                 snap.forEach(childSnap => {
                     const d = childSnap.val();
+                    // CALCULO DE SCORE DINAMICO PARA RANKING
+                    let score = 0;
                     if(d.plano > 0) {
                         const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                        const diff = dataFim - agora;
+                        const diasRestantes = diff / (1000 * 60 * 60 * 24);
+                        
                         if(agora > dataFim) {
                             d.plano = 0; d.pos = 999;
                             if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
                             db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999, fotos: d.fotos });
+                        } else {
+                            // CADA DIA RESTANTE VALE 100 PONTOS
+                            score = Math.floor(diasRestantes * 100);
                         }
                     }
-                    listaFiltrada.push({key: childSnap.key, ...d});
+                    // SOMA PONTOS DE ATIVIDADE
+                    score += (d.pontos_atividade || 0);
+                    
+                    listaFiltrada.push({key: childSnap.key, ...d, scoreRank: score});
                     bancoDeFotos[childSnap.key] = d.fotos;
                 });
                 
-                // Padrão: Filtrar por Mulheres ao buscar cidade
                 const btnMulher = document.querySelector('.btn-filtro-genero[onclick*="Feminino"]');
                 filtrarPorGenero('Feminino', btnMulher, listaFiltrada);
             });
@@ -1117,7 +1177,6 @@
             return true;
         }
 
-        // FILTRO POR GÊNERO COMBINADO COM CIDADE
         function filtrarPorGenero(genero, btn, listaPreCarregada = null) {
             document.querySelectorAll('.btn-filtro-genero').forEach(b => b.classList.remove('ativo'));
             btn.classList.add('ativo');
@@ -1129,11 +1188,28 @@
             const processarLista = (snap) => {
                 lv.innerHTML = '';
                 let listaFinal = [];
-                snap.forEach(child => {
-                    const d = child.val ? child.val() : child;
-                    if(d.genero === genero) {
-                        listaFinal.push({key: child.key, ...d});
-                        bancoDeFotos[child.key] = d.fotos;
+                const agora = Date.now();
+                
+                const dados = snap.val ? snap.val() : snap;
+                
+                Object.entries(dados).forEach(([k, d]) => {
+                    const obj = d.val ? d.val() : d;
+                    const key = d.key ? d.key : (obj.key ? obj.key : k);
+                    
+                    if(obj.genero === genero) {
+                        // RECALCULA SCORE SE FOR PRECISO
+                        let sRank = obj.scoreRank;
+                        if(sRank === undefined) {
+                            sRank = 0;
+                            if(obj.plano > 0) {
+                                const dataFim = (obj.criadoEm || agora) + (obj.plano * 24 * 60 * 60 * 1000);
+                                const diasRestantes = (dataFim - agora) / (1000 * 60 * 60 * 24);
+                                if(diasRestantes > 0) sRank = Math.floor(diasRestantes * 100);
+                            }
+                            sRank += (obj.pontos_atividade || 0);
+                        }
+                        listaFinal.push({...obj, key: key, scoreRank: sRank});
+                        bancoDeFotos[key] = obj.fotos;
                     }
                 });
                 const btnBusca = document.getElementById('btn-lupa-busca');
@@ -1150,10 +1226,10 @@
 
         function finalizarRenderizacao(listaFiltrada, btnBusca, icon, termo) {
             const lv = document.getElementById('lv');
+            
+            // RANKING POR SCORE (PONTUAÇÃO)
             listaFiltrada.sort((a, b) => { 
-                const pA = parseInt(a.pos || 999); const pB = parseInt(b.pos || 999); 
-                if (pA === pB) return b.criadoEm - a.criadoEm;
-                return pA - pB; 
+                return b.scoreRank - a.scoreRank; 
             });
 
             listaFiltrada.forEach(d => {
@@ -1327,12 +1403,17 @@
                     return alert("Não é possível criar dois anúncios na mesma cidade. Para subir de posição, você deve escolher um plano.");
                 }
 
+                // GERA HASHES INICIAIS
+                const historicoInicial = imgs.map(base => generatePhotoHash(base));
+
                 db.ref('anuncios').push({ 
                     nome:n, cidade:c, estado:st, genero:gn, bairro:b, email:em, whats:w, fotos:imgs, 
                     foto_capa: imgs[0],
                     plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
                     v_hora: vh, tem_local: loc, horario_atend: hr, fotosBorradas: [],
                     privacyLink: pLink, onlyfansLink: oLink,
+                    pontos_atividade: 0,
+                    historico_fotos: historicoInicial,
                     status_cidade: `pendente_${cidadeNormalizada}`
                 }).then(() => { 
                     btn.innerText = originalText;
@@ -1516,7 +1597,18 @@
                         const d = item.val(); const key = item.key;
                         if(normalizarTxt(d.cidade) === termoNormal) {
                             const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
-                            aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} [Pos: ${d.pos}]<div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>renderizarListasAdm())">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
+                            
+                            // CALCULO SCORE PARA EXIBIR NO ADM
+                            let scoreRank = 0;
+                            const agora = Date.now();
+                            if(d.plano > 0) {
+                                const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                                const diasR = (dataFim - agora) / (1000 * 60 * 60 * 24);
+                                if(diasR > 0) scoreRank = Math.floor(diasR * 100);
+                            }
+                            scoreRank += (d.pontos_atividade || 0);
+
+                            aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/${key}').update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                         }
                     });
                 });
