@@ -88,7 +88,7 @@
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; transition: filter 0.3s; }
         .card-gratis b { font-size: 18px; }
         .galeria-social { width: 100%; overflow: hidden; margin-top: 5px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
-        .social-track { display: flex; width: max-content; animation: scroll-social 40s linear infinite; gap: 15px; padding-left: 15px; }
+        .social-track { display: flex; width: max-content; animation: scroll-social 50s linear infinite; gap: 15px; padding-left: 15px; }
         .item-social { width: 70px; text-align: center; flex-shrink: 0; }
         .item-social img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid #333; transition: filter 0.3s; }
         .item-social span { display: block; font-size: 8px; color: #888; text-transform: uppercase; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1697,17 +1697,44 @@
             });
         }
 
-        db.ref('anuncios').orderByChild('status').equalTo('ativo').limitToFirst(20).once('value', s => {
-            const track = document.getElementById('track-social'); 
-            let html = '';
-            s.forEach(i => { 
-                const d = i.val(); 
-                const borrada = (d.fotosBorradas || []).includes(0);
-                const capa = d.foto_carrocel || d.fotos[0];
-                const style = borrada ? 'style="filter: blur(8px) grayscale(100%);"' : '';
-                html += `<div class="item-social"><img src="${capa}" ${style} loading="lazy"><span>${d.cidade}</span></div>`; 
+        db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
+            const track = document.getElementById('track-social');
+            if(!track) return;
+            let listaTotal = [];
+            snap.forEach(c => {
+                const d = c.val();
+                listaTotal.push({ key: c.key, nome: d.nome, cidade: d.cidade, plano: d.plano || 0, capa: d.foto_carrocel || d.fotos[0], borrada: (d.fotosBorradas || []).includes(0) });
             });
-            if(html !== '' && track) {
+            const agora = new Date();
+            const sementeTurno = agora.toDateString() + (agora.getHours() < 12 ? "-AM" : "-PM");
+            function gerarSeed(str) {
+                let h = 0;
+                for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+                return Math.abs(h);
+            }
+            let premium = listaTotal.filter(d => d.plano > 0);
+            let simples = listaTotal.filter(d => d.plano <= 0);
+            simples.sort((a, b) => gerarSeed(a.key + sementeTurno) - gerarSeed(b.key + sementeTurno));
+            let listaExibicao = [];
+            let idxS = 0;
+            const limiteBolinhas = 30;
+            premium.forEach(p => {
+                if (listaExibicao.length < limiteBolinhas) {
+                    listaExibicao.push(p);
+                    for (let i = 0; i < 3; i++) { if (simples[idxS] && listaExibicao.length < limiteBolinhas) { listaExibicao.push(simples[idxS]); idxS++; } }
+                }
+            });
+            while (listaExibicao.length < limiteBolinhas && idxS < simples.length) { listaExibicao.push(simples[idxS]); idxS++; }
+            let html = '';
+            listaExibicao.forEach(d => {
+                const isVip = d.plano > 0;
+                const size = isVip ? '72px' : '60px';
+                const borderStyle = isVip ? 'border: 2.5px solid gold; box-shadow: 0 0 15px gold;' : 'border: 1px solid #333;';
+                const blurStyle = d.borrada ? 'filter: blur(8px) grayscale(100%);' : '';
+                const textStyle = isVip ? 'color: gold; font-weight: bold; font-size: 9px;' : 'color: #888; font-size: 8px;';
+                html += `<div class="item-social"><img src="${d.capa}" style="width:${size}; height:${size}; border-radius: 50%; object-fit: cover; ${borderStyle} ${blurStyle}" loading="lazy"><span style="${textStyle}">${d.cidade}</span></div>`;
+            });
+            if (html !== '') {
                 document.getElementById('area-social').style.display = 'block';
                 track.innerHTML = html + html;
             }
