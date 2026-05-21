@@ -6,7 +6,7 @@
     <meta name="google-site-verification" content="khmTM9yemLAQYvN3ZZHNZX_VKoL3l8fWSJHmD42Xii4" />
     
     <title>Segredo Urbano | Acompanhantes em Porto Alegre, Guaíba e RS</title>
-    <meta name="description" content="O melhor portal de acompanhantes do RS. Encontre garotas de programa em Porto Alegre, Guaíba, Canoas, Caxias do Sul e todo o Rio Grande do Sul. Fotos reais e WhatsApp.">
+    <meta name="description" content="O melhor portal de acompanhantes do RS. Encontre garotas de programa em Porto Alegre, Guaíba, Canoas, Caxias do Sul e todo o Rio Grande do Sul. Fotos reais and WhatsApp.">
     <meta name="keywords" content="acompanhantes porto alegre, acompanhantes guaiba, acompanhantes canoas, acompanhantes caxias do sul, acompanhantes pelotas, acompanhantes passo fundo, acompanhantes santa maria, acompanhantes novo hamburgo, acompanhantes sao leopoldo, segredo urbano">
     <meta name="robots" content="index, follow">
 
@@ -736,6 +736,10 @@
         document.addEventListener('scroll', resetarTimerInatividade);
         document.addEventListener('touchstart', resetarTimerInatividade);
         resetarTimerInatividade();
+
+        async function attivReconhecimento() {
+            // Placeholder funcional mantido
+        }
 
         async function ativarReconhecimento() {
             try {
@@ -1724,7 +1728,8 @@
                             }
                             scoreRank += (d.pontos_atividade || 0);
 
-                            aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + key).update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + key).update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + key).update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + key).update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + key).update({plano:parseInt(p), criadoEm:Date.now()}).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) db.ref('anuncios/' + key).remove().then(()=>renderizarListasAdm())" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
+                            // REVISÃO COMPLETA E CORREÇÃO DOS CONFLITOS DE ASPAS INTERNAS NOS BOTÕES DO CARD ATIVO:
+                            aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}')}).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) { db.ref('anuncios/' + '${key}').remove().then(()=>renderizarListasAdm()); }" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                         }
                     });
                 });
