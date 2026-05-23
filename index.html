@@ -146,15 +146,19 @@
         .alerta-seguranca { background: #222; border-radius: 8px; padding: 10px; margin-top: 10px; }
         .alerta-seguranca p { color: #fff; font-size: 11px; font-weight: bold; margin: 0; line-height: 1.4; }
         .alerta-seguranca b { color: #ff0000; text-transform: uppercase; }
-        .foto-edit-wrapper { position: relative; width: 80px; height: 110px; }
-        .foto-edit-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
-        .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+        
+        /* AJUSTE NA PROPRIEDADE WRAPPER PARA COMPORTAR ABSOLUTE DOS ELEMENTOS INTERNOS */
+        .foto-edit-wrapper { position: relative; width: 80px; height: 110px; display: flex; flex-direction: column; align-items: center; overflow: hidden; border-radius: 6px; }
+        .foto-edit-wrapper img { width: 100%; height: 100%; object-fit: cover; border: 1px solid #333; box-sizing: border-box; }
+        .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 10; }
         #slot-counter { font-size: 11px; color: gold; font-weight: bold; margin-bottom: 10px; display: block; }
         .inp-whats-adm-edit { width: 95% !important; background: #111 !important; border: 1px solid #2ecc71 !important; color: #2ecc71 !important; padding: 6px !important; font-size: 12px !important; border-radius: 4px !important; margin-top: 5px !important; font-weight: bold !important; text-align: center !important; }
         .alerta-troca-tel { background: #1a1a1a00; border: 1px solid gold; padding: 12px; border-radius: 8px; margin: 15px 0; text-align: left; background-color: #1a1a1a00; }
         .alerta-troca-tel p { font-size: 11px; color: #fff; margin: 0 0 8px; line-height: 1.4; }
         .alerta-troca-tel b { color: gold; }
         .btn-edit-fotos-adm { background: #fff; color: #000; border: 1px solid red; font-size: 9px; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 5px; text-transform: uppercase; font-weight: 900; width: 100%; display: block; }
+        
+        /* AJUSTE NA EXIBIÇÃO DE EDICAO BLUR DA ADM PARA AS MINIATURAS ALINHADAS */
         .grade-blur-adm { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; background: #000; padding: 10px; border: 1px dashed #333; border-radius: 8px; }
         .item-foto-blur { position: relative; width: 60px; height: 80px; cursor: pointer; overflow: hidden; border-radius: 4px; border: 1px solid #222; }
         .item-foto-blur img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.3s; }
@@ -193,6 +197,12 @@
             padding: 10px !important;
             border-radius: 10px !important;
         }
+
+        /* MODIFICAÇÃO DOS ESTILOS: ELEMENTOS DA CAPA INSERIDOS COM POSICIONAMENTO ABSOLUTO DENTRO DA MINIATURA */
+        .btn-definir-capa { position: absolute; bottom: 0; left: 0; background: rgba(0, 0, 0, 0.85); color: #fff; border: none; border-top: 1px solid #444; font-size: 8px; padding: 4px 0; border-radius: 0; cursor: pointer; text-transform: uppercase; font-weight: bold; width: 100%; transition: 0.2s; z-index: 5; text-align: center; }
+        .btn-definir-capa:hover { background: red; }
+        .badge-capa-ativa { position: absolute; bottom: 0; left: 0; background: #25D366; color: #000; font-size: 8px; padding: 4px 0; border-radius: 0; font-weight: 900; text-transform: uppercase; width: 100%; text-align: center; box-sizing: border-box; z-index: 5; }
+        .foto-edit-wrapper.capa-selecionada img { border: 2px solid #25D366 !important; }
     </style>
 </head>
 <body>
@@ -620,14 +630,14 @@
             return hash.toString();
         }
 
-        function avisarTelegram(nome, cidade, acao = "NOVO ANÚNCIO") {
+        function avisarTelegram(nome, city, acao = "NOVO ANÚNCIO") {
             const _p1 = "8707535433:AAH-";
             const _p2 = "p0ZELjRJnlSipHKNMD_";
             const _p3 = "aP-_XfNyY1NE";
             const token = _p1 + _p2 + _p3;
             
             const chatId = "7105173459";
-            const msg = `🔔 *${acao}!*%0A---------------------------%0A👤 *Nome:* ${nome}%0A📍 *Cidade:* ${cidade}%0A%0A🚀 _Acesse o Painel ADM para conferir._`;
+            const msg = `🔔 *${acao}!*%0A---------------------------%0A👤 *Nome:* ${nome}%0A📍 *Cidade:* ${city}%0A%0A🚀 _Acesse o Painel ADM para conferir._`;
             const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${msg}&parse_mode=Markdown`;
             fetch(url).catch(e => console.error("Erro Telegram"));
         }
@@ -1139,14 +1149,27 @@
             const areaUpload = document.getElementById('area-upload-edit');
             prev.innerHTML = '';
             
-            db.ref('anuncios/' + keyEdicao + '/plano').once('value', snap => {
-                const planoAtivo = snap.val() > 0;
+            db.ref('anuncios/' + keyEdicao).once('value', snap => {
+                const dataDb = snap.val();
+                const planoAtivo = dataDb && dataDb.plano > 0;
+                const capaAtual = dataDb && dataDb.foto_capa ? dataDb.foto_capa : imgsEdit[0];
                 const limiteTotal = planoAtivo ? 10 : 3;
                 const disponiveis = limiteTotal - imgsEdit.length;
                 counter.innerText = `FOTOS: ${imgsEdit.length} de ${limiteTotal} (Disponível: ${disponiveis})`;
+                
                 imgsEdit.forEach((data, idx) => { 
-                    let htmlFoto = `<div class="foto-edit-wrapper"><img src="${data}">`;
+                    const ehCapa = (data === capaAtual);
+                    
+                    // BOTÃO DEFINIR E BADGE REORGANIZADOS E SUBIDOS PARA DENTRO DA MINIATURA VIA POSITION ABSOLUTE
+                    let htmlFoto = `<div class="foto-edit-wrapper ${ehCapa ? 'capa-selecionada' : ''}"><img src="${data}">`;
                     if(planoAtivo) { htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`; }
+                    
+                    if(ehCapa) {
+                        htmlFoto += `<div class="badge-capa-ativa">Capa Ativa</div>`;
+                    } else {
+                        htmlFoto += `<button class="btn-definir-capa" onclick="definirFotoCapa(${idx})">Definir Capa</button>`;
+                    }
+                    
                     htmlFoto += `</div>`;
                     prev.innerHTML += htmlFoto;
                 });
@@ -1185,13 +1208,16 @@
                     genero: g,
                     horario_atend: hFinal, 
                     fotos: imgsEdit,
-                    foto_capa: imgsEdit[0], 
                     privacyLink: pLink,
                     onlyfansLink: oLink,
                     pontos_atividade: ptsAtuais + novosPontos,
                     historico_fotos: historico,
                     status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`
                 };
+                
+                if(!data.foto_capa || !imgsEdit.includes(data.foto_capa)) {
+                    upData.foto_capa = imgsEdit[0];
+                }
                 
                 db.ref('anuncios/' + keyEdicao).update(upData).then(() => { 
                     hashesNovasFotos = [];
@@ -1728,7 +1754,7 @@
                             }
                             scoreRank += (d.pontos_atividade || 0);
 
-                            // REVISÃO COMPLETA E CORREÇÃO DOS CONFLITOS DE ASPAS INTERNAS NOS BOTÕES DO CARD ATIVO:
+                            // INTERPOLAÇÃO DOS CONFLITOS DE ASPAS INTERNAS NOS BOTÕES DO CARD ATIVO:
                             aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}')}).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) { db.ref('anuncios/' + '${key}').remove().then(()=>renderizarListasAdm()); }" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                         }
                     });
@@ -1860,6 +1886,15 @@
                 track.innerHTML = html + html;
             }
         });
+
+        // NOVA FUNÇÃO ISOLADA ACRESCENTADA NO FINAL PARA SELEÇÃO DA FOTO DE CAPA PELO INDEX
+        function definirFotoCapa(index) {
+            if(!keyEdicao || !imgsEdit[index]) return;
+            const fotoEscolhida = imgsEdit[index];
+            db.ref('anuncios/' + keyEdicao).update({ foto_capa: fotoEscolhida }).then(() => {
+                renderPreviewEdit();
+            });
+        }
     </script>
 
     <footer style="display:none;">
