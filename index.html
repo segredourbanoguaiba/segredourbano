@@ -593,7 +593,7 @@
         <div id="lista-troca-tel"></div>
         <hr style="border-color:#333;">
 
-        <h4 style="text-align:left; color:gold;">🚀 PEDIDOS DE UPGRADE:</h4>
+        <h4 style="text-align:left; colorgold;">🚀 PEDIDOS DE UPGRADE:</h4>
         <div id="lista-upgrades"></div>
         <hr style="border-color:#333;">
 
@@ -1381,7 +1381,11 @@
             });
 
             listaFiltrada.forEach(d => {
-                const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent('Olá '+d.nome+', vi seu anuncio no Segredo Urbano e gostaria de mais informações!')}`;
+                // INJEÇÃO DA MENSAGEM DINÂMICA MELHORADA COM EMOJIS, NEGRITO E LINK DE ACESSO DO PORTAL
+                const linkBaseAnuncio = window.location.origin + window.location.pathname + '?id=' + d.key;
+                const mensagemMelhorada = `🔥 *SEGREDO URBANO* 🔥\nOlá ${d.nome}, vi seu anúncio no site *Segredo Urbano* e gostaria de mais informações! 📍\n\n*Vim por este link:* ${linkBaseAnuncio}`;
+                const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent(mensagemMelhorada)}`;
+                
                 const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
                 const estaOn = checkStatus(d.horario_atend);
                 let opcionalHtml = '<div class="info-opcional-bar">';
