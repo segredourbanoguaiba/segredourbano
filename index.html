@@ -1132,13 +1132,26 @@
         }
 
         function deletarFotoEdit(index) {
-            db.ref('anuncios/' + keyEdicao + '/plano').once('value', snap => {
-                const planoAtivo = snap.val() > 0;
+            db.ref('anuncios/' + keyEdicao).once('value', snap => {
+                const data = snap.val();
+                const planoAtivo = data.plano > 0;
                 if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
                 if(imgsEdit.length <= 1) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
+                
                 if(confirm("Deseja realmente apagar esta foto? Isso liberará um espaço para uma nova.")) {
+                    const fotoExcluida = imgsEdit[index];
                     imgsEdit.splice(index, 1);
-                    renderPreviewEdit();
+                    
+                    let novaCapa = data.foto_capa;
+                    // Se apagou a capa ou a capa salva não estiver mais nas fotos restantes, redefine para a [0]
+                    if (fotoExcluida === novaCapa || !imgsEdit.includes(novaCapa)) {
+                        novaCapa = imgsEdit[0];
+                    }
+                    
+                    db.ref('anuncios/' + keyEdicao).update({ fotos: imgsEdit, foto_capa: novaCapa }).then(() => {
+                        renderPreviewEdit();
+                        alert("Foto excluída com sucesso.");
+                    });
                 }
             });
         }
@@ -1208,16 +1221,13 @@
                     genero: g,
                     horario_atend: hFinal, 
                     fotos: imgsEdit,
+                    foto_capa: data.foto_capa || imgsEdit[0], // Garantia de que a capa seja persistida no BD
                     privacyLink: pLink,
                     onlyfansLink: oLink,
                     pontos_atividade: ptsAtuais + novosPontos,
                     historico_fotos: historico,
                     status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`
                 };
-                
-                if(!data.foto_capa || !imgsEdit.includes(data.foto_capa)) {
-                    upData.foto_capa = imgsEdit[0];
-                }
                 
                 db.ref('anuncios/' + keyEdicao).update(upData).then(() => { 
                     hashesNovasFotos = [];
@@ -1609,10 +1619,17 @@
                 const data = snap.val();
                 const plano = data.plano;
                 const borradas = data.fotosBorradas || [];
-                let fotosExibir = (plano > 0) ? lista : lista.slice(0, 3);
+                
+                // ORDENAÇÃO: Forçando a Capa como a primeira foto na visualização
+                const capa = data.foto_capa || data.fotos[0];
+                let listaOrdenada = [capa, ...data.fotos.filter(f => f !== capa)];
+                
+                let fotosExibir = (plano > 0) ? listaOrdenada : listaOrdenada.slice(0, 3);
                 fotosGaleria = fotosExibir; 
-                fotoIndex = (idxManual !== undefined) ? idxManual : (sliderIndices[key] || 0); 
+                
+                fotoIndex = (idxManual !== undefined) ? idxManual : 0; 
                 if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
+                
                 const imgEl = document.getElementById('img-ampliada');
                 imgEl.src = fotosGaleria[fotoIndex]; 
                 const isFacialOk = document.body.classList.contains('facial-verificado');
