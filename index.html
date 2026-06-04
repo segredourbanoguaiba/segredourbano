@@ -53,7 +53,7 @@
         .btn-upgrade { background: gold !important; color: #000 !important; }
 
         /* NOVOS ESTILOS ISOLADOS - CHAT DE SUPORTE */
-        #btn-suporte-fixo, #btn-suporte-fixo-2 { display: none !important; } /* Ocultando botões antigos via CSS */
+        #btn-suporte-fixo, #btn-suporte-fixo-2 { display: none !important; } 
         .btn-suporte-exclusivo { position: fixed; bottom: 15px; left: 15px; background: red; color: #fff; padding: 6px 10px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 9px; border: 1px solid #fff; z-index: 10000; box-shadow: 0 0 20px rgba(255,0,0,0.6); cursor: pointer; display: flex; align-items: center; gap: 4px; }
         .btn-suporte-exclusivo svg { width: 12px; height: 12px; }
         #janela-chat-suporte { display: none; position: fixed; bottom: 50px; left: 15px; width: 310px; height: 450px; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(15px); border: 2px solid red; border-radius: 15px; z-index: 10001; flex-direction: column; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.9); }
@@ -147,7 +147,6 @@
         .alerta-seguranca p { color: #fff; font-size: 11px; font-weight: bold; margin: 0; line-height: 1.4; }
         .alerta-seguranca b { color: #ff0000; text-transform: uppercase; }
         
-        /* AJUSTE NA PROPRIEDADE WRAPPER PARA COMPORTAR ABSOLUTE DOS ELEMENTOS INTERNOS */
         .foto-edit-wrapper { position: relative; width: 80px; height: 110px; display: flex; flex-direction: column; align-items: center; overflow: hidden; border-radius: 6px; }
         .foto-edit-wrapper img { width: 100%; height: 100%; object-fit: cover; border: 1px solid #333; box-sizing: border-box; }
         .btn-del-foto { position: absolute; top: -5px; right: -5px; background: red; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 5px rgba(0,0,0,0.5); z-index: 10; }
@@ -158,7 +157,6 @@
         .alerta-troca-tel b { color: gold; }
         .btn-edit-fotos-adm { background: #fff; color: #000; border: 1px solid red; font-size: 9px; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 5px; text-transform: uppercase; font-weight: 900; width: 100%; display: block; }
         
-        /* AJUSTE NA EXIBIÇÃO DE EDICAO BLUR DA ADM PARA AS MINIATURAS ALINHADAS */
         .grade-blur-adm { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; background: #000; padding: 10px; border: 1px dashed #333; border-radius: 8px; }
         .item-foto-blur { position: relative; width: 60px; height: 80px; cursor: pointer; overflow: hidden; border-radius: 4px; border: 1px solid #222; }
         .item-foto-blur img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.3s; }
@@ -167,22 +165,18 @@
         .btn-privacy { background: #fff !important; color: #ff6600 !important; border: 1px solid #ff6600 !important; font-weight: 900 !important; }
         .btn-onlyfans { background: #fff !important; color: #0088ff !important; border: 1px solid #0088ff !important; font-weight: 900 !important; }
         
-        /* Novas Classes para Área do Anunciante Multinível */
         .card-selecao-anuncio { background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid red; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.3s; }
         .card-selecao-anuncio:hover { background: #220000; transform: scale(1.02); }
         .card-selecao-anuncio img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 1px solid red; }
 
-        /* ESTILOS DOS BOTÕES DE GÊNERO */
         .container-genero-filtros { display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
         .btn-filtro-genero { background: #111; color: #fff; border: 1px solid #333; padding: 8px 15px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-filtro-genero:active, .btn-filtro-genero.ativo { background: red; border-color: red; box-shadow: 0 0 10px rgba(255,0,0,0.5); }
         .inp-genero-adm { background: #111 !important; border: 1px solid #444 !important; color: #fff !important; padding: 4px !important; font-size: 11px !important; border-radius: 4px !important; width: 100% !important; margin-top: 5px !important; cursor: pointer; }
 
-        /* NOVO ESTILO: BADGE DE PONTOS NO ADM */
         .badge-pontos-adm { background: #3498db; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 900; margin-left: 5px; }
         .info-pontos-visib { font-size: 10px; color: #3498db; font-weight: bold; margin-bottom: 10px; display: block; text-align: left; margin-left: 5%; }
 
-        /* NOVA ANIMAÇÃO ISOLADA DO BRILHO NEON PARA LINK DE DIVULGAÇÃO */
         @keyframes glowCardDivulgacao {
             0% { box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; border-color: #ff0000; }
             50% { box-shadow: 0 0 25px #ff0000, 0 0 35px #ff0000; border-color: #ff0000; }
@@ -198,7 +192,6 @@
             border-radius: 10px !important;
         }
 
-        /* MODIFICAÇÃO DOS ESTILOS: ELEMENTOS DA CAPA INSERIDOS COM POSICIONAMENTO ABSOLUTO DENTRO DA MINIATURA */
         .btn-definir-capa { position: absolute; bottom: 0; left: 0; background: rgba(0, 0, 0, 0.85); color: #fff; border: none; border-top: 1px solid #444; font-size: 8px; padding: 4px 0; border-radius: 0; cursor: pointer; text-transform: uppercase; font-weight: bold; width: 100%; transition: 0.2s; z-index: 5; text-align: center; }
         .btn-definir-capa:hover { background: red; }
         .badge-capa-ativa { position: absolute; bottom: 0; left: 0; background: #25D366; color: #000; font-size: 8px; padding: 4px 0; border-radius: 0; font-weight: 900; text-transform: uppercase; width: 100%; text-align: center; box-sizing: border-box; z-index: 5; }
@@ -454,13 +447,17 @@
             <input type="url" id="edit-privacy" placeholder="Link do seu Privacy">
             <input type="url" id="edit-onlyfans" placeholder="Link do seu OnlyFans">
 
-            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">GERENCIAR FOTOS:</p>
+            <p style="font-size:11px; text-align:left; color:#888; margin-top:15px; margin-left: 5%;">GERENCIAR FOTOS SALVAS:</p>
             <span id="slot-counter">Calculando slots...</span>
             <div id="container-fotos-edit" style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin:15px 0;"></div>
             
             <div id="area-upload-edit" style="display:none;">
-                <p style="font-size:11px; color:#aaa; margin-bottom:5px;">ADICIONAR MAIS FOTOS:</p>
+                <p style="font-size:11px; color:#aaa; margin-bottom:5px;">ADICIONAR NOVAS FOTOS:</p>
                 <input type="file" id="f-edit" accept="image/*" multiple onchange="loadFilesEdit()">
+                
+                <div id="container-preview-novas" style="display:flex; justify-content:center; flex-wrap:wrap; gap:5px; margin:10px 0; border: 1px dashed #444; padding: 10px; border-radius: 8px; min-height: 50px;">
+                    <span style="font-size:10px; color:#666; width:100%;">Pré-visualização das novas fotos...</span>
+                </div>
             </div>
 
             <button class="btn" onclick="salvarEdicao()">SALVAR ALTERAÇÕES</button>
@@ -607,7 +604,8 @@
         const conf = { databaseURL: "https://segredo-urbano-a4d81-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(conf);
         const db = firebase.database();
-        let imgs = []; let imgsEdit = []; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
+        let imgs = []; let imgsEdit = []; let novasImgsTemp = []; let hashesNovasTemp = []; 
+        let capaTemporaria = ""; let planoTemporario = 0; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
         let bancoDeFotos = {}; let sliderIndices = {}; 
         let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
         
@@ -987,9 +985,19 @@
                 document.getElementById('edit-h-fecha').value = partes[1];
             }
             document.getElementById('btn-solicitar-upgrade').style.display = (data.plano > 0) ? 'none' : 'block';
+            
             imgsEdit = data.fotos || [];
+            capaTemporaria = data.foto_capa || imgsEdit[0];
+            planoTemporario = data.plano || 0;
+            
+            // RESETAR O QUADRO DE PRÉ-VISUALIZAÇÃO DE NOVAS FOTOS
+            novasImgsTemp = []; 
+            hashesNovasTemp = []; 
             hashesNovasFotos = []; 
+            
             renderPreviewEdit();
+            renderPreviewNovas(); // Limpa o quadro isolado de visualização
+
             document.getElementById('selecao-perfil-edicao').style.display = 'none';
             document.getElementById('form-busca-edicao').style.display = 'none';
             document.getElementById('form-campos-edicao').style.display = 'block';
@@ -1091,69 +1099,96 @@
         async function loadFilesEdit() {
             const input = document.getElementById('f-edit');
             const files = Array.from(input.files);
-            db.ref('anuncios/' + keyEdicao).once('value', async snap => {
-                const data = snap.val();
-                const planoAtivo = data && data.plano > 0;
-                const limiteTotal = planoAtivo ? 10 : 3;
-                const slotsLivres = limiteTotal - imgsEdit.length;
-                if (files.length > slotsLivres) { alert(`Você só tem ${slotsLivres} slot(s) disponível(is).`); input.value = ''; return; }
-                
-                const promises = files.map(f => {
-                    return new Promise((resolve) => {
-                        const r = new FileReader();
-                        r.onload = (e) => {
-                            const img = new Image();
-                            img.onload = () => {
-                                const cv = document.createElement('canvas');
-                                const maxW = 800;
-                                const scale = maxW / img.width;
-                                cv.width = maxW;
-                                cv.height = img.height * scale;
-                                cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-                                const base64 = cv.toDataURL('image/webp', 0.8);
-                                const h = generatePhotoHash(base64);
-                                resolve({base64, hash: h});
-                            };
-                            img.src = e.target.result;
+            
+            const planoAtivo = planoTemporario > 0;
+            const limiteTotal = planoAtivo ? 10 : 3;
+            // O total considera o que já está salvo (imgsEdit) + o que está na fila (novasImgsTemp)
+            const slotsLivres = limiteTotal - (imgsEdit.length + novasImgsTemp.length);
+            
+            if (files.length > slotsLivres) { 
+                alert(`Você só tem ${slotsLivres} slot(s) disponível(is).`); 
+                input.value = ''; 
+                return; 
+            }
+            
+            const promises = files.map(f => {
+                return new Promise((resolve) => {
+                    const r = new FileReader();
+                    r.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const cv = document.createElement('canvas');
+                            const maxW = 800;
+                            const scale = maxW / img.width;
+                            cv.width = maxW;
+                            cv.height = img.height * scale;
+                            cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+                            const base64 = cv.toDataURL('image/webp', 0.8);
+                            const h = generatePhotoHash(base64);
+                            resolve({base64, hash: h});
                         };
-                        r.readAsDataURL(f);
-                    });
+                        img.src = e.target.result;
+                    };
+                    r.readAsDataURL(f);
                 });
-                const resultados = await Promise.all(promises);
-                
-                resultados.forEach(res => {
-                    imgsEdit.push(res.base64);
-                    hashesNovasFotos.push(res.hash);
-                });
-                
-                input.value = '';
-                renderPreviewEdit();
+            });
+            const resultados = await Promise.all(promises);
+            
+            resultados.forEach(res => {
+                // Ao invés de ir para imgsEdit, vai para a fila de espera
+                novasImgsTemp.push(res.base64);
+                hashesNovasTemp.push(res.hash);
+            });
+            
+            input.value = '';
+            renderPreviewNovas(); // Atualiza o quadro de miniaturas menores
+            renderPreviewEdit();  // Atualiza apenas os contadores do quadro oficial
+        }
+
+        // Função para deletar as fotos que estão na fila de espera antes de salvar
+        function deletarNovaFotoTemp(idx) {
+            novasImgsTemp.splice(idx, 1);
+            hashesNovasTemp.splice(idx, 1);
+            renderPreviewNovas();
+            renderPreviewEdit();
+        }
+
+        // Renderiza as fotos menores no quadro isolado de pré-visualização
+        function renderPreviewNovas() {
+            const prev = document.getElementById('container-preview-novas');
+            if(novasImgsTemp.length === 0) {
+                prev.innerHTML = '<span style="font-size:10px; color:#666; width:100%;">Pré-visualização das novas fotos...</span>';
+                return;
+            }
+            
+            prev.innerHTML = '<span style="font-size:10px; color:gold; width:100%; margin-bottom:5px; font-weight:bold;">FOTOS NA FILA DE ESPERA (Clique em SALVAR para confirmar):</span>';
+            
+            novasImgsTemp.forEach((data, idx) => {
+                let htmlFoto = `
+                <div style="position:relative; width:50px; height:70px; border:1px solid gold; border-radius:4px; overflow:hidden;">
+                    <img src="${data}" style="width:100%; height:100%; object-fit:cover;">
+                    <button style="position:absolute; top:0; right:0; background:red; color:white; border:none; width:16px; height:16px; font-size:10px; cursor:pointer;" onclick="deletarNovaFotoTemp(${idx})">×</button>
+                </div>`;
+                prev.innerHTML += htmlFoto;
             });
         }
 
         function deletarFotoEdit(index) {
-            db.ref('anuncios/' + keyEdicao).once('value', snap => {
-                const data = snap.val();
-                const planoAtivo = data.plano > 0;
-                if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
-                if(imgsEdit.length <= 1) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
+            const planoAtivo = planoTemporario > 0;
+            if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
+            if(imgsEdit.length <= 1 && novasImgsTemp.length === 0) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
+            
+            if(confirm("Deseja remover esta foto do quadro oficial?\n(Lembre-se de clicar em SALVAR ALTERAÇÕES para confirmar no sistema)")) {
+                const fotoExcluida = imgsEdit[index];
+                imgsEdit.splice(index, 1);
                 
-                if(confirm("Deseja realmente apagar esta foto? Isso liberará um espaço para uma nova.")) {
-                    const fotoExcluida = imgsEdit[index];
-                    imgsEdit.splice(index, 1);
-                    
-                    let novaCapa = data.foto_capa;
-                    // Se apagou a capa ou a capa salva não estiver mais nas fotos restantes, redefine para a [0]
-                    if (fotoExcluida === novaCapa || !imgsEdit.includes(novaCapa)) {
-                        novaCapa = imgsEdit[0];
-                    }
-                    
-                    db.ref('anuncios/' + keyEdicao).update({ fotos: imgsEdit, foto_capa: novaCapa }).then(() => {
-                        renderPreviewEdit();
-                        alert("Foto excluída com sucesso.");
-                    });
+                // Se apagou a capa ou a capa salva não estiver mais nas fotos restantes, redefine para a [0] localmente
+                if (fotoExcluida === capaTemporaria || !imgsEdit.includes(capaTemporaria)) {
+                    capaTemporaria = imgsEdit[0] || novasImgsTemp[0];
                 }
-            });
+                
+                renderPreviewEdit();
+            }
         }
 
         function renderPreviewEdit() {
@@ -1162,35 +1197,38 @@
             const areaUpload = document.getElementById('area-upload-edit');
             prev.innerHTML = '';
             
-            db.ref('anuncios/' + keyEdicao).once('value', snap => {
-                const dataDb = snap.val();
-                const planoAtivo = dataDb && dataDb.plano > 0;
-                const capaAtual = dataDb && dataDb.foto_capa ? dataDb.foto_capa : imgsEdit[0];
-                const limiteTotal = planoAtivo ? 10 : 3;
-                const disponiveis = limiteTotal - imgsEdit.length;
-                counter.innerText = `FOTOS: ${imgsEdit.length} de ${limiteTotal} (Disponível: ${disponiveis})`;
+            const planoAtivo = planoTemporario > 0;
+            const limiteTotal = planoAtivo ? 10 : 3;
+            const totalAtual = imgsEdit.length + novasImgsTemp.length;
+            const disponiveis = limiteTotal - totalAtual;
+            
+            counter.innerText = `FOTOS SALVAS: ${imgsEdit.length} | NA FILA: ${novasImgsTemp.length} | DISPONÍVEL: ${disponiveis}`;
+            
+            imgsEdit.forEach((data, idx) => { 
+                const ehCapa = (data === capaTemporaria);
                 
-                imgsEdit.forEach((data, idx) => { 
-                    const ehCapa = (data === capaAtual);
-                    
-                    // BOTÃO DEFINIR E BADGE REORGANIZADOS E SUBIDOS PARA DENTRO DA MINIATURA VIA POSITION ABSOLUTE
-                    let htmlFoto = `<div class="foto-edit-wrapper ${ehCapa ? 'capa-selecionada' : ''}"><img src="${data}">`;
-                    if(planoAtivo) { htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`; }
-                    
-                    if(ehCapa) {
-                        htmlFoto += `<div class="badge-capa-ativa">Capa Ativa</div>`;
-                    } else {
-                        htmlFoto += `<button class="btn-definir-capa" onclick="definirFotoCapa(${idx})">Definir Capa</button>`;
-                    }
-                    
-                    htmlFoto += `</div>`;
-                    prev.innerHTML += htmlFoto;
-                });
-                if(planoAtivo && disponiveis > 0) { areaUpload.style.display = 'block'; } else { areaUpload.style.display = 'none'; }
+                let htmlFoto = `<div class="foto-edit-wrapper ${ehCapa ? 'capa-selecionada' : ''}"><img src="${data}">`;
+                if(planoAtivo) { htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`; }
+                
+                if(ehCapa) {
+                    htmlFoto += `<div class="badge-capa-ativa">Capa Ativa</div>`;
+                } else {
+                    htmlFoto += `<button class="btn-definir-capa" onclick="definirFotoCapa(${idx})">Definir Capa</button>`;
+                }
+                
+                htmlFoto += `</div>`;
+                prev.innerHTML += htmlFoto;
             });
+            if(planoAtivo && disponiveis > 0) { areaUpload.style.display = 'block'; } else { areaUpload.style.display = 'none'; }
         }
 
         function salvarEdicao() {
+            // Mescla as fotos que estavam na fila de espera com as oficiais
+            if (novasImgsTemp.length > 0) {
+                imgsEdit = imgsEdit.concat(novasImgsTemp);
+                hashesNovasFotos = hashesNovasFotos.concat(hashesNovasTemp);
+            }
+
             const v = document.getElementById('edit-valor').value;
             const l = document.getElementById('edit-local').value;
             const g = document.getElementById('edit-genero').value;
@@ -1221,7 +1259,7 @@
                     genero: g,
                     horario_atend: hFinal, 
                     fotos: imgsEdit,
-                    foto_capa: data.foto_capa || imgsEdit[0], // Garantia de que a capa seja persistida no BD
+                    foto_capa: capaTemporaria || imgsEdit[0], 
                     privacyLink: pLink,
                     onlyfansLink: oLink,
                     pontos_atividade: ptsAtuais + novosPontos,
@@ -1231,9 +1269,17 @@
                 
                 db.ref('anuncios/' + keyEdicao).update(upData).then(() => { 
                     hashesNovasFotos = [];
+                    
+                    // Limpa a fila de espera após salvar
+                    novasImgsTemp = []; 
+                    hashesNovasTemp = [];
+                    renderPreviewNovas(); 
+                    renderPreviewEdit(); 
+
                     avisarTelegram(data.nome, data.cidade, "ANÚNCIO EDITADO");
-                    alert(`Dados atualizados! ${novosPontos > 0 ? '+'+novosPontos+' pontos de visibilidade ganhos.' : ''}`); 
-                    ir('menu'); 
+                    document.getElementById('info-pontos-visib').innerText = `Pontos de Visibilidade: ${ptsAtuais + novosPontos}`;
+                    alert(`Alterações salvas com sucesso!${novosPontos > 0 ? '\nVocê ganhou +' + novosPontos + ' pontos de visibilidade pelas novas fotos.' : ''}`);
+                    // O usuário permanece no painel para continuar trabalhando, sem redirecionamento automático
                 });
             });
         }
@@ -1756,38 +1802,48 @@
                     ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', foto_capa: '${d.fotos[0]}', criadoEm:Date.now(), status_cidade:'ativo_'+normalizarTxt('${d.cidade}')}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
                 });
             });
+            
             if(vSalvo !== 'todas') {
                 aa.innerHTML = 'Carregando cidade...';
-                db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
+                const termoNormal = normalizarTxt(vSalvo);
+                db.ref('anuncios').orderByChild('status_cidade').equalTo('ativo_' + termoNormal).once('value', snap => {
                     aa.innerHTML = '';
-                    const termoNormal = normalizarTxt(vSalvo);
                     snap.forEach(item => {
                         const d = item.val(); const key = item.key;
-                        if(normalizarTxt(d.cidade) === termoNormal) {
-                            const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
-                            
-                            let scoreRank = 0;
-                            const agora = Date.now();
-                            if(d.plano > 0) {
-                                const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
-                                const diasR = (dataFim - agora) / (1000 * 60 * 60 * 24);
-                                if(diasR > 0) scoreRank = Math.floor(diasR * 100);
-                            }
-                            scoreRank += (d.pontos_atividade || 0);
-
-                            // INTERPOLAÇÃO DOS CONFLITOS DE ASPAS INTERNAS NOS BOTÕES DO CARD ATIVO:
-                            aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}')}).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) { db.ref('anuncios/' + '${key}').remove().then(()=>renderizarListasAdm()); }" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
+                        const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
+                        
+                        let scoreRank = 0;
+                        const agora = Date.now();
+                        if(d.plano > 0) {
+                            const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
+                            const diasR = (dataFim - agora) / (1000 * 60 * 60 * 24);
+                            if(diasR > 0) scoreRank = Math.floor(diasR * 100);
                         }
+                        scoreRank += (d.pontos_atividade || 0);
+
+                        // INTERPOLAÇÃO DOS CONFLITOS DE ASPAS INTERNAS NOS BOTÕES DO CARD ATIVO:
+                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}')}).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) { db.ref('anuncios/' + '${key}').remove().then(()=>renderizarListasAdm()); }" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                     });
                 });
+            } else {
+                aa.innerHTML = '<p style="color:#666; font-size:12px; margin-top:15px;">Aguardando seleção da cidade...</p>';
             }
-            db.ref('anuncios').once('value', snap => {
-                let cidadesUnicas = new Set();
-                snap.forEach(item => { if(item.val().cidade) cidadesUnicas.add(item.val().cidade.trim().toUpperCase()); });
+            
+            // Lógica isolada de Cache para as Cidades do Dropdown (evita full download a cada renderização)
+            if(!window.cidadesAdminCache) {
+                db.ref('anuncios').once('value', snap => {
+                    let cidadesUnicas = new Set();
+                    snap.forEach(item => { if(item.val().cidade) cidadesUnicas.add(item.val().cidade.trim().toUpperCase()); });
+                    window.cidadesAdminCache = Array.from(cidadesUnicas).sort();
+                    let opcoes = '<option value="todas">SELECIONE UMA CIDADE PARA CARREGAR</option>';
+                    window.cidadesAdminCache.forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
+                    seletor.innerHTML = opcoes;
+                });
+            } else {
                 let opcoes = '<option value="todas">SELECIONE UMA CIDADE PARA CARREGAR</option>';
-                Array.from(cidadesUnicas).sort().forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
+                window.cidadesAdminCache.forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
                 seletor.innerHTML = opcoes;
-            });
+            }
         }
 
         function abrirAtendimentoADM(whatsId) {
@@ -1911,10 +1967,8 @@
         // NOVA FUNÇÃO ISOLADA ACRESCENTADA NO FINAL PARA SELEÇÃO DA FOTO DE CAPA PELO INDEX
         function definirFotoCapa(index) {
             if(!keyEdicao || !imgsEdit[index]) return;
-            const fotoEscolhida = imgsEdit[index];
-            db.ref('anuncios/' + keyEdicao).update({ foto_capa: fotoEscolhida }).then(() => {
-                renderPreviewEdit();
-            });
+            capaTemporaria = imgsEdit[index];
+            renderPreviewEdit();
         }
     </script>
 
