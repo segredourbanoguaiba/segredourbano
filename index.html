@@ -52,7 +52,6 @@
         .btn-whats { background: #25D366 !important; }
         .btn-upgrade { background: gold !important; color: #000 !important; }
 
-        /* NOVOS ESTILOS ISOLADOS - CHAT DE SUPORTE */
         #btn-suporte-fixo, #btn-suporte-fixo-2 { display: none !important; } 
         .btn-suporte-exclusivo { position: fixed; bottom: 15px; left: 15px; background: red; color: #fff; padding: 6px 10px; border-radius: 50px; text-decoration: none; font-weight: 900; font-size: 9px; border: 1px solid #fff; z-index: 10000; box-shadow: 0 0 20px rgba(255,0,0,0.6); cursor: pointer; display: flex; align-items: center; gap: 4px; }
         .btn-suporte-exclusivo svg { width: 12px; height: 12px; }
@@ -84,7 +83,7 @@
         .badge-on { background: #25D366; color: #000; border: none; }
         .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; }
         .card-gratis-flex { display: flex; align-items: center; }
-        .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; }
+        .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; cursor:pointer; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; transition: filter 0.3s; }
         .card-gratis b { font-size: 18px; }
         .galeria-social { width: 100%; overflow: hidden; margin-top: 5px; background: rgba(255,0,0,0.03); padding: 15px 0; border-top: 1px solid #111; }
@@ -98,7 +97,7 @@
         .btn-fechar-galeria { position: absolute; top: 20px; right: 25px; color: white; font-size: 50px; cursor: pointer; z-index: 1000005; font-weight: bold; }
         .modal-cont { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; }
         .modal-cont img { width: 100%; }
-        .btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,0,0,0.7); color: white; border: none; font-size: 28px; padding: 18px; border-radius: 5px; z-index: 1000004; }
+        .btn-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,0,0,0.7); color: white; border: none; font-size: 28px; padding: 18px; border-radius: 5px; z-index: 1000004; cursor:pointer;}
         select, input { background: #111; border: 1px solid #333; color: #fff; padding: 14px; width: 90%; margin: 8px 0; border-radius: 8px; font-family: 'Montserrat'; }
         #aviso-pix-central { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); border: 2px solid #25D366; padding: 25px; border-radius: 20px; z-index: 1000001; width: 80%; max-width: 300px; box-shadow: 0 0 50px rgba(37, 211, 102, 0.3); }
         .item-adm { background: #111; padding: 15px; border: 1px solid #333; margin-bottom: 12px; border-radius: 10px; text-align: left; position: relative; }
@@ -139,7 +138,7 @@
         .btn-todas-cidades:hover { color: red; border-color: red; }
         #modal-cidades { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000002; padding: 20px; box-sizing: border-box; overflow-y: auto; height: 100%; top: 0; left: 0; }
         .lista-cidades-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
-        .item-cidade-link { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; text-decoration: none; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
+        .item-cidade-link { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; font-size: 12px; text-decoration: none; text-transform: uppercase; font-weight: bold; transition: 0.2s; cursor:pointer;}
         .item-cidade-link:active { transform: scale(0.95); border-color: red; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
         .card-token-seguranca { background: #1a0000; border: 2px solid #ff0000; border-radius: 12px; padding: 15px; margin: 15px auto; max-width: 90%; text-align: center; box-shadow: 0 0 20px rgba(255,0,0,0.2); }
         .token-display { background: #000; border: 1px dashed #ff0000; color: #ff0000; font-family: 'Courier New', monospace; font-size: 32px; font-weight: 900; padding: 10px; margin: 10px 0; border-radius: 6px; letter-spacing: 5px; }
@@ -305,7 +304,7 @@
         <button class="btn" onclick="ir('menu')">VOLTAR</button>
     </div>
 
-    <div id="modal-cidades" class="tela" style="position: fixed; z-index: 1000002; background: rgba(0,0,0,0.95); padding: 20px; box-sizing: border-box; overflow-y: auto; height: 100%; top: 0; left: 0;">
+    <div id="modal-cidades" class="tela">
         <div id="etapa-estado">
             <h2 style="color:red; font-family:'Playfair Display';">SELECIONE SEU ESTADO</h2>
             <div class="lista-cidades-grid">
@@ -617,6 +616,28 @@
         // ESTRUTURA PARA PONTUAÇÃO (HASH)
         let hashesNovasFotos = [];
 
+        // ======== NOVA FUNÇÃO DE DUPLA GRAVAÇÃO (SYNC RESUMO) ======== //
+        function syncResumo(key) {
+            return db.ref('anuncios/' + key).once('value').then(snap => {
+                const d = snap.val();
+                if (!d) {
+                    return db.ref('anuncios_resumo/' + key).remove();
+                }
+                const resumo = {
+                    nome: d.nome || "", cidade: d.cidade || "", estado: d.estado || "", bairro: d.bairro || "",
+                    genero: d.genero || "", email: d.email || "", whats: d.whats || "", 
+                    foto_capa: d.foto_capa || (d.fotos ? d.fotos[0] : ""),
+                    plano: d.plano || 0, status: d.status || "pendente", status_cidade: d.status_cidade || "", 
+                    criadoEm: d.criadoEm || 0, pos: d.pos || 999, cliquesZap: d.cliquesZap || 0, 
+                    v_hora: d.v_hora || "", tem_local: d.tem_local || "", horario_atend: d.horario_atend || "", 
+                    fotosBorradas: d.fotosBorradas || [], privacyLink: d.privacyLink || "", onlyfansLink: d.onlyfansLink || "", 
+                    pontos_atividade: d.pontos_atividade || 0, totalFotos: d.fotos ? d.fotos.length : 0
+                };
+                return db.ref('anuncios_resumo/' + key).set(resumo);
+            });
+        }
+        // ============================================================= //
+
         function generatePhotoHash(base64) {
             let hash = 0;
             if (base64.length === 0) return hash;
@@ -640,7 +661,6 @@
             fetch(url).catch(e => console.error("Erro Telegram"));
         }
 
-        // NOVAS FUNÇÕES ISOLADAS DO SUPORTE NOVO
         function abrirSuporteNovo() { document.getElementById('janela-chat-suporte').style.display = 'flex'; }
         
         function fecharSuporteNovo() { 
@@ -745,9 +765,7 @@
         document.addEventListener('touchstart', resetarTimerInatividade);
         resetarTimerInatividade();
 
-        async function attivReconhecimento() {
-            // Placeholder funcional mantido
-        }
+        async function attivReconhecimento() {}
 
         async function ativarReconhecimento() {
             try {
@@ -766,8 +784,6 @@
                         document.getElementById('camera-container').style.display = 'none';
                         document.body.classList.add('facial-verificado'); 
                         fecharAviso18();
-                        
-                        // DISPARA O DIRECIONAMENTO SOMENTE APÓS A FACIAL SER COMPLETA E VALIDADA
                         processarUrlLinkDireto();
                     }
                 }, 1000);
@@ -780,8 +796,6 @@
         function entrarSemFacial() {
             document.body.classList.remove('facial-verificado'); 
             fecharAviso18();
-            
-            // DISPARA O DIRECIONAMENTO IMEDIATAMENTE NO ACESSO VISITANTE
             processarUrlLinkDireto();
         }
 
@@ -812,7 +826,7 @@
             const container = document.getElementById('lista-todas-cidades');
             document.getElementById('titulo-estado-sel').innerText = "CIDADES EM " + uf;
             
-            db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
+            db.ref('anuncios_resumo').orderByChild('status').equalTo('ativo').once('value', snap => {
                 let cidadesSet = new Set();
                 snap.forEach(child => {
                     const d = child.val();
@@ -965,7 +979,6 @@
             const tokenS = key.slice(-4).toUpperCase();
             document.getElementById('token-anunciante-edit').innerText = tokenS;
 
-            // ADAPTAÇÃO DINÂMICA DA URL DO LINK SEJA NO CODEPEN OU NO DOMÍNIO REAL
             const linkBase = window.location.origin + window.location.pathname;
             document.getElementById('link-divulgacao-campo').value = linkBase + "?id=" + key;
 
@@ -990,20 +1003,18 @@
             capaTemporaria = data.foto_capa || imgsEdit[0];
             planoTemporario = data.plano || 0;
             
-            // RESETAR O QUADRO DE PRÉ-VISUALIZAÇÃO DE NOVAS FOTOS
             novasImgsTemp = []; 
             hashesNovasTemp = []; 
             hashesNovasFotos = []; 
             
             renderPreviewEdit();
-            renderPreviewNovas(); // Limpa o quadro isolado de visualização
+            renderPreviewNovas(); 
 
             document.getElementById('selecao-perfil-edicao').style.display = 'none';
             document.getElementById('form-busca-edicao').style.display = 'none';
             document.getElementById('form-campos-edicao').style.display = 'block';
         }
 
-        // FUNÇÃO ISOLADA PARA COPIAR O LINK DE DIVULGAÇÃO
         function copiarLinkDivulgacao() {
             const campo = document.getElementById('link-divulgacao-campo');
             campo.select();
@@ -1012,24 +1023,22 @@
             alert("Link de divulgação copiado!");
         }
 
-        // NOVA FUNÇÃO ISOLADA PARA TRATAR O DIRECIONAMENTO E FILTRAGEM DO LINK DIRETO
         function processarUrlLinkDireto() {
             const urlParams = new URLSearchParams(window.location.search);
             const idAlvo = urlParams.get('id');
             if (!idAlvo) return;
 
-            db.ref('anuncios/' + idAlvo).once('value', snap => {
+            db.ref('anuncios_resumo/' + idAlvo).once('value', snap => {
                 const d = snap.val();
                 if (!d || d.status !== 'ativo') return;
 
-                // Prepara campo de busca invisível
                 document.getElementById('inp-filtro-cidade').value = d.cidade;
                 document.getElementById('badge-local-topo').innerText = "📍 " + d.cidade.toUpperCase();
                 
                 const termoNormal = normalizarTxt(d.cidade);
                 const buscaChave = "ativo_" + termoNormal;
 
-                db.ref('anuncios').orderByChild('status_cidade').equalTo(buscaChave).once('value', snapCid => {
+                db.ref('anuncios_resumo').orderByChild('status_cidade').equalTo(buscaChave).once('value', snapCid => {
                     const lv = document.getElementById('lv');
                     lv.innerHTML = '';
                     let listaFiltrada = [];
@@ -1044,20 +1053,17 @@
                             const diasRestantes = diff / (1000 * 60 * 60 * 24);
                             if(agora > dataFim) {
                                 adv.plano = 0; adv.pos = 999;
-                                if(adv.fotos.length > 3) adv.fotos = adv.fotos.slice(0, 3);
-                                db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999, fotos: adv.fotos });
+                                db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999 }).then(() => syncResumo(childSnap.key));
                             } else {
-                                score = Math.floor(diasRestantes * 100);
+                                score = Math.ceil(diasRestantes) * 100;
                             }
                         }
                         score += (adv.pontos_atividade || 0);
                         listaFiltrada.push({key: childSnap.key, ...adv, scoreRank: score});
-                        bancoDeFotos[childSnap.key] = adv.fotos;
                     });
 
                     ir('vitrine');
 
-                    // Simula clique dinâmico no gênero/modalidade correspondente da anunciante
                     const modalidade = d.genero || 'Feminino';
                     const btnGen = document.getElementById('btn-vitrine-' + modalidade);
                     
@@ -1069,7 +1075,6 @@
                     
                     finalizarRenderizacao(filtradosPorGenero, btnBusca, btnBusca.innerHTML, d.cidade);
 
-                    // Efetua rolagem suave e aplica o efeito temporário de brilho neon
                     setTimeout(() => {
                         let cardElement = document.getElementById('img-pago-' + idAlvo);
                         let containerCard = cardElement ? cardElement.closest('.card-pago') : null;
@@ -1102,7 +1107,6 @@
             
             const planoAtivo = planoTemporario > 0;
             const limiteTotal = planoAtivo ? 10 : 3;
-            // O total considera o que já está salvo (imgsEdit) + o que está na fila (novasImgsTemp)
             const slotsLivres = limiteTotal - (imgsEdit.length + novasImgsTemp.length);
             
             if (files.length > slotsLivres) { 
@@ -1135,17 +1139,15 @@
             const resultados = await Promise.all(promises);
             
             resultados.forEach(res => {
-                // Ao invés de ir para imgsEdit, vai para a fila de espera
                 novasImgsTemp.push(res.base64);
                 hashesNovasTemp.push(res.hash);
             });
             
             input.value = '';
-            renderPreviewNovas(); // Atualiza o quadro de miniaturas menores
-            renderPreviewEdit();  // Atualiza apenas os contadores do quadro oficial
+            renderPreviewNovas();
+            renderPreviewEdit(); 
         }
 
-        // Função para deletar as fotos que estão na fila de espera antes de salvar
         function deletarNovaFotoTemp(idx) {
             novasImgsTemp.splice(idx, 1);
             hashesNovasTemp.splice(idx, 1);
@@ -1153,7 +1155,6 @@
             renderPreviewEdit();
         }
 
-        // Renderiza as fotos menores no quadro isolado de pré-visualização
         function renderPreviewNovas() {
             const prev = document.getElementById('container-preview-novas');
             if(novasImgsTemp.length === 0) {
@@ -1182,7 +1183,6 @@
                 const fotoExcluida = imgsEdit[index];
                 imgsEdit.splice(index, 1);
                 
-                // Se apagou a capa ou a capa salva não estiver mais nas fotos restantes, redefine para a [0] localmente
                 if (fotoExcluida === capaTemporaria || !imgsEdit.includes(capaTemporaria)) {
                     capaTemporaria = imgsEdit[0] || novasImgsTemp[0];
                 }
@@ -1223,7 +1223,6 @@
         }
 
         function salvarEdicao() {
-            // Mescla as fotos que estavam na fila de espera com as oficiais
             if (novasImgsTemp.length > 0) {
                 imgsEdit = imgsEdit.concat(novasImgsTemp);
                 hashesNovasFotos = hashesNovasFotos.concat(hashesNovasTemp);
@@ -1268,9 +1267,9 @@
                 };
                 
                 db.ref('anuncios/' + keyEdicao).update(upData).then(() => { 
+                    return syncResumo(keyEdicao); 
+                }).then(() => {
                     hashesNovasFotos = [];
-                    
-                    // Limpa a fila de espera após salvar
                     novasImgsTemp = []; 
                     hashesNovasTemp = [];
                     renderPreviewNovas(); 
@@ -1279,7 +1278,6 @@
                     avisarTelegram(data.nome, data.cidade, "ANÚNCIO EDITADO");
                     document.getElementById('info-pontos-visib').innerText = `Pontos de Visibilidade: ${ptsAtuais + novosPontos}`;
                     alert(`Alterações salvas com sucesso!${novosPontos > 0 ? '\nVocê ganhou +' + novosPontos + ' pontos de visibilidade pelas novas fotos.' : ''}`);
-                    // O usuário permanece no painel para continuar trabalhando, sem redirecionamento automático
                 });
             });
         }
@@ -1349,7 +1347,7 @@
             const termoNormal = normalizarTxt(termoOriginal);
             const buscaChave = "ativo_" + termoNormal;
 
-            db.ref('anuncios').orderByChild('status_cidade').equalTo(buscaChave).once('value', snap => {
+            db.ref('anuncios_resumo').orderByChild('status_cidade').equalTo(buscaChave).once('value', snap => {
                 lv.innerHTML = '';
                 let listaFiltrada = [];
                 const agora = Date.now();
@@ -1364,16 +1362,13 @@
                         
                         if(agora > dataFim) {
                             d.plano = 0; d.pos = 999;
-                            if(d.fotos.length > 3) d.fotos = d.fotos.slice(0, 3);
-                            db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999, fotos: d.fotos });
+                            db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999 }).then(() => syncResumo(childSnap.key));
                         } else {
-                            score = Math.floor(diasRestantes * 100);
+                            score = Math.ceil(diasRestantes) * 100;
                         }
                     }
                     score += (d.pontos_atividade || 0);
-                    
                     listaFiltrada.push({key: childSnap.key, ...d, scoreRank: score});
-                    bancoDeFotos[childSnap.key] = d.fotos;
                 });
                 
                 const btnMulher = document.getElementById('btn-vitrine-Feminino');
@@ -1409,12 +1404,11 @@
                             if(obj.plano > 0) {
                                 const dataFim = (obj.criadoEm || agora) + (obj.plano * 24 * 60 * 60 * 1000);
                                 const diasRestantes = (dataFim - agora) / (1000 * 60 * 60 * 24);
-                                if(diasRestantes > 0) sRank = Math.floor(diasRestantes * 100);
+                                if(diasRestantes > 0) sRank = Math.ceil(diasRestantes) * 100;
                             }
                             sRank += (obj.pontos_atividade || 0);
                         }
                         listaFinal.push({...obj, key: key, scoreRank: sRank});
-                        bancoDeFotos[key] = obj.fotos;
                     }
                 });
                 const btnBusca = document.getElementById('btn-lupa-busca');
@@ -1425,7 +1419,7 @@
                 processarLista(listaPreCarregada);
             } else {
                 lv.innerHTML = '<p style="color:#666; margin-top:20px;">Filtrando...</p>';
-                db.ref('anuncios').orderByChild('status_cidade').equalTo("ativo_" + termoCidade).once('value', processarLista);
+                db.ref('anuncios_resumo').orderByChild('status_cidade').equalTo("ativo_" + termoCidade).once('value', processarLista);
             }
         }
 
@@ -1437,7 +1431,6 @@
             });
 
             listaFiltrada.forEach(d => {
-                // INJEÇÃO DA MENSAGEM DINÂMICA MELHORADA COM EMOJIS, NEGRITO E LINK DE ACESSO DO PORTAL
                 const linkBaseAnuncio = window.location.origin + window.location.pathname + '?id=' + d.key;
                 const mensagemMelhorada = `🔥 *SEGREDO URBANO* 🔥\nOlá ${d.nome}, vi seu anúncio no site *Segredo Urbano* e gostaria de mais informações! 📍\n\n*Vim por este link:* ${linkBaseAnuncio}`;
                 const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent(mensagemMelhorada)}`;
@@ -1458,12 +1451,36 @@
                 }
 
                 const borradas = d.fotosBorradas || [];
+                const fotoParaCapa = d.foto_capa || (d.fotos ? d.fotos[0] : "");
+
+                let totalFotos = d.totalFotos;
+                let autoCura = false;
+                if (!totalFotos) {
+                    if (d.fotos) {
+                        totalFotos = d.fotos.length;
+                    } else {
+                        totalFotos = "⌛"; 
+                        autoCura = true;
+                    }
+                }
+
                 if(d.plano > 0) {
                     const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%);' : '';
-                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${d.foto_capa || d.fotos[0]}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${d.fotos.length}</div>${d.fotos.length > 1 ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
+                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${fotoParaCapa}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${totalFotos}</div>${totalFotos > 1 || autoCura ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
                 } else {
                     const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%)' : '';
-                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${d.foto_capa || d.fotos[0]}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${d.fotos.length}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${fotoParaCapa}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" id="badge-gratis-${d.key}" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${totalFotos}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}</div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:6px 10px; border-radius:6px; font-size:11px;">WHATS</a></div></div>`;
+                }
+
+                if (autoCura) {
+                    db.ref('anuncios/' + d.key + '/fotos').once('value').then(snap => {
+                        const count = snap.numChildren() || 1;
+                        db.ref('anuncios_resumo/' + d.key).update({ totalFotos: count });
+                        const bp = document.getElementById('badge-pago-' + d.key);
+                        if(bp) bp.innerText = `📸 1/${count}`;
+                        const bg = document.getElementById('badge-gratis-' + d.key);
+                        if(bg) bg.innerText = `📸 ${count}`;
+                    });
                 }
             });
 
@@ -1502,11 +1519,27 @@
         function trackZap(key) { db.ref('anuncios/' + key + '/cliquesZap').transaction((atual) => (atual || 0) + 1); }
         
         function trocarFotoCard(key, dir) {
-            const fotos = bancoDeFotos[key]; if (!fotos) return;
+            if(!bancoDeFotos[key] || bancoDeFotos[key].length < 2) {
+                db.ref('anuncios/' + key + '/fotos').once('value', snap => {
+                    const fotosData = snap.val();
+                    if(fotosData && fotosData.length > 0) {
+                        bancoDeFotos[key] = fotosData;
+                        executarTrocaCard(key, dir);
+                    }
+                });
+            } else {
+                executarTrocaCard(key, dir);
+            }
+        }
+
+        function executarTrocaCard(key, dir) {
+            const fotos = bancoDeFotos[key];
             if (sliderIndices[key] === undefined) sliderIndices[key] = 0;
-            sliderIndices[key] += dir; if (sliderIndices[key] < 0) sliderIndices[key] = fotos.length - 1; if (sliderIndices[key] >= fotos.length) sliderIndices[key] = 0;
+            sliderIndices[key] += dir; 
+            if (sliderIndices[key] < 0) sliderIndices[key] = fotos.length - 1; 
+            if (sliderIndices[key] >= fotos.length) sliderIndices[key] = 0;
             
-            db.ref('anuncios/' + key + '/fotosBorradas').once('value', snap => {
+            db.ref('anuncios_resumo/' + key + '/fotosBorradas').once('value', snap => {
                 const borradas = snap.val() || [];
                 const imgEl = document.getElementById('img-pago-' + key);
                 imgEl.src = fotos[sliderIndices[key]];
@@ -1612,8 +1645,9 @@
                 }
 
                 const historicoInicial = imgs.map(base => generatePhotoHash(base));
+                const novoRef = db.ref('anuncios').push();
 
-                db.ref('anuncios').push({ 
+                novoRef.set({ 
                     nome:n, cidade:c, estado:st, genero:gn, bairro:b, email:em, whats:w, fotos:imgs, 
                     foto_capa: imgs[0],
                     plano:dias, status:'pendente', criadoEm: Date.now(), pos: 999, cliquesZap: 0,
@@ -1622,6 +1656,8 @@
                     pontos_atividade: 0,
                     historico_fotos: historicoInicial,
                     status_cidade: `pendente_${cidadeNormalizada}`
+                }).then(() => {
+                    return syncResumo(novoRef.key); 
                 }).then(() => { 
                     btn.innerText = originalText;
                     btn.style.boxShadow = "none";
@@ -1647,42 +1683,32 @@
         }
 
         function abrirGaleria(key, idxManual) { 
-            let lista = bancoDeFotos[key]; 
-            if (lista) {
-                processarGaleriaLocal(key, lista, idxManual);
-            } else {
-                db.ref('anuncios/' + key).once('value', snap => {
-                    const data = snap.val();
-                    if(!data) return;
-                    bancoDeFotos[key] = data.fotos;
-                    processarGaleriaLocal(key, data.fotos, idxManual);
-                });
-            }
-        }
-
-        function processarGaleriaLocal(key, lista, idxManual) {
             db.ref('anuncios/' + key).once('value', snap => {
                 const data = snap.val();
-                const plano = data.plano;
-                const borradas = data.fotosBorradas || [];
-                
-                // ORDENAÇÃO: Forçando a Capa como a primeira foto na visualização
-                const capa = data.foto_capa || data.fotos[0];
-                let listaOrdenada = [capa, ...data.fotos.filter(f => f !== capa)];
-                
-                let fotosExibir = (plano > 0) ? listaOrdenada : listaOrdenada.slice(0, 3);
-                fotosGaleria = fotosExibir; 
-                
-                fotoIndex = (idxManual !== undefined) ? idxManual : 0; 
-                if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
-                
-                const imgEl = document.getElementById('img-ampliada');
-                imgEl.src = fotosGaleria[fotoIndex]; 
-                const isFacialOk = document.body.classList.contains('facial-verificado');
-                imgEl.style.filter = (!isFacialOk && borradas.includes(fotoIndex)) ? 'blur(15px) grayscale(100%)' : '';
-                document.getElementById('modal-galeria').setAttribute('data-current-key', key);
-                document.getElementById('modal-galeria').style.display = 'block';
+                if(!data) return;
+                bancoDeFotos[key] = data.fotos;
+                processarGaleriaLocal(key, data, idxManual);
             });
+        }
+
+        function processarGaleriaLocal(key, dataObj, idxManual) {
+            const plano = dataObj.plano || 0;
+            const borradas = dataObj.fotosBorradas || [];
+            const capa = dataObj.foto_capa || dataObj.fotos[0];
+            
+            let listaOrdenada = [capa, ...dataObj.fotos.filter(f => f !== capa)];
+            let fotosExibir = (plano > 0) ? listaOrdenada : listaOrdenada.slice(0, 3);
+            fotosGaleria = fotosExibir; 
+            
+            fotoIndex = (idxManual !== undefined) ? idxManual : 0; 
+            if(fotoIndex >= fotosGaleria.length) fotoIndex = 0;
+            
+            const imgEl = document.getElementById('img-ampliada');
+            imgEl.src = fotosGaleria[fotoIndex]; 
+            const isFacialOk = document.body.classList.contains('facial-verificado');
+            imgEl.style.filter = (!isFacialOk && borradas.includes(fotoIndex)) ? 'blur(15px) grayscale(100%)' : '';
+            document.getElementById('modal-galeria').setAttribute('data-current-key', key);
+            document.getElementById('modal-galeria').style.display = 'block';
         }
 
         function fecharGaleria() { document.getElementById('modal-galeria').style.display = 'none'; }
@@ -1710,7 +1736,7 @@
                 let novasFotos = snap.val();
                 if(novasFotos) {
                     novasFotos.splice(fotoIdx, 1);
-                    db.ref('anuncios/' + anuncioKey).update({ fotos: novasFotos, foto_capa: novasFotos[0] }).then(() => renderizarListasAdm());
+                    db.ref('anuncios/' + anuncioKey).update({ fotos: novasFotos, foto_capa: novasFotos[0] }).then(() => syncResumo(anuncioKey)).then(() => renderizarListasAdm());
                 }
             });
         }
@@ -1724,7 +1750,7 @@
                 } else {
                     borradas.push(idx);
                 }
-                ref.set(borradas).then(() => {
+                ref.set(borradas).then(() => syncResumo(anuncioKey)).then(() => {
                     const img = document.querySelector(`#blur-img-${anuncioKey}-${idx}`);
                     const badge = document.querySelector(`#badge-blur-${anuncioKey}-${idx}`);
                     if (img) {
@@ -1760,6 +1786,24 @@
             });
         }
 
+        function aprovarAnuncioPendente(key, foto_capa, cidade) {
+            db.ref('anuncios/' + key).update({
+                status: 'ativo', foto_capa: foto_capa, criadoEm: Date.now(), status_cidade: 'ativo_' + normalizarTxt(cidade)
+            }).then(() => syncResumo(key)).then(() => renderizarListasAdm());
+        }
+
+        function deletarAnuncioAdm(key) {
+            if(confirm('Deletar?')) {
+                db.ref('anuncios/' + key).remove().then(() => syncResumo(key)).then(() => renderizarListasAdm());
+            }
+        }
+
+        function deletarAnuncioPrazo(key) {
+            if(confirm('Deletar?')) {
+                db.ref('anuncios/' + key).remove().then(() => syncResumo(key)).then(() => renderizarPrazos());
+            }
+        }
+
         function renderizarListasAdm() {
             const ap = document.getElementById('ap'); 
             const aa = document.getElementById('aa');
@@ -1793,13 +1837,14 @@
                     upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="ignorarPedido('pedidos_upgrade', '${ped.key}')" style="background:#444; color:white; border:none; padding:10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
+
             db.ref('anuncios').orderByChild('status').equalTo('pendente').once('value', snap => {
                 snap.forEach(item => {
                     const d = item.val(); const key = item.key;
                     const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
                     let fotsRev = ''; 
                     if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; });
-                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="db.ref('anuncios/${key}').update({status:'ativo', foto_capa: '${d.fotos[0]}', criadoEm:Date.now(), status_cidade:'ativo_'+normalizarTxt('${d.cidade}')}).then(()=>renderizarListasAdm())">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="if(confirm('Excluir?')) db.ref('anuncios/${key}').remove().then(()=>renderizarListasAdm())">X</button></div></div></div>`;
+                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="aprovarAnuncioPendente('${key}', '${d.fotos[0]}', '${d.cidade}')">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="deletarAnuncioAdm('${key}')">X</button></div></div></div>`;
                 });
             });
             
@@ -1817,19 +1862,17 @@
                         if(d.plano > 0) {
                             const dataFim = (d.criadoEm || agora) + (d.plano * 24 * 60 * 60 * 1000);
                             const diasR = (dataFim - agora) / (1000 * 60 * 60 * 24);
-                            if(diasR > 0) scoreRank = Math.floor(diasR * 100);
+                            if(diasR > 0) scoreRank = Math.ceil(diasR) * 100;
                         }
                         scoreRank += (d.pontos_atividade || 0);
 
-                        // INTERPOLAÇÃO DOS CONFLITOS DE ASPAS INTERNAS NOS BOTÕES DO CARD ATIVO:
-                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value})"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value})"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value})"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}')}).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="if(confirm('Deletar?')) { db.ref('anuncios/' + '${key}').remove().then(()=>renderizarListasAdm()); }" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
+                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value}).then(() => syncResumo('${key}'))"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value}).then(()=>syncResumo('${key}'))"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>syncResumo('${key}')).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value}).then(()=>syncResumo('${key}'))"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}')}).then(() => syncResumo('${key}')).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="deletarAnuncioAdm('${key}')" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                     });
                 });
             } else {
                 aa.innerHTML = '<p style="color:#666; font-size:12px; margin-top:15px;">Aguardando seleção da cidade...</p>';
             }
             
-            // Lógica isolada de Cache para as Cidades do Dropdown (evita full download a cada renderização)
             if(!window.cidadesAdminCache) {
                 db.ref('anuncios').once('value', snap => {
                     let cidadesUnicas = new Set();
@@ -1874,13 +1917,13 @@
         }
 
         function aprovarUpgrade(pedidoKey, anuncioKey, planoDias) {
-            db.ref('anuncios/' + anuncioKey).update({ plano: parseInt(planoDias), criadoEm: Date.now(), pos: 1 }).then(() => {
+            db.ref('anuncios/' + anuncioKey).update({ plano: parseInt(planoDias), criadoEm: Date.now(), pos: 1 }).then(() => syncResumo(anuncioKey)).then(() => {
                 db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => { alert("Upgrade aprovado!"); renderizarListasAdm(); });
             });
         }
 
         function aprovarTrocaTel(pedidoKey, anuncioKey, novoNumero) {
-            db.ref('anuncios/' + anuncioKey).update({ whats: novoNumero, plano: 7, criadoEm: Date.now(), pos: 1 }).then(() => {
+            db.ref('anuncios/' + anuncioKey).update({ whats: novoNumero, plano: 7, criadoEm: Date.now(), pos: 1 }).then(() => syncResumo(anuncioKey)).then(() => {
                 db.ref('pedidos_troca_tel/' + pedidoKey).remove().then(() => { alert("Troca aprovada!"); renderizarListasAdm(); });
             });
         }
@@ -1894,7 +1937,7 @@
             const seletor = document.getElementById('filtro-prazos-cidade');
             const vSelecionado = seletor.value || 'todas';
             cont.innerHTML = 'Carregando...';
-            db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
+            db.ref('anuncios_resumo').orderByChild('status').equalTo('ativo').once('value', snap => {
                 cont.innerHTML = '';
                 let cidadesAtivasSet = new Set();
                 const agora = Date.now();
@@ -1912,7 +1955,7 @@
                         else if(diasRestantes <= 1) prazoHtml = `<span style="color:orange; font-weight:bold;">⏳ VENCE HOJE</span>`;
                         else prazoHtml = `<span style="color:#25D366;">⏳ Restam ${diasRestantes} dias</span>`;
                     } else { prazoHtml = `<span style="color:#888;">PLANO GRÁTIS</span>`; }
-                    cont.innerHTML += `<div class="item-prazo" style="border-left: 4px solid ${d.plano > 0 ? '#d4af37' : '#555'};"><div class="prazo-info"><b>${d.nome}</b><span>${d.cidade} | ${prazoHtml}</span></div><div style="text-align:right;"><a href="https://wa.me/${d.whats}" class="btn-prazo-zap">ZAP</a><button class="btn-prazo-del" onclick="if(confirm('Deletar?')) db.ref('anuncios/${item.key}').remove().then(()=>renderizarPrazos())">X</button></div></div>`;
+                    cont.innerHTML += `<div class="item-prazo" style="border-left: 4px solid ${d.plano > 0 ? '#d4af37' : '#555'};"><div class="prazo-info"><b>${d.nome}</b><span>${d.cidade} | ${prazoHtml}</span></div><div style="text-align:right;"><a href="https://wa.me/${d.whats}" class="btn-prazo-zap">ZAP</a><button class="btn-prazo-del" onclick="deletarAnuncioPrazo('${item.key}')">X</button></div></div>`;
                 });
                 let opcoes = '<option value="todas">VER TODAS AS CIDADES</option>';
                 Array.from(cidadesAtivasSet).sort().forEach(c => { opcoes += `<option value="${c}" ${vSelecionado === c ? 'selected' : ''}>${c}</option>`; });
@@ -1921,13 +1964,13 @@
             });
         }
 
-        db.ref('anuncios').orderByChild('status').equalTo('ativo').once('value', snap => {
+        db.ref('anuncios_resumo').orderByChild('status').equalTo('ativo').once('value', snap => {
             const track = document.getElementById('track-social');
             if(!track) return;
             let listaTotal = [];
             snap.forEach(c => {
                 const d = c.val();
-                listaTotal.push({ key: c.key, nome: d.nome, cidade: d.cidade, plano: d.plano || 0, capa: d.foto_carrocel || d.fotos[0], borrada: (d.fotosBorradas || []).includes(0) });
+                listaTotal.push({ key: c.key, nome: d.nome, cidade: d.cidade, plano: d.plano || 0, capa: d.foto_capa || d.fotos[0], borrada: (d.fotosBorradas || []).includes(0) });
             });
             const agora = new Date();
             const sementeTurno = agora.toDateString() + (agora.getHours() < 12 ? "-AM" : "-PM");
@@ -1964,7 +2007,6 @@
             }
         });
 
-        // NOVA FUNÇÃO ISOLADA ACRESCENTADA NO FINAL PARA SELEÇÃO DA FOTO DE CAPA PELO INDEX
         function definirFotoCapa(index) {
             if(!keyEdicao || !imgsEdit[index]) return;
             capaTemporaria = imgsEdit[index];
