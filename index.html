@@ -19,7 +19,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z%22 fill=%22red%22 /><text x=%2250%%22 y=%2262%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2245%22 fill=%22white%22>S</text><text x=%2268%%22 y=%2272%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2225%22 fill=%22black%22 font-weight=%22900%22>U</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     
@@ -621,20 +620,9 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyC2uK7ghhnYMFzDLaUAbDDtDIfc84T7KHk",
-            authDomain: "segredo-urbano-a4d81.firebaseapp.com",
-            databaseURL: "https://segredo-urbano-a4d81-default-rtdb.firebaseio.com",
-            projectId: "segredo-urbano-a4d81",
-            storageBucket: "segredo-urbano-a4d81.firebasestorage.app",
-            messagingSenderId: "954680213156",
-            appId: "1:954680213156:web:f71babc205e7757fd03031",
-            measurementId: "G-NL0HSJ0S5D"
-        };
-        firebase.initializeApp(firebaseConfig);
+        const conf = { databaseURL: "https://segredo-urbano-a4d81-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(conf);
         const db = firebase.database();
-        const auth = firebase.auth();
-        
         let imgs = []; let imgsEdit = []; let novasImgsTemp = []; let hashesNovasTemp = []; 
         let capaTemporaria = ""; let planoTemporario = 0; let dias = 0; let fotosGaleria = []; let fotoIndex = 0; let telaAtual = 'menu';
         let bancoDeFotos = {}; let sliderIndices = {}; 
@@ -1824,26 +1812,7 @@
             });
         }
         
-        async function logAdm(alvo) {
-            const email = prompt("E-mail de Administrador:");
-            const senha = prompt("Senha de Administrador:");
-            
-            if (!email || !senha) return;
-
-            try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, senha);
-                
-                if (userCredential.user.uid === "3iWcHxI1twZRzPG1mai7SBXVmCc2") {
-                    ir(alvo);
-                } else {
-                    alert("Acesso negado: ID não autorizado.");
-                    auth.signOut();
-                }
-            } catch (error) {
-                alert("Erro no login: " + error.message);
-            }
-        }
-
+        function logAdm(alvo) { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir(alvo); }
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         
         function deletarFotoNaRevisao(anuncioKey, fotoIdx) {
@@ -2123,7 +2092,7 @@
             }
         });
 
-        function definingFotoCapa(index) {
+        function definirFotoCapa(index) {
             if(!keyEdicao || !imgsEdit[index]) return;
             capaTemporaria = imgsEdit[index];
             renderPreviewEdit();
