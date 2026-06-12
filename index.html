@@ -29,8 +29,8 @@
         .loc-badge-header { display: inline-block; background: #222; border: 1px solid red; color: red; padding: 5px 15px; border-radius: 20px; font-size: 11px; margin-bottom: 35px; font-weight: bold; letter-spacing: 1px; }
         .logo-container { width: 130px; height: 130px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid red; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .brand-name-aviso { color: red; font-size: 26px; text-transform: uppercase; letter-spacing: 2px; font-family: 'Playfair Display', serif; display: block; font-weight: 900; }
-        #btn-prazos-esq { position: absolute; top: 0; left: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: default; }
-        #btn-adm-dir { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: default; }
+        #btn-prazos-esq { position: absolute; top: 0; left: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: pointer; }
+        #btn-adm-dir { position: absolute; top: 0; right: 0; width: 80px; height: 80px; opacity: 0; z-index: 9999; border: none; background: transparent; cursor: pointer; }
         #aviso-18 { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; background: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat; }
         #aviso-18::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: -1; }
         .btn-grande { width: 100%; max-width: 350px; border-radius: 12px; border: none; padding: 20px; margin-bottom: 15px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.2s; }
@@ -321,7 +321,7 @@
             <option value="todas">VER TODAS AS CIDADES</option>
         </select>
         <div id="lista-prazos-cont"></div>
-        <button class="btn" onclick="ir('menu')">VOLTAR</button>
+        <button class="btn" onclick="sairAdm()">VOLTAR / SAIR</button>
     </div>
 
     <div id="modal-cidades" class="tela">
@@ -439,7 +439,10 @@
 
             <hr style="border-color:#222; margin: 20px 0;">
 
-            <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">VALOR POR HORA:</p>
+            <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">NOME ARTÍSTICO:</p>
+            <input type="text" id="edit-nome" placeholder="Seu Nome Artístico">
+
+            <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%; margin-top: 15px;">VALOR POR HORA:</p>
             <input type="text" id="edit-valor" placeholder="Ex: 250">
 
             <p style="font-size:11px; text-align:left; color:#888; margin-left: 5%;">MEU GÊNERO:</p>
@@ -616,7 +619,7 @@
         <h4 style="text-align:left; color:#888;">PARA APROVAR (NOVOS):</h4><div id="ap"></div>
         <hr style="border-color:#222; margin:20px 0;">
         <h4 style="text-align:left; color:#888;">ATIVOS NA CIDADE:</h4><div id="aa"></div>
-        <button class="btn" onclick="ir('menu')">SAIR</button>
+        <button class="btn" onclick="sairAdm()">SAIR</button>
     </div>
 
     <script>
@@ -629,12 +632,29 @@
         let anunciosCache = []; let cidadePostagemOriginal = ""; let keyEdicao = "";
         
         let inatividadeTimer; 
-
-        // VARIÁVEIS ISOLADAS DO CHAT
         let chatGlobalId = null;
-
-        // ESTRUTURA PARA PONTUAÇÃO (HASH)
         let hashesNovasFotos = [];
+
+        // SENHA DE SERVIDOR PARA BLINDAR COMANDOS DO ADM
+        let myAuthKey = "";
+
+        // FUNÇÃO ATUALIZADA: Pede a senha sempre que o botão for clicado
+        function logAdm(alvo) { 
+            const s = prompt("Senha:"); 
+            if (s === null) return; // Se cancelar o prompt
+            if(btoa(s) === "MTkwNzgz") { 
+                myAuthKey = "Guaiba2026_Segredo_Urbano_X99_Secure"; 
+                ir(alvo); 
+            } else {
+                alert("Senha incorreta");
+            }
+        }
+
+        // FUNÇÃO NOVA: Limpa a chave ao sair do ADM para que peça senha de novo
+        function sairAdm() {
+            myAuthKey = ""; // Derruba a sessão de forma segura
+            ir('menu');
+        }
 
         // ======== SISTEMA DE CURTIDAS ======== //
         function carregarCurtidas(anuncioId) {
@@ -669,7 +689,6 @@
             countSpan.innerText = parseInt(countSpan.innerText || 0) + 1;
             localStorage.setItem(storageKey, 'true');
 
-            // Animação dos 7 corações flutuantes
             const rect = btn.getBoundingClientRect();
             for(let i = 0; i < 7; i++) {
                 let coracao = document.createElement('div');
@@ -695,14 +714,13 @@
                 }
             });
         }
-        // ===================================== //
 
-        // ======== NOVA FUNÇÃO DE DUPLA GRAVAÇÃO (SYNC RESUMO) ======== //
+        // ======== NOVA FUNÇÃO DE DUPLA GRAVAÇÃO (SYNC RESUMO BLINDADO) ======== //
         function syncResumo(key) {
             return db.ref('anuncios/' + key).once('value').then(snap => {
                 const d = snap.val();
-                if (!d) {
-                    return db.ref('anuncios_resumo/' + key).remove();
+                if (!d || d.status === 'excluido') {
+                    return db.ref('anuncios_resumo/' + key).update({status: 'excluido', status_cidade: 'excluido', authKey: myAuthKey || ""});
                 }
                 const resumo = {
                     nome: d.nome || "", cidade: d.cidade || "", estado: d.estado || "", bairro: d.bairro || "",
@@ -712,12 +730,13 @@
                     criadoEm: d.criadoEm || 0, pos: d.pos || 999, cliquesZap: d.cliquesZap || 0, 
                     v_hora: d.v_hora || "", tem_local: d.tem_local || "", horario_atend: d.horario_atend || "", 
                     fotosBorradas: d.fotosBorradas || [], privacyLink: d.privacyLink || "", onlyfansLink: d.onlyfansLink || "", 
-                    pontos_atividade: d.pontos_atividade || 0, totalFotos: d.fotos ? d.fotos.length : 0
+                    pontos_atividade: d.pontos_atividade || 0, totalFotos: d.fotos ? d.fotos.length : 0,
+                    token: d.token || ""
                 };
+                if(myAuthKey) resumo.authKey = myAuthKey;
                 return db.ref('anuncios_resumo/' + key).set(resumo);
             });
         }
-        // ============================================================= //
 
         function generatePhotoHash(base64) {
             let hash = 0;
@@ -836,7 +855,6 @@
             firebase.database().goOnline();
             inatividadeTimer = setTimeout(() => {
                 firebase.database().goOffline();
-                console.log("Conexão encerrada por inatividade.");
             }, 120000); 
         }
 
@@ -1057,7 +1075,7 @@
         function carregarPerfilParaEditar(key, data) {
             keyEdicao = key;
             cidadePostagemOriginal = data.cidade; 
-            const tokenS = key.slice(-4).toUpperCase();
+            const tokenS = data.token || key.slice(-4).toUpperCase();
             document.getElementById('token-anunciante-edit').innerText = tokenS;
 
             const linkBase = window.location.origin + window.location.pathname;
@@ -1065,6 +1083,7 @@
 
             const infoDiv = document.getElementById('info-modelo-edit');
             infoDiv.innerHTML = `<img src="${data.fotos[0]}"><div><b style="font-size:18px;">${data.nome}</b><br><small style="color:#25D366; font-weight:bold;">📍 ${data.cidade} ✔️</small></div>`;
+            document.getElementById('edit-nome').value = data.nome || "";
             document.getElementById('edit-valor').value = data.v_hora || "";
             document.getElementById('edit-local').value = data.tem_local || "nao";
             document.getElementById('edit-privacy').value = data.privacyLink || "";
@@ -1094,6 +1113,16 @@
             document.getElementById('selecao-perfil-edicao').style.display = 'none';
             document.getElementById('form-busca-edicao').style.display = 'none';
             document.getElementById('form-campos-edicao').style.display = 'block';
+        }
+
+        function abrirEdicaoRapidaAdm(key) {
+            db.ref('anuncios/' + key).once('value', snap => {
+                const data = snap.val();
+                if(data) {
+                    ir('edicao');
+                    carregarPerfilParaEditar(key, data);
+                }
+            });
         }
 
         function copiarLinkDivulgacao() {
@@ -1134,7 +1163,7 @@
                             const diasRestantes = diff / (1000 * 60 * 60 * 24);
                             if(agora > dataFim) {
                                 adv.plano = 0; adv.pos = 999;
-                                db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999 }).then(() => syncResumo(childSnap.key));
+                                db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999, authKey: myAuthKey || "" }).then(() => syncResumo(childSnap.key));
                             } else {
                                 score = Math.ceil(diasRestantes) * 100;
                             }
@@ -1304,11 +1333,16 @@
         }
 
         function salvarEdicao() {
+            const tokenInput = prompt("Digite seu Código de Acesso Exclusivo (4 dígitos) para confirmar as alterações:");
+            if (!tokenInput) return;
+            const tk = tokenInput.trim().toUpperCase();
+
             if (novasImgsTemp.length > 0) {
                 imgsEdit = imgsEdit.concat(novasImgsTemp);
                 hashesNovasFotos = hashesNovasFotos.concat(hashesNovasTemp);
             }
 
+            const nomeEditado = document.getElementById('edit-nome').value.trim();
             const v = document.getElementById('edit-valor').value;
             const l = document.getElementById('edit-local').value;
             const g = document.getElementById('edit-genero').value;
@@ -1334,6 +1368,7 @@
                 if(historico.length > 30) historico = historico.slice(-30);
 
                 const upData = { 
+                    nome: nomeEditado,
                     v_hora: v, 
                     tem_local: l, 
                     genero: g,
@@ -1344,8 +1379,10 @@
                     onlyfansLink: oLink,
                     pontos_atividade: ptsAtuais + novosPontos,
                     historico_fotos: historico,
-                    status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`
+                    status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`,
+                    token: tk
                 };
+                if(myAuthKey) upData.authKey = myAuthKey;
                 
                 db.ref('anuncios/' + keyEdicao).update(upData).then(() => { 
                     return syncResumo(keyEdicao); 
@@ -1356,9 +1393,11 @@
                     renderPreviewNovas(); 
                     renderPreviewEdit(); 
 
-                    avisarTelegram(data.nome, data.cidade, "ANÚNCIO EDITADO");
+                    avisarTelegram(nomeEditado, data.cidade, "ANÚNCIO EDITADO");
                     document.getElementById('info-pontos-visib').innerText = `Pontos de Visibilidade: ${ptsAtuais + novosPontos}`;
                     alert(`Alterações salvas com sucesso!${novosPontos > 0 ? '\nVocê ganhou +' + novosPontos + ' pontos de visibilidade pelas novas fotos.' : ''}`);
+                }).catch(e => {
+                    alert("Acesso Negado! Verifique se o Código de Acesso (Token) está correto ou se houve alteração indevida.");
                 });
             });
         }
@@ -1443,7 +1482,7 @@
                         
                         if(agora > dataFim) {
                             d.plano = 0; d.pos = 999;
-                            db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999 }).then(() => syncResumo(childSnap.key));
+                            db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999, authKey: myAuthKey || "" }).then(() => syncResumo(childSnap.key));
                         } else {
                             score = Math.ceil(diasRestantes) * 100;
                         }
@@ -1556,7 +1595,7 @@
                 if (autoCura) {
                     db.ref('anuncios/' + d.key + '/fotos').once('value').then(snap => {
                         const count = snap.numChildren() || 1;
-                        db.ref('anuncios_resumo/' + d.key).update({ totalFotos: count });
+                        db.ref('anuncios_resumo/' + d.key).update({ totalFotos: count, authKey: myAuthKey || "" });
                         const bp = document.getElementById('badge-pago-' + d.key);
                         if(bp) bp.innerText = `📸 1/${count}`;
                         const bg = document.getElementById('badge-gratis-' + d.key);
@@ -1731,6 +1770,7 @@
 
                 const historicoInicial = imgs.map(base => generatePhotoHash(base));
                 const novoRef = db.ref('anuncios').push();
+                const tkGerado = novoRef.key.slice(-4).toUpperCase();
 
                 novoRef.set({ 
                     nome:n, cidade:c, estado:st, genero:gn, bairro:b, email:em, whats:w, fotos:imgs, 
@@ -1740,7 +1780,8 @@
                     privacyLink: pLink, onlyfansLink: oLink,
                     pontos_atividade: 0,
                     historico_fotos: historicoInicial,
-                    status_cidade: `pendente_${cidadeNormalizada}`
+                    status_cidade: `pendente_${cidadeNormalizada}`,
+                    token: tkGerado
                 }).then(() => {
                     return syncResumo(novoRef.key); 
                 }).then(() => { 
@@ -1770,7 +1811,7 @@
         function abrirGaleria(key, idxManual) { 
             db.ref('anuncios/' + key).once('value', snap => {
                 const data = snap.val();
-                if(!data) return;
+                if(!data || data.status === 'excluido') return;
                 bancoDeFotos[key] = data.fotos;
                 processarGaleriaLocal(key, data, idxManual);
             });
@@ -1812,7 +1853,6 @@
             });
         }
         
-        function logAdm(alvo) { const s = prompt("Senha:"); if(btoa(s) === "MTkwNzgz") ir(alvo); }
         function toggleRev(key) { const d = document.getElementById('rev-'+key); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
         
         function deletarFotoNaRevisao(anuncioKey, fotoIdx) {
@@ -1821,7 +1861,7 @@
                 let novasFotos = snap.val();
                 if(novasFotos) {
                     novasFotos.splice(fotoIdx, 1);
-                    db.ref('anuncios/' + anuncioKey).update({ fotos: novasFotos, foto_capa: novasFotos[0] }).then(() => syncResumo(anuncioKey)).then(() => renderizarListasAdm());
+                    db.ref('anuncios/' + anuncioKey).update({ fotos: novasFotos, foto_capa: novasFotos[0], authKey: myAuthKey }).then(() => syncResumo(anuncioKey)).then(() => renderizarListasAdm());
                 }
             });
         }
@@ -1871,21 +1911,28 @@
             });
         }
 
+        // FUNÇÃO ATUALIZADA: Força o navegador a segurar o processo até salvar com o uso de alert/catch
         function aprovarAnuncioPendente(key, foto_capa, cidade) {
             db.ref('anuncios/' + key).update({
-                status: 'ativo', foto_capa: foto_capa, criadoEm: Date.now(), status_cidade: 'ativo_' + normalizarTxt(cidade)
-            }).then(() => syncResumo(key)).then(() => renderizarListasAdm());
+                status: 'ativo', foto_capa: foto_capa, criadoEm: Date.now(), status_cidade: 'ativo_' + normalizarTxt(cidade), authKey: myAuthKey
+            }).then(() => syncResumo(key)).then(() => {
+                alert("Anúncio APROVADO com sucesso!"); // O alert trava a execução, garantindo tempo de sync
+                renderizarListasAdm();
+            }).catch(e => {
+                alert("ERRO AO APROVAR. O anúncio não foi salvo: " + e.message);
+                console.error(e);
+            });
         }
 
         function deletarAnuncioAdm(key) {
             if(confirm('Deletar?')) {
-                db.ref('anuncios/' + key).remove().then(() => syncResumo(key)).then(() => renderizarListasAdm());
+                db.ref('anuncios/' + key).update({status: 'excluido', status_cidade: 'excluido', authKey: myAuthKey}).then(() => syncResumo(key)).then(() => renderizarListasAdm());
             }
         }
 
         function deletarAnuncioPrazo(key) {
             if(confirm('Deletar?')) {
-                db.ref('anuncios/' + key).remove().then(() => syncResumo(key)).then(() => renderizarPrazos());
+                db.ref('anuncios/' + key).update({status: 'excluido', status_cidade: 'excluido', authKey: myAuthKey}).then(() => syncResumo(key)).then(() => renderizarPrazos());
             }
         }
 
@@ -1913,12 +1960,14 @@
             db.ref('pedidos_troca_tel').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
+                    if(p.status === 'excluido') return;
                     trList.innerHTML += `<div class="item-adm" style="border-left: 5px solid #25D366;"><b>${p.nome}</b> (${p.cidade})<br>Número Atual: ${p.numeroAtual}<br>Solicitou mudar para: <b>${p.numeroNovo}</b><div style="margin-top:10px;"><button onclick="aprovarTrocaTel('${ped.key}', '${p.anuncioKey}', '${p.numeroNovo}')" style="background:#25D366; color:black; border:none; padding:5px 10px; border-radius:4px; font-weight:bold;">APROVAR E DAR 7 DIAS</button> <button onclick="ignorarPedido('pedidos_troca_tel', '${ped.key}')" style="background:#444; color:white; border:none; padding:5px 10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
             db.ref('pedidos_upgrade').once('value', snap => {
                 snap.forEach(ped => {
                     const p = ped.val();
+                    if(p.status === 'excluido') return;
                     upList.innerHTML += `<div class="item-adm" style="border-left: 5px solid gold;"><b>${p.nome}</b> (${p.cidade}) pediu upgrade para <b>${p.planoSolicitado} dias</b>.<div style="margin-top:10px;"><button onclick="aprovarUpgrade('${ped.key}', '${p.anuncioKey}', ${p.planoSolicitado})" style="background:#25D366; color:black; border:none; padding:10px; border-radius:4px; font-weight:bold;">APROVAR</button> <button onclick="ignorarPedido('pedidos_upgrade', '${ped.key}')" style="background:#444; color:white; border:none; padding:10px; border-radius:4px;">IGNORAR</button></div></div>`;
                 });
             });
@@ -1926,10 +1975,11 @@
             db.ref('anuncios').orderByChild('status').equalTo('pendente').once('value', snap => {
                 snap.forEach(item => {
                     const d = item.val(); const key = item.key;
+                    if(d.status === 'excluido') return;
                     const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
                     let fotsRev = ''; 
                     if(d.fotos) d.fotos.forEach((f, idx) => { fotsRev += `<div class="foto-revisao"><img src="${f}" onclick="abrirGaleria('${key}', ${idx})"><button class="btn-del-foto-revisao" onclick="deletarFotoNaRevisao('${key}', ${idx})">×</button></div>`; });
-                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button onclick="toggleRev('${key}')" style="float:right;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="aprovarAnuncioPendente('${key}', '${d.fotos[0]}', '${d.cidade}')">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="deletarAnuncioAdm('${key}')">X</button></div></div></div>`;
+                    ap.innerHTML += `<div class="item-adm"><b>${d.nome}</b> (${d.cidade}/${d.estado || '--'}) ${badgeP}<br><div class="info-recuperacao-adm">Recuperação: ${d.email} | ${d.whats}</div><button style="background:#0055ff; color:white; border:none; border-radius:4px; padding:5px 10px; cursor:pointer; font-weight:bold; margin-top: 5px; width: 100%;" onclick="abrirEdicaoRapidaAdm('${key}')">ACESSO RÁPIDO (Área Anunciante)</button><button onclick="toggleRev('${key}')" style="float:right; margin-top:8px;">REVISAR</button><div id="rev-${key}" class="area-revisao"><div class="grade-fotos-adm">${fotsRev}</div><div style="margin-top:15px; display:flex; gap:10px;"><button style="flex:1; background:#25D366; color:black; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="aprovarAnuncioPendente('${key}', '${d.fotos[0]}', '${d.cidade}')">APROVAR</button><button style="flex:1; background:red; color:white; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="deletarAnuncioAdm('${key}')">X</button></div></div></div>`;
                 });
             });
             
@@ -1940,6 +1990,7 @@
                     aa.innerHTML = '';
                     snap.forEach(item => {
                         const d = item.val(); const key = item.key;
+                        if(d.status === 'excluido') return;
                         const badgeP = `<span class="badge-plano-adm ${d.plano > 0 ? 'plano-pago' : ''}">${d.plano > 0 ? d.plano + ' DIAS' : 'GRÁTIS'}</span>`;
                         
                         let scoreRank = 0;
@@ -1951,7 +2002,7 @@
                         }
                         scoreRank += (d.pontos_atividade || 0);
 
-                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value}).then(() => syncResumo('${key}'))"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value}).then(()=>syncResumo('${key}'))"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value)}).then(()=>syncResumo('${key}')).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value}).then(()=>syncResumo('${key}'))"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}')}).then(() => syncResumo('${key}')).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="deletarAnuncioAdm('${key}')" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
+                        aa.innerHTML += `<div class="item-adm" style="display:flex; align-items:flex-start; gap:10px;"><img src="${d.foto_capa || d.fotos[0]}" style="width:45px; height:45px; object-fit:cover; border-radius:5px; border:1px solid red;" onclick="abrirGaleria('${key}', 0)"><div style="flex:1;"><b>${d.nome}</b> ${badgeP} <span class="badge-pontos-adm">SCORE: ${scoreRank}</span><div class="marcador-cliques-zap">⚡ ${d.cliquesZap || 0}</div><input type="text" class="inp-whats-adm-edit" value="${d.whats}" onblur="db.ref('anuncios/' + '${key}').update({whats: this.value, authKey: myAuthKey}).then(() => syncResumo('${key}'))"><div class="info-recuperacao-adm">📧 ${d.email}</div><div style="margin-top:5px;"><input type="number" class="inp-pos" value="${d.pos || 999}" onchange="db.ref('anuncios/' + '${key}').update({pos:this.value, authKey: myAuthKey}).then(()=>syncResumo('${key}'))"><input type="text" class="inp-cidade-adm-edit" value="${d.cidade}" onchange="db.ref('anuncios/' + '${key}').update({cidade:this.value, status_cidade: 'ativo_' + normalizarTxt(this.value), authKey: myAuthKey}).then(()=>syncResumo('${key}')).then(()=>renderizarListasAdm())"></div><select class="inp-genero-adm" onchange="db.ref('anuncios/' + '${key}').update({genero: this.value, authKey: myAuthKey}).then(()=>syncResumo('${key}'))"><option value="Feminino" ${d.genero==='Feminino'?'selected':''}>Feminino</option><option value="Masculino" ${d.genero==='Masculino'?'selected':''}>Masculino</option><option value="Trans" ${d.genero==='Trans'?'selected':''}>Trans</option></select><button class="btn-toggle-plano" onclick="const p = prompt('Dias:'); if(p!==null) { db.ref('anuncios/' + '${key}').update({plano:parseInt(p), criadoEm:Date.now(), status_cidade: 'ativo_' + normalizarTxt('${d.cidade}'), authKey: myAuthKey}).then(() => syncResumo('${key}')).then(()=>{ renderizarListasAdm(); renderizarPrazos(); }); }">Alterar Plano</button><button class="btn-edit-fotos-adm" onclick="abrirEdicaoFotosAdm('${key}')">Editar Fotos (Borrar/Normal)</button><button style="background:#0055ff; color:white; border:none; border-radius:4px; padding:5px 10px; cursor:pointer; font-weight:bold; margin-top: 5px; width: 100%;" onclick="abrirEdicaoRapidaAdm('${key}')">ACESSO RÁPIDO (Área Anunciante)</button><div id="edit-fotos-grid-${key}" class="grade-blur-adm" style="display:none;"></div></div><button onclick="deletarAnuncioAdm('${key}')" style="background:red; color:white; border:none; border-radius:4px; padding:10px; cursor:pointer; font-weight:bold;">X</button></div>`;
                     });
                 });
             } else {
@@ -1961,7 +2012,7 @@
             if(!window.cidadesAdminCache) {
                 db.ref('anuncios').once('value', snap => {
                     let cidadesUnicas = new Set();
-                    snap.forEach(item => { if(item.val().cidade) cidadesUnicas.add(item.val().cidade.trim().toUpperCase()); });
+                    snap.forEach(item => { if(item.val().cidade && item.val().status !== 'excluido') cidadesUnicas.add(item.val().cidade.trim().toUpperCase()); });
                     window.cidadesAdminCache = Array.from(cidadesUnicas).sort();
                     let opcoes = '<option value="todas">SELECIONE UMA CIDADE PARA CARREGAR</option>';
                     window.cidadesAdminCache.forEach(c => { opcoes += `<option value="${c}" ${vSalvo === c ? 'selected' : ''}>${c}</option>`; });
@@ -2002,19 +2053,19 @@
         }
 
         function aprovarUpgrade(pedidoKey, anuncioKey, planoDias) {
-            db.ref('anuncios/' + anuncioKey).update({ plano: parseInt(planoDias), criadoEm: Date.now(), pos: 1 }).then(() => syncResumo(anuncioKey)).then(() => {
-                db.ref('pedidos_upgrade/' + pedidoKey).remove().then(() => { alert("Upgrade aprovado!"); renderizarListasAdm(); });
+            db.ref('anuncios/' + anuncioKey).update({ plano: parseInt(planoDias), criadoEm: Date.now(), pos: 1, authKey: myAuthKey }).then(() => syncResumo(anuncioKey)).then(() => {
+                db.ref('pedidos_upgrade/' + pedidoKey).update({status: 'excluido', authKey: myAuthKey}).then(() => { alert("Upgrade aprovado!"); renderizarListasAdm(); });
             });
         }
 
         function aprovarTrocaTel(pedidoKey, anuncioKey, novoNumero) {
-            db.ref('anuncios/' + anuncioKey).update({ whats: novoNumero, plano: 7, criadoEm: Date.now(), pos: 1 }).then(() => syncResumo(anuncioKey)).then(() => {
-                db.ref('pedidos_troca_tel/' + pedidoKey).remove().then(() => { alert("Troca aprovada!"); renderizarListasAdm(); });
+            db.ref('anuncios/' + anuncioKey).update({ whats: novoNumero, plano: 7, criadoEm: Date.now(), pos: 1, authKey: myAuthKey }).then(() => syncResumo(anuncioKey)).then(() => {
+                db.ref('pedidos_troca_tel/' + pedidoKey).update({status: 'excluido', authKey: myAuthKey}).then(() => { alert("Troca aprovada!"); renderizarListasAdm(); });
             });
         }
 
         function ignorarPedido(caminho, key) {
-            if(confirm("Ignorar?")) db.ref(caminho + '/' + key).remove().then(() => renderizarListasAdm());
+            if(confirm("Ignorar?")) db.ref(caminho + '/' + key).update({status: 'excluido', authKey: myAuthKey}).then(() => renderizarListasAdm());
         }
 
         function renderizarPrazos() {
