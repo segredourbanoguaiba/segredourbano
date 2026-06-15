@@ -2124,7 +2124,7 @@
             premium.forEach(p => {
                 if (listaExibicao.length < limiteBolinhas) {
                     listaExibicao.push(p);
-                    for (let i = 0; i < 3; i++) { if (simples[idxS] && listaExibicao.length < limiteBolinhas) { listaExibicao.push(simples[idxS]); idxS++; } }
+                    for (let i = 0; i < 2; i++) { if (simples[idxS] && listaExibicao.length < limiteBolinhas) { listaExibicao.push(simples[idxS]); idxS++; } }
                 }
             });
             while (listaExibicao.length < limiteBolinhas && idxS < simples.length) { listaExibicao.push(simples[idxS]); idxS++; }
