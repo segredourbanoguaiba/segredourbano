@@ -722,10 +722,18 @@
                 if (!d || d.status === 'excluido') {
                     return db.ref('anuncios_resumo/' + key).update({status: 'excluido', status_cidade: 'excluido', authKey: myAuthKey || ""});
                 }
+                
+                let idxCapa = 0;
+                if(d.fotos && d.foto_capa) {
+                    idxCapa = d.fotos.indexOf(d.foto_capa);
+                    if(idxCapa === -1) idxCapa = 0;
+                }
+
                 const resumo = {
                     nome: d.nome || "", cidade: d.cidade || "", estado: d.estado || "", bairro: d.bairro || "",
                     genero: d.genero || "", email: d.email || "", whats: d.whats || "", 
                     foto_capa: d.foto_capa || (d.fotos ? d.fotos[0] : ""),
+                    indexCapa: idxCapa,
                     plano: d.plano || 0, status: d.status || "pendente", status_cidade: d.status_cidade || "", 
                     criadoEm: d.criadoEm || 0, pos: d.pos || 999, cliquesZap: d.cliquesZap || 0, 
                     v_hora: d.v_hora || "", tem_local: d.tem_local || "", horario_atend: d.horario_atend || "", 
@@ -1367,6 +1375,8 @@
 
                 if(historico.length > 30) historico = historico.slice(-30);
 
+                const capaFinal = capaTemporaria || imgsEdit[0];
+
                 const upData = { 
                     nome: nomeEditado,
                     v_hora: v, 
@@ -1374,7 +1384,8 @@
                     genero: g,
                     horario_atend: hFinal, 
                     fotos: imgsEdit,
-                    foto_capa: capaTemporaria || imgsEdit[0], 
+                    foto_capa: capaFinal, 
+                    fotosBorradas: data.fotosBorradas || [],
                     privacyLink: pLink,
                     onlyfansLink: oLink,
                     pontos_atividade: ptsAtuais + novosPontos,
@@ -1572,6 +1583,7 @@
 
                 const borradas = d.fotosBorradas || [];
                 const fotoParaCapa = d.foto_capa || (d.fotos ? d.fotos[0] : "");
+                const indexDaCapa = d.indexCapa !== undefined ? d.indexCapa : 0;
 
                 let totalFotos = d.totalFotos;
                 let autoCura = false;
@@ -1585,10 +1597,10 @@
                 }
 
                 if(d.plano > 0) {
-                    const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%);' : '';
+                    const styleBlur = borradas.includes(indexDaCapa) ? 'filter: blur(10px) grayscale(100%);' : '';
                     lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${fotoParaCapa}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${totalFotos}</div><div id="btn-curtir-${d.key}" class="btn-curtir btn-curtir-pago" onclick="curtirAnuncio(event, '${d.key}')"><span class="coracao" id="icone-coracao-${d.key}">🤍</span> <span style="margin: 0 2px;">CURTIR</span> <span id="count-curtidas-${d.key}">0</span></div>${totalFotos > 1 || autoCura ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
                 } else {
-                    const styleBlur = borradas.includes(0) ? 'filter: blur(10px) grayscale(100%)' : '';
+                    const styleBlur = borradas.includes(indexDaCapa) ? 'filter: blur(10px) grayscale(100%)' : '';
                     lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${fotoParaCapa}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" id="badge-gratis-${d.key}" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${totalFotos}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}<div style="display:flex; gap:8px; margin-top:6px; align-items:center;"><div id="btn-curtir-${d.key}" class="btn-curtir" onclick="curtirAnuncio(event, '${d.key}')"><span class="coracao" id="icone-coracao-${d.key}">🤍</span> <span style="margin: 0 2px;">CURTIR</span> <span id="count-curtidas-${d.key}">0</span></div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold;">WHATS</a></div></div></div></div>`;
                 }
 
@@ -2106,7 +2118,9 @@
             let listaTotal = [];
             snap.forEach(c => {
                 const d = c.val();
-                listaTotal.push({ key: c.key, nome: d.nome, cidade: d.cidade, plano: d.plano || 0, capa: d.foto_capa || d.fotos[0], borrada: (d.fotosBorradas || []).includes(0) });
+                const capaAtual = d.foto_capa || (d.fotos ? d.fotos[0] : "");
+                const idxCapa = d.indexCapa !== undefined ? d.indexCapa : 0;
+                listaTotal.push({ key: c.key, nome: d.nome, cidade: d.cidade, plano: d.plano || 0, capa: capaAtual, borrada: (d.fotosBorradas || []).includes(idxCapa) });
             });
             const agora = new Date();
             const sementeTurno = agora.toDateString() + (agora.getHours() < 12 ? "-AM" : "-PM");
