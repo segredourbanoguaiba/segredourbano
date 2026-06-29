@@ -216,9 +216,55 @@
             animation: animarCoracao 0.8s ease-out forwards;
             z-index: 1000000;
         }
+
+        /* --- ANIMAÇÃO COPA (TEMPORÁRIO) --- */
+        #anim-copa {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100px;
+            z-index: 9999999;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: sumirContainer 4s forwards;
+        }
+        .bandeira-anim { font-size: 65px; position: absolute; }
+        .b-japao { animation: empurrarJapao 4s forwards; }
+        .b-brasil { animation: entrarBrasil 4s forwards; }
+
+        @keyframes entrarBrasil {
+            0% { transform: translateX(-150px) scale(0.5); opacity: 0; }
+            15% { transform: translateX(-30px) scale(1); opacity: 1; }
+            20% { transform: translateX(0px) scale(1.2); opacity: 1; } /* Impacto! */
+            25% { transform: translateX(0px) scale(1); opacity: 1; }
+            80% { transform: translateX(0px) scale(1); opacity: 1; }
+            100% { transform: translateX(0px) scale(1); opacity: 0; }
+        }
+
+        @keyframes empurrarJapao {
+            0% { transform: translateX(0px); opacity: 1; }
+            19% { transform: translateX(0px); opacity: 1; }
+            25% { transform: translate(150px, -50px) rotate(45deg); opacity: 0; } /* Voando pra fora */
+            100% { transform: translate(150px, -50px) rotate(45deg); opacity: 0; }
+        }
+
+        @keyframes sumirContainer {
+            0% { visibility: visible; }
+            99% { visibility: visible; }
+            100% { visibility: hidden; display: none; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="anim-copa">
+        <span class="bandeira-anim b-japao">🇯🇵</span>
+        <span class="bandeira-anim b-brasil">🇧🇷</span>
+    </div>
 
     <h1 style="display:none;">Segredo Urbano - Acompanhantes e Modelos em Porto Alegre, Guaíba e todo RS</h1>
 
@@ -2163,6 +2209,12 @@
             capaTemporaria = imgsEdit[index];
             renderPreviewEdit();
         }
+
+        // Script para limpar a animação da tela após 4 segundos e manter o DOM limpo
+        setTimeout(() => {
+            const animEl = document.getElementById('anim-copa');
+            if (animEl) animEl.remove();
+        }, 4000);
     </script>
 
     <footer style="display:none;">
