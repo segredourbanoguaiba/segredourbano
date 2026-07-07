@@ -213,7 +213,7 @@
             color: red;
             font-size: 14px;
             pointer-events: none;
-            animation: animarCoracao 0.8s forwards;
+            animation: animarCoracao 0.8s ease-out forwards;
             z-index: 1000000;
         }
     </style>
@@ -1144,7 +1144,7 @@
         // ==========================================
         // ROLAGEM CONTÍNUA ADICIONADA AQUI
         // ==========================================
-        function rolarParaAnuncioContinuo(containerCard, duracaoMax = 3000) {
+        function rolarParaAnuncioContinuo(containerCard, duracaoMax = 2500) {
             const start = performance.now();
             let isAnimating = true;
 
@@ -1157,10 +1157,15 @@
                     return;
                 }
 
-                // Calcula a posição e centraliza a tela
+                // Calcula a posição alvo para centralizar a tela
                 const rect = containerCard.getBoundingClientRect();
-                const offset = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
-                window.scrollTo({ top: offset, behavior: 'instant' });
+                const targetY = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
+                const currentY = window.scrollY;
+
+                // Suavização matemática (Lerp): move 8% da distância por quadro
+                const nextY = currentY + (targetY - currentY) * 0.08;
+                
+                window.scrollTo(0, nextY);
 
                 // Continua rodando até acabar o tempo máximo
                 if (time - start < duracaoMax) {
@@ -1168,6 +1173,7 @@
                 } else {
                     // Quando o tempo acaba (a página já parou de empurrar o layout)
                     isAnimating = false;
+                    window.scrollTo(0, targetY); // Crava no alvo final
                     containerCard.classList.add('anuncio-link-destacado');
                     setTimeout(() => {
                         containerCard.classList.remove('anuncio-link-destacado');
