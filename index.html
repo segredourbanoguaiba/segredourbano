@@ -213,7 +213,7 @@
             color: red;
             font-size: 14px;
             pointer-events: none;
-            animation: animarCoracao 0.8s ease-out forwards;
+            animation: animarCoracao 0.8s forwards;
             z-index: 1000000;
         }
     </style>
@@ -477,10 +477,9 @@
             <div id="area-upload-edit" style="display:none;">
                 <p style="font-size:11px; color:#aaa; margin-bottom:5px;">ADICIONAR NOVAS FOTOS:</p>
                 <input type="file" id="f-edit" accept="image/*" multiple onchange="loadFilesEdit()">
-                
-                <div id="container-preview-novas" style="display:flex; justify-content:center; flex-wrap:wrap; gap:5px; margin:10px 0; border: 1px dashed #444; padding: 10px; border-radius: 8px; min-height: 50px;">
-                    <span style="font-size:10px; color:#666; width:100%;">Pré-visualização das novas fotos...</span>
-                </div>
+            </div>
+            
+            <div id="container-preview-novas" style="display:none; justify-content:center; flex-wrap:wrap; gap:5px; margin:10px 0; border: 1px dashed #444; padding: 10px; border-radius: 8px; min-height: 50px;">
             </div>
 
             <button class="btn" onclick="salvarEdicao()">SALVAR ALTERAÇÕES</button>
@@ -1142,6 +1141,47 @@
             alert("Link de divulgação copiado!");
         }
 
+        // ==========================================
+        // ROLAGEM CONTÍNUA ADICIONADA AQUI
+        // ==========================================
+        function rolarParaAnuncioContinuo(containerCard, duracaoMax = 3000) {
+            const start = performance.now();
+            let isAnimating = true;
+
+            function animate(time) {
+                if (!isAnimating) return;
+                
+                // Se o elemento não existe mais, aborta
+                if (!document.body.contains(containerCard)) {
+                    isAnimating = false;
+                    return;
+                }
+
+                // Calcula a posição e centraliza a tela
+                const rect = containerCard.getBoundingClientRect();
+                const offset = rect.top + window.scrollY - (window.innerHeight / 2) + (rect.height / 2);
+                window.scrollTo({ top: offset, behavior: 'instant' });
+
+                // Continua rodando até acabar o tempo máximo
+                if (time - start < duracaoMax) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Quando o tempo acaba (a página já parou de empurrar o layout)
+                    isAnimating = false;
+                    containerCard.classList.add('anuncio-link-destacado');
+                    setTimeout(() => {
+                        containerCard.classList.remove('anuncio-link-destacado');
+                    }, 5000);
+                }
+            }
+            requestAnimationFrame(animate);
+            
+            // Failsafe: se o usuário tentar rolar a tela manualmente, aborta a perseguição para não prender ele
+            const stopScroll = () => { isAnimating = false; };
+            window.addEventListener('wheel', stopScroll, { once: true });
+            window.addEventListener('touchstart', stopScroll, { once: true });
+        }
+
         function processarUrlLinkDireto() {
             const urlParams = new URLSearchParams(window.location.search);
             const idAlvo = urlParams.get('id');
@@ -1194,6 +1234,9 @@
                     
                     finalizarRenderizacao(filtradosPorGenero, btnBusca, btnBusca.innerHTML, d.cidade);
 
+                    // ========================================================
+                    // GATILHO DA NOVA ROLAGEM EM SUBSTITUIÇÃO AO SETTIMEOUT
+                    // ========================================================
                     setTimeout(() => {
                         let cardElement = document.getElementById('img-pago-' + idAlvo);
                         let containerCard = cardElement ? cardElement.closest('.card-pago') : null;
@@ -1209,13 +1252,10 @@
                         }
 
                         if (containerCard) {
-                            containerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            containerCard.classList.add('anuncio-link-destacado');
-                            setTimeout(() => {
-                                containerCard.classList.remove('anuncio-link-destacado');
-                            }, 5000);
+                            // Em vez de dar apenas um salto seco, usamos a função contínua
+                            rolarParaAnuncioContinuo(containerCard);
                         }
-                    }, 500);
+                    }, 100); 
                 });
             });
         }
@@ -1277,10 +1317,12 @@
         function renderPreviewNovas() {
             const prev = document.getElementById('container-preview-novas');
             if(novasImgsTemp.length === 0) {
-                prev.innerHTML = '<span style="font-size:10px; color:#666; width:100%;">Pré-visualização das novas fotos...</span>';
+                prev.style.display = 'none';
+                prev.innerHTML = '';
                 return;
             }
             
+            prev.style.display = 'flex';
             prev.innerHTML = '<span style="font-size:10px; color:gold; width:100%; margin-bottom:5px; font-weight:bold;">FOTOS NA FILA DE ESPERA (Clique em SALVAR para confirmar):</span>';
             
             novasImgsTemp.forEach((data, idx) => {
@@ -1294,8 +1336,6 @@
         }
 
         function deletarFotoEdit(index) {
-            const planoAtivo = planoTemporario > 0;
-            if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
             if(imgsEdit.length <= 1 && novasImgsTemp.length === 0) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
             
             if(confirm("Deseja remover esta foto do quadro oficial?\n(Lembre-se de clicar em SALVAR ALTERAÇÕES para confirmar no sistema)")) {
@@ -1327,7 +1367,7 @@
                 const ehCapa = (data === capaTemporaria);
                 
                 let htmlFoto = `<div class="foto-edit-wrapper ${ehCapa ? 'capa-selecionada' : ''}"><img src="${data}">`;
-                if(planoAtivo) { htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`; }
+                htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`;
                 
                 if(ehCapa) {
                     htmlFoto += `<div class="badge-capa-ativa">Capa Ativa</div>`;
@@ -1338,7 +1378,7 @@
                 htmlFoto += `</div>`;
                 prev.innerHTML += htmlFoto;
             });
-            if(planoAtivo && disponiveis > 0) { areaUpload.style.display = 'block'; } else { areaUpload.style.display = 'none'; }
+            if(disponiveis > 0) { areaUpload.style.display = 'block'; } else { areaUpload.style.display = 'none'; }
         }
 
         function salvarEdicao() {
