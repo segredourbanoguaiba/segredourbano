@@ -16,7 +16,9 @@
     <meta property="og:description" content="Confira as novidades e modelos disponíveis em Porto Alegre, Guaíba e região. Clique para ver fotos e contatos.">
     <meta property="og:type" content="website">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z%22 fill=%22red%22 /><text x=%2250%%22 y=%2262%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2245%22 fill=%22white%22>S</text><text x=%2268%%22 y=%2272%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2225%22 fill=%22black%22 font-weight=%22900%22>U</text></svg>">
+    <link rel="icon" type="image/png" href="https://segredourbano.com.br/logo.png">
+    <link rel="apple-touch-icon" href="https://segredourbano.com.br/logo.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -220,8 +222,6 @@
 </head>
 <body>
 
-    <h1 style="display:none;">Segredo Urbano - Acompanhantes e Modelos em Porto Alegre, Guaíba e todo RS</h1>
-
     <div id="aviso-18">
         <div class="logo-container">
             <svg viewBox="0 0 100 100" width="100" height="100">
@@ -230,7 +230,7 @@
                 <text x="68%" y="72%" text-anchor="middle" font-family="'Playfair Display', serif" font-size="25" fill="red" font-weight="900">U</text>
             </svg>
         </div>
-        <b class="brand-name-aviso" style="margin-bottom: 30px;">Segredo Urbano</b>
+        <h1 class="brand-name-aviso" style="margin-bottom: 30px; margin-top: 0; padding: 0;">Segredo Urbano</h1>
         
         <button class="btn-grande btn-facial-novo" onclick="ativarReconhecimento()">
             <span class="titulo-btn">
@@ -309,7 +309,7 @@
                 <text x="68%" y="72%" text-anchor="middle" font-family="'Playfair Display', serif" font-size="25" fill="red" font-weight="900">U</text>
             </svg>
         </div>
-        <b style="color:red; font-size:26px; text-transform:uppercase; letter-spacing:2px; font-family:'Playfair Display';">Segredo Urbano</b>
+        <h1 style="color:red; font-size:26px; text-transform:uppercase; letter-spacing:2px; font-family:'Playfair Display'; margin: 0; padding: 0;">Segredo Urbano</h1>
     </header>
 
     <div id="tela-prazos" class="tela">
@@ -507,7 +507,7 @@
     </div>
 
     <div id="cad" class="tela">
-        <h3 style="font-family:'Playfair Display';">CADASTRO</h3>
+        <h2 style="font-family:'Playfair Display';">CADASTRO</h2>
         <p id="aviso-limite" style="color:red; font-size:11px; margin-bottom:10px; font-weight:bold;"></p>
         <input type="text" id="n" placeholder="Nome Artístico">
         
@@ -1141,9 +1141,6 @@
             alert("Link de divulgação copiado!");
         }
 
-        // ==========================================
-        // ROLAGEM CONTÍNUA ADICIONADA AQUI
-        // ==========================================
         function rolarParaAnuncioContinuo(containerCard, duracaoMax = 2500) {
             const start = performance.now();
             let isAnimating = true;
@@ -1715,7 +1712,7 @@
             }
         }
 
-        function executarTrocaCard(key, dir) {
+        function ejecutarTrocaCard(key, dir) {
             const fotos = bancoDeFotos[key];
             if (sliderIndices[key] === undefined) sliderIndices[key] = 0;
             sliderIndices[key] += dir; 
@@ -1970,15 +1967,14 @@
             });
         }
 
-        // FUNÇÃO ATUALIZADA: Força o navegador a segurar o processo até salvar com o uso de alert/catch
         function aprovarAnuncioPendente(key, foto_capa, cidade) {
             db.ref('anuncios/' + key).update({
                 status: 'ativo', foto_capa: foto_capa, criadoEm: Date.now(), status_cidade: 'ativo_' + normalizarTxt(cidade), authKey: myAuthKey
             }).then(() => syncResumo(key)).then(() => {
-                alert("Anúncio APROVADO com sucesso!"); // O alert trava a execução, garantindo tempo de sync
+                alert("Anúncio APROVADO com sucesso!"); 
                 renderizarListasAdm();
             }).catch(e => {
-                alert("ERRO AO APROVAR. O anúncio não foi salvo: " + e.message);
+                alert("ERRO AO APROVAR: " + e.message);
                 console.error(e);
             });
         }
@@ -2160,6 +2156,38 @@
         }
 
         db.ref('anuncios_resumo').orderByChild('status').equalTo('ativo').once('value', snap => {
+            // INJEÇÃO AUTOMÁTICA DE DADOS ESTRUTURADOS (JSON-LD) PARA O GOOGLE ROBOT 
+            try {
+                let jsonLD = {
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "name": "Segredo Urbano",
+                    "url": "https://segredourbano.com.br/",
+                    "description": "O melhor portal de acompanhantes do RS. Encontre garotas de programa em Porto Alegre, Guaíba, Canoas, Caxias do Sul e todo o Rio Grande do Sul.",
+                    "about": []
+                };
+                snap.forEach(c => {
+                    const d = c.val();
+                    if(d.nome && d.cidade && d.status === 'ativo') {
+                        jsonLD.about.push({
+                            "@type": "Person",
+                            "name": d.nome,
+                            "jobTitle": "Acompanhante",
+                            "image": d.foto_capa || (d.fotos ? d.fotos[0] : ""),
+                            "address": {
+                                "@type": "PostalAddress",
+                                "addressLocality": d.cidade,
+                                "addressRegion": d.estado || "RS"
+                            }
+                        });
+                    }
+                });
+                let scriptSEO = document.createElement('script');
+                scriptSEO.type = 'application/ld+json';
+                scriptSEO.text = JSON.stringify(jsonLD);
+                document.head.appendChild(scriptSEO);
+            } catch(e) { console.error("SEO Error:", e); }
+
             const track = document.getElementById('track-social');
             if(!track) return;
             let listaTotal = [];
@@ -2210,21 +2238,5 @@
             renderPreviewEdit();
         }
     </script>
-
-    <footer style="display:none;">
-        <h1>Segredo Urbano - Acompanhantes e Modelos no Rio Grande do Sul</h1>
-        
-        <h2>Acompanhantes em Porto Alegre e Região Metropolitana</h2>
-        <p>Encontre anúncios em Porto Alegre, Guaíba, Eldorado do Sul, Canoas, Gravataí, Viamão, Cachoeirinha e Alvorada.</p>
-        
-        <h2>Garotas de Programa no Vale dos Sinos e Serra Gaúcha</h2>
-        <p>As melhores modelos em São Leopoldo, Novo Hamburgo, Sapucaia do Sul, Esteio, Caxias do Sul, Bento Gonçalves e Gramado.</p>
-        
-        <h2>Atendimento no Interior, Litoral e Região Carbonífera</h2>
-        <p>Anúncios verificados em Pelotas, Rio Grande, Passo Fundo, Santa Maria, Capão da Canoa, Charqueadas e São Jerônimo.</p>
-        
-        <p>Portal Segredo Urbano: fotos reais, segurança com verificação facial e contato direto via WhatsApp.</p>
-    </footer>
-
 </body>
 </html>
