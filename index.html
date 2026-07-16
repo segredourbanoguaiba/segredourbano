@@ -233,7 +233,7 @@
         
         <button class="btn-grande btn-facial-novo" onclick="ativarReconhecimento()">
             <span class="titulo-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M9,11.75A1.25,1.25 0 0,0 7.75,13A1.25,1.25 0 0,0 9,14.25A1.25,1.25 0 0,0 10.25,13A1.25,1.25 0 0,0 9,11.75M15,11.75A1.25,1.25 0 0,0 13.75,13A1.25,1.25 0 0,0 15,14.25A1.25,1.25 0 0,0 16.25,13A1.25,1.25 0 0,0 15,11.75M12,2 Bledsoe10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,11.71 4,11.42 4.05,11.14C4.82,11.64 5.73,11.93 6.69,11.93C8.44,11.93 9.96,11.07 10.89,10.1C11.5,11.23 12.66,12 14,12C14.46,12 14.9,11.91 15.3,11.76C15.75,12.5 16.58,13 17.5,13C18,13 18.46,12.87 18.87,12.65C18.96,12.44 19,12.22 19,12C19,8.13 15.87,5 12,5C10.74,5 9.56,5.33 8.5,5.9C7.88,5.33 7.07,5 6.18,5C5.45,5 4.77,5.21 4.21,5.57C5.87,3.41 8.77,2 12,2M12,18C9.73,18 7.74,16.8 6.61,15L17.39,15C16.26,16.8 14.27,18 12,18Z"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M9,11.75A1.25,1.25 0 0,0 7.75,13A1.25,1.25 0 0,0 9,14.25A1.25,1.25 0 0,0 10.25,13A1.25,1.25 0 0,0 9,11.75M15,11.75A1.25,1.25 0 0,0 13.75,13A1.25,1.25 0 0,0 15,14.25A1.25,1.25 0 0,0 16.25,13A1.25,1.25 0 0,0 15,11.75M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,11.71 4,11.42 4.05,11.14C4.82,11.64 5.73,11.93 6.69,11.93C8.44,11.93 9.96,11.07 10.89,10.1C11.5,11.23 12.66,12 14,12C14.46,12 14.9,11.91 15.3,11.76C15.75,12.5 16.58,13 17.5,13C18,13 18.46,12.87 18.87,12.65C18.96,12.44 19,12.22 19,12C19,8.13 15.87,5 12,5C10.74,5 9.56,5.33 8.5,5.9C7.88,5.33 7.07,5 6.18,5C5.45,5 4.77,5.21 4.21,5.57C5.87,3.41 8.77,2 12,2M12,18C9.73,18 7.74,16.8 6.61,15L17.39,15C16.26,16.8 14.27,18 12,18Z"/></svg>
                 AUTENTICAÇÃO FACIAL
             </span>
             <span class="subtitulo-btn">Liberar todo conteúdo sem censura</span>
@@ -1275,10 +1275,12 @@
         function renderPreviewNovas() {
             const prev = document.getElementById('container-preview-novas');
             if(novasImgsTemp.length === 0) {
-                prev.innerHTML = '<span style="font-size:10px; color:#666; width:100%;">Pré-visualização das novas fotos...</span>';
+                prev.style.display = 'none';
+                prev.innerHTML = '';
                 return;
             }
             
+            prev.style.display = 'flex';
             prev.innerHTML = '<span style="font-size:10px; color:gold; width:100%; margin-bottom:5px; font-weight:bold;">FOTOS NA FILA DE ESPERA (Clique em SALVAR para confirmar):</span>';
             
             novasImgsTemp.forEach((data, idx) => {
@@ -1523,24 +1525,41 @@
                 
                 const dados = snap.val ? snap.val() : snap;
                 
-                Object.entries(dados).forEach(([k, d]) => {
-                    const obj = d.val ? d.val() : d;
-                    const key = d.key ? d.key : (obj.key ? obj.key : k);
-                    
-                    if(obj.genero === genero) {
-                        let sRank = obj.scoreRank;
-                        if(sRank === undefined) {
-                            sRank = 0;
-                            if(obj.plano > 0) {
-                                const dataFim = (obj.criadoEm || agora) + (obj.plano * 24 * 60 * 60 * 1000);
-                                const diasRestantes = (dataFim - agora) / (1000 * 60 * 60 * 24);
-                                if(diasRestantes > 0) sRank = Math.ceil(diasRestantes) * 100;
+                let countF = 0, countM = 0, countT = 0;
+
+                if (dados) {
+                    Object.entries(dados).forEach(([k, d]) => {
+                        const obj = d.val ? d.val() : d;
+                        const key = d.key ? d.key : (obj.key ? obj.key : k);
+                        
+                        if(obj.genero === 'Feminino') countF++;
+                        else if(obj.genero === 'Masculino') countM++;
+                        else if(obj.genero === 'Trans') countT++;
+
+                        if(obj.genero === genero) {
+                            let sRank = obj.scoreRank;
+                            if(sRank === undefined) {
+                                sRank = 0;
+                                if(obj.plano > 0) {
+                                    const dataFim = (obj.criadoEm || agora) + (obj.plano * 24 * 60 * 60 * 1000);
+                                    const diasRestantes = (dataFim - agora) / (1000 * 60 * 60 * 24);
+                                    if(diasRestantes > 0) sRank = Math.ceil(diasRestantes) * 100;
+                                }
+                                sRank += (obj.pontos_atividade || 0);
                             }
-                            sRank += (obj.pontos_atividade || 0);
+                            listaFinal.push({...obj, key: key, scoreRank: sRank});
                         }
-                        listaFinal.push({...obj, key: key, scoreRank: sRank});
-                    }
-                });
+                    });
+                }
+                
+                const btnF = document.getElementById('btn-vitrine-Feminino');
+                const btnM = document.getElementById('btn-vitrine-Masculino');
+                const btnT = document.getElementById('btn-vitrine-Trans');
+                
+                if(btnF) btnF.innerText = `MULHERES (${countF})`;
+                if(btnM) btnM.innerText = `HOMENS (${countM})`;
+                if(btnT) btnT.innerText = `TRANS (${countT})`;
+
                 const btnBusca = document.getElementById('btn-lupa-busca');
                 finalizarRenderizacao(listaFinal, btnBusca, btnBusca.innerHTML, document.getElementById('inp-filtro-cidade').value);
             };
@@ -2112,7 +2131,6 @@
         }
 
         db.ref('anuncios_resumo').orderByChild('status').equalTo('ativo').once('value', snap => {
-            // INJEÇÃO AUTOMÁTICA DE DADOS ESTRUTURADOS (JSON-LD) PARA O GOOGLE ROBOT 
             try {
                 let jsonLD = {
                     "@context": "https://schema.org",
@@ -2184,10 +2202,8 @@
                 const blurStyle = d.borrada ? 'filter: blur(8px) grayscale(100%);' : '';
                 const textStyle = isVip ? 'color: gold; font-weight: bold; font-size: 9px;' : 'color: #888; font-size: 8px;';
                 
-                // HTML do Carrossel Visual
                 html += `<div class="item-social"><img src="${d.capa}" style="width:${size}; height:${size}; border-radius: 50%; object-fit: cover; ${borderStyle} ${blurStyle}" loading="lazy"><span style="${textStyle}">${d.cidade}</span></div>`;
                 
-                // HTML da Vitrine Fantasma para o Google Imagens (Rotaciona a cada 12h com o carrossel)
                 if(!d.borrada) {
                     htmlSeoImagens += `<img src="${d.capa}" alt="Acompanhante ${d.nome} em ${d.cidade} - Segredo Urbano">`;
                 }
@@ -2198,7 +2214,6 @@
                 track.innerHTML = html + html;
             }
 
-            // Injetando no HTML invisível para o robô pescar
             const seoFooter = document.getElementById('seo-footer-invisivel');
             if(seoFooter) seoFooter.innerHTML = htmlSeoImagens;
         });
