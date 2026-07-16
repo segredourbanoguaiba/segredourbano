@@ -477,6 +477,7 @@
                 <p style="font-size:11px; color:#aaa; margin-bottom:5px;">ADICIONAR NOVAS FOTOS:</p>
                 <input type="file" id="f-edit" accept="image/*" multiple onchange="loadFilesEdit()">
             </div>
+            <div id="msg-limite-excedido" style="display:none; font-size:11px; color:red; font-weight:bold; border: 1px dashed red; padding: 12px; border-radius: 8px; margin: 10px 0;"></div>
             
             <div id="container-preview-novas" style="display:none; justify-content:center; flex-wrap:wrap; gap:5px; margin:10px 0; border: 1px dashed #444; padding: 10px; border-radius: 8px; min-height: 50px;">
             </div>
@@ -1295,7 +1296,6 @@
 
         function deletarFotoEdit(index) {
             const planoAtivo = planoTemporario > 0;
-            if(!planoAtivo) { alert("Apenas planos pagos podem gerenciar fotos individualmente."); return; }
             if(imgsEdit.length <= 1 && novasImgsTemp.length === 0) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
             
             if(confirm("Deseja remover esta foto do quadro oficial?\n(Lembre-se de clicar em SALVAR ALTERAÇÕES para confirmar no sistema)")) {
@@ -1314,7 +1314,10 @@
             const prev = document.getElementById('container-fotos-edit');
             const counter = document.getElementById('slot-counter');
             const areaUpload = document.getElementById('area-upload-edit');
+            const msgLimite = document.getElementById('msg-limite-excedido');
+            
             prev.innerHTML = '';
+            if(msgLimite) msgLimite.style.display = 'none';
             
             const planoAtivo = planoTemporario > 0;
             const limiteTotal = planoAtivo ? 10 : 3;
@@ -1327,7 +1330,8 @@
                 const ehCapa = (data === capaTemporaria);
                 
                 let htmlFoto = `<div class="foto-edit-wrapper ${ehCapa ? 'capa-selecionada' : ''}"><img src="${data}">`;
-                if(planoAtivo) { htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`; }
+                
+                htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`;
                 
                 if(ehCapa) {
                     htmlFoto += `<div class="badge-capa-ativa">Capa Ativa</div>`;
@@ -1338,7 +1342,20 @@
                 htmlFoto += `</div>`;
                 prev.innerHTML += htmlFoto;
             });
-            if(planoAtivo && disponiveis > 0) { areaUpload.style.display = 'block'; } else { areaUpload.style.display = 'none'; }
+            
+            if(disponiveis > 0) { 
+                areaUpload.style.display = 'block'; 
+            } else { 
+                areaUpload.style.display = 'none'; 
+                if(msgLimite) {
+                    msgLimite.style.display = 'block';
+                    if(totalAtual > limiteTotal) {
+                        msgLimite.innerHTML = `⚠️ <b>LIMITE EXCEDIDO!</b><br>O plano atual permite até ${limiteTotal} fotos, mas você possui ${totalAtual}.<br>Exclua ${totalAtual - limiteTotal + 1} foto(s) para liberar o botão de envio.`;
+                    } else {
+                        msgLimite.innerHTML = `⚠️ <b>LIMITE ATINGIDO!</b><br>Você atingiu o máximo de ${limiteTotal} fotos.<br>Exclua pelo menos uma foto para enviar outra.`;
+                    }
+                }
+            }
         }
 
         function salvarEdicao() {
