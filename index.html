@@ -546,7 +546,7 @@
             <option value="MS">Mato Grosso do SUL (MS)</option>
             <option value="MG">Minas Gerais (MG)</option>
             <option value="PA">Pará (PA)</option>
-            <option value="PB">Paraíba (PB)</option>
+            <option value="PB">ParaíBA (PB)</option>
             <option value="PR">Paraná (PR)</option>
             <option value="PE">Pernambuco (PE)</option>
             <option value="PI">Piauí (PI)</option>
@@ -2159,37 +2159,6 @@
         }
 
         db.ref('anuncios_resumo').orderByChild('status').equalTo('ativo').once('value', snap => {
-            try {
-                let jsonLD = {
-                    "@context": "https://schema.org",
-                    "@type": "WebSite",
-                    "name": "Segredo Urbano",
-                    "url": "https://segredourbano.com.br/",
-                    "description": "O melhor portal de acompanhantes do RS. Encontre garotas de programa em Porto Alegre, Guaíba, Canoas, Caxias do Sul e todo o Rio Grande do Sul.",
-                    "about": []
-                };
-                snap.forEach(c => {
-                    const d = c.val();
-                    if(d.nome && d.cidade && d.status === 'ativo') {
-                        jsonLD.about.push({
-                            "@type": "Person",
-                            "name": d.nome,
-                            "jobTitle": "Acompanhante",
-                            "image": d.foto_capa || (d.fotos ? d.fotos[0] : ""),
-                            "address": {
-                                "@type": "PostalAddress",
-                                "addressLocality": d.cidade,
-                                "addressRegion": d.estado || "RS"
-                            }
-                        });
-                    }
-                });
-                let scriptSEO = document.createElement('script');
-                scriptSEO.type = 'application/ld+json';
-                scriptSEO.text = JSON.stringify(jsonLD);
-                document.head.appendChild(scriptSEO);
-            } catch(e) { console.error("SEO Error:", e); }
-
             const track = document.getElementById('track-social');
             if(!track) return;
             let listaTotal = [];
