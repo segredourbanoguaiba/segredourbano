@@ -16,7 +16,19 @@
     <meta property="og:description" content="Confira as novidades e modelos disponíveis em Porto Alegre, Guaíba e região. Clique para ver fotos e contatos.">
     <meta property="og:type" content="website">
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z%22 fill=%22red%22 /><text x=%2250%%22 y=%2262%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2245%22 fill=%22white%22>S</text><text x=%2268%%22 y=%2272%%22 text-anchor=%22middle%22 font-family=%22serif%22 font-size=%2225%22 fill=%22black%22 font-weight=%22900%22>U</text></svg>">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://segredourbano.com.br/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://segredourbano.com.br/logo.png">
+    <link rel="manifest" href="https://segredourbano.com.br/manifest.json">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Segredo Urbano",
+      "url": "https://segredourbano.com.br/",
+      "description": "O melhor portal de acompanhantes do RS. Encontre garotas de programa em Porto Alegre, Guaíba, Canoas, Caxias do Sul e todo o Rio Grande do Sul."
+    }
+    </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -386,7 +398,7 @@
         <button class="btn" id="btn-ver-anuncios" onclick="document.getElementById('inp-filtro-cidade').focus();">VER ANÚNCIOS</button>
         <button class="btn" style="background:#fff; color:#000" onclick="ir('planos')">ANUNCIAR AGORA</button>
         <button class="btn" style="background:none; border: 1px solid #333; font-size:10px;" onclick="abrirEdicao()">SOMENTE PARA ANUNCIANTES, EDITAR MEU ANÚNCIO</button>
-        <div class="galeria-social" id="area-social" style="display:none;">
+        <div class="galeria-social" id="area-social">
             <div class="social-track" id="track-social"></div>
         </div>
     </div>
@@ -1958,12 +1970,11 @@
             });
         }
 
-        // FUNÇÃO ATUALIZADA: Força o navegador a segurar o processo até salvar com o uso de alert/catch
         function aprovarAnuncioPendente(key, foto_capa, cidade) {
             db.ref('anuncios/' + key).update({
                 status: 'ativo', foto_capa: foto_capa, criadoEm: Date.now(), status_cidade: 'ativo_' + normalizarTxt(cidade), authKey: myAuthKey
             }).then(() => syncResumo(key)).then(() => {
-                alert("Anúncio APROVADO com sucesso!"); // O alert trava a execução, garantindo tempo de sync
+                alert("Anúncio APROVADO com sucesso!"); 
                 renderizarListasAdm();
             }).catch(e => {
                 alert("ERRO AO APROVAR. O anúncio não foi salvo: " + e.message);
@@ -2210,7 +2221,6 @@
             while (listaExibicao.length < limiteBolinhas && idxS < simples.length) { listaExibicao.push(simples[idxS]); idxS++; }
             
             let html = '';
-            let htmlSeoImagens = '<h1>Segredo Urbano - Acompanhantes no Rio Grande do Sul</h1><h2>Fotos Reais e Atualizadas</h2>';
             
             listaExibicao.forEach(d => {
                 const isVip = d.plano > 0;
@@ -2219,20 +2229,13 @@
                 const blurStyle = d.borrada ? 'filter: blur(8px) grayscale(100%);' : '';
                 const textStyle = isVip ? 'color: gold; font-weight: bold; font-size: 9px;' : 'color: #888; font-size: 8px;';
                 
-                html += `<div class="item-social"><img src="${d.capa}" style="width:${size}; height:${size}; border-radius: 50%; object-fit: cover; ${borderStyle} ${blurStyle}" loading="lazy"><span style="${textStyle}">${d.cidade}</span></div>`;
-                
-                if(!d.borrada) {
-                    htmlSeoImagens += `<img src="${d.capa}" alt="Acompanhante ${d.nome} em ${d.cidade} - Segredo Urbano">`;
-                }
+                html += `<div class="item-social"><img src="${d.capa}" style="width:${size}; height:${size}; border-radius: 50%; object-fit: cover; ${borderStyle} ${blurStyle}"><span style="${textStyle}">${d.cidade}</span></div>`;
             });
             
             if (html !== '') {
                 document.getElementById('area-social').style.display = 'block';
                 track.innerHTML = html + html;
             }
-
-            const seoFooter = document.getElementById('seo-footer-invisivel');
-            if(seoFooter) seoFooter.innerHTML = htmlSeoImagens;
         });
 
         function definirFotoCapa(index) {
@@ -2241,8 +2244,5 @@
             renderPreviewEdit();
         }
     </script>
-    
-    <footer id="seo-footer-invisivel" style="display:none;"></footer>
-
 </body>
 </html>
