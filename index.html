@@ -1810,15 +1810,24 @@
             btn.style.boxShadow = "0 0 15px white";
 
             const cidadeNormalizada = normalizarTxt(c);
-            db.ref('anuncios').orderByChild('email').equalTo(em).once('value', snap => {
+            
+            Promise.all([
+                db.ref('anuncios').orderByChild('email').equalTo(em).once('value'),
+                db.ref('anuncios').orderByChild('whats').equalTo(w).once('value')
+            ]).then(([snapEmail, snapWhats]) => {
                 let duplicado = false;
-                snap.forEach(child => {
-                    const d = child.val();
-                    const whatsDb = (d.whats || "").toString().replace(/\D/g, '');
-                    if((whatsDb === w || d.email === em) && normalizarTxt(d.cidade) === cidadeNormalizada) {
-                        duplicado = true;
-                    }
-                });
+                
+                const checarDuplicidade = (snap) => {
+                    snap.forEach(child => {
+                        const d = child.val();
+                        if (d.status !== 'excluido' && normalizarTxt(d.cidade) === cidadeNormalizada) {
+                            duplicado = true;
+                        }
+                    });
+                };
+                
+                checarDuplicidade(snapEmail);
+                checarDuplicidade(snapWhats);
 
                 if(duplicado) {
                     btn.innerText = originalText;
