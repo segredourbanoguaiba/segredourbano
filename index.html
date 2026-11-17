@@ -30,6 +30,8 @@
     </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
@@ -81,9 +83,9 @@
         .chat-valida-form p { font-size: 12px; color: #ccc; margin-bottom: 20px; }
         .badge-atendimento { background: #25D366; color: #000; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
 
-        .cidade-txt { text-align: left; font-size: 10px; color: #ff0000; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .cidade-txt { text-align: left; font-size: 10px; color: #ff0000; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
         .bairro-txt { color: #888; font-size: 10px; margin-left: 5px; text-transform: uppercase; font-weight: normal; }
-        .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; }
+        .card-pago { margin: 30px auto; max-width: 480px; text-align: left; padding: 0 10px; border-bottom: 1px solid #331111; padding-bottom: 30px; transition: box-shadow 0.3s, border 0.3s; }
         .img-container { position: relative; border-radius: 15px; overflow: hidden; border: 1px solid #222; background: #000; }
         .card-pago img { width: 100%; height: auto; max-height: 600px; object-fit: contain; display: block; margin: 0 auto; transition: filter 0.3s; }
         .card-pago h2 { font-family: 'Playfair Display', serif; font-size: 30px; margin: 15px 0 5px; color: #fff; text-align: center; }
@@ -94,7 +96,7 @@
         .badge-opcional { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
         .badge-opcional.destaque-valor { border-color: gold; color: gold; }
         .badge-on { background: #25D366; color: #000; border: none; }
-        .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; }
+        .card-gratis { border-bottom: 1px solid #222; padding: 15px 0; max-width: 420px; margin: 0 auto; text-align: left; transition: box-shadow 0.3s, border 0.3s; }
         .card-gratis-flex { display: flex; align-items: center; }
         .card-gratis .img-container { width: 121px; height: 121px; margin-right: 15px; flex-shrink: 0; cursor:pointer; }
         .card-gratis img { width: 121px; height: 121px; object-fit: cover; border-radius: 10px; transition: filter 0.3s; }
@@ -190,18 +192,14 @@
         .info-pontos-visib { font-size: 10px; color: #3498db; font-weight: bold; margin-bottom: 10px; display: block; text-align: left; margin-left: 5%; }
 
         @keyframes glowCardDivulgacao {
-            0% { box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000; border-color: #ff0000; }
-            50% { box-shadow: 0 0 25px #ff0000, 0 0 35px #ff0000; border-color: #ff0000; }
-            100% { box-shadow: none; border-color: #222; }
+            0% { box-shadow: 0 0 5px #ff0000, 0 0 15px #ff0000; border: 2px solid #ff0000; background: #1a0000; }
+            50% { box-shadow: 0 0 35px #ff0000, 0 0 50px #ff0000; border: 2px solid gold; background: #2b0000; }
+            100% { box-shadow: none; border: 1px solid #222; background: transparent; }
         }
         .anuncio-link-destacado {
-            animation: glowCardDivulgacao 1.5s ease-in-out 3 !important;
-        }
-        .card-gratis.anuncio-link-destacado {
-            animation: glowCardDivulgacao 1.5s ease-in-out 3 !important;
-            border: 1px solid #ff0000 !important;
-            padding: 10px !important;
-            border-radius: 10px !important;
+            animation: glowCardDivulgacao 1.2s ease-in-out 4 !important;
+            border-radius: 14px !important;
+            padding: 12px !important;
         }
 
         .btn-definir-capa { position: absolute; bottom: 0; left: 0; background: rgba(0, 0, 0, 0.85); color: #fff; border: none; border-top: 1px solid #444; font-size: 8px; padding: 4px 0; border-radius: 0; cursor: pointer; text-transform: uppercase; font-weight: bold; width: 100%; transition: 0.2s; z-index: 5; text-align: center; }
@@ -227,6 +225,202 @@
             pointer-events: none;
             animation: animarCoracao 0.8s ease-out forwards;
             z-index: 1000000;
+        }
+
+        /* ======== ESTILOS RADAR MAPA VIP, OPENSTREETMAP DARK, STORIES E TAGS ======== */
+        .btn-mapa-vip {
+            background: linear-gradient(135deg, #1a1500 0%, #000000 100%) !important;
+            color: gold !important;
+            border: 1.5px solid gold !important;
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.35);
+            font-size: 12px !important;
+            letter-spacing: 0.5px;
+        }
+        .btn-mapa-vip:active { transform: scale(0.96); }
+
+        .tag-exclusiva-badge {
+            background: #111;
+            border: 1px solid #333;
+            color: gold;
+            padding: 2px 7px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: lowercase;
+            letter-spacing: 0.5px;
+            transition: 0.2s;
+        }
+        .tag-exclusiva-badge:active {
+            background: gold;
+            color: #000;
+        }
+
+        .story-vitrine-destaque {
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px dashed gold;
+            color: gold;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 4px auto 8px;
+            animation: pulseStory 2s infinite;
+        }
+
+        @keyframes pulseStory {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 5px rgba(255,215,0,0.3); }
+            50% { transform: scale(1.03); box-shadow: 0 0 15px rgba(255,215,0,0.7); }
+        }
+
+        #modal-pix-mapa-vip {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.94);
+            z-index: 1000006;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .box-pix-vip {
+            background: #0d0d0d;
+            border: 2px solid gold;
+            border-radius: 16px;
+            padding: 22px;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+
+        #modal-radar-mapa {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 1000005;
+            flex-direction: column;
+        }
+        .radar-header {
+            background: #0d0d0d;
+            border-bottom: 2px solid gold;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        #mapa-leaflet-container {
+            flex: 1;
+            width: 100%;
+            background: #0a0a0a;
+        }
+        .leaflet-tile-pane {
+            filter: invert(100%) hue-rotate(180deg) brightness(88%) contrast(92%);
+        }
+        .radar-footer {
+            background: #0d0d0d;
+            border-top: 1px solid #333;
+            padding: 10px;
+            font-size: 11px;
+            color: gold;
+            font-weight: bold;
+        }
+
+        .pin-avatar-wrap {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .pin-avatar-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #000;
+            transition: transform 0.2s;
+        }
+        .pin-avatar-circle.vip-pin {
+            border: 3px solid gold;
+            box-shadow: 0 0 18px gold;
+        }
+        .pin-avatar-circle.gratis-pin {
+            border: 2.5px solid #ff0000;
+            box-shadow: 0 0 14px #ff0000;
+        }
+        .pin-avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: none !important;
+        }
+        .pin-label-black {
+            background: rgba(0, 0, 0, 0.92);
+            color: #fff;
+            border: 1px solid #444;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-top: 3px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+        }
+        .pin-story-bubble {
+            position: absolute;
+            bottom: 74px;
+            background: linear-gradient(90deg, #ff0055, #ff9900);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 4px 8px;
+            border-radius: 12px;
+            white-space: nowrap;
+            box-shadow: 0 0 12px rgba(255, 0, 85, 0.8);
+            animation: pulseStory 1.5s infinite;
+            z-index: 30;
+            border: 1px solid #fff;
+        }
+        .pin-story-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: #ff4500 transparent transparent;
+        }
+        .pin-voce-aqui {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .pin-voce-bolinha {
+            width: 18px;
+            height: 18px;
+            background: #00e5ff;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 18px #00e5ff;
+            animation: pulseStory 1.4s infinite;
+        }
+        .pin-voce-txt {
+            background: #00e5ff;
+            color: #000;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-top: 3px;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
     </style>
 </head>
@@ -275,6 +469,39 @@
         <b style="color:#25D366; font-size:18px;">✓ COPIADO!</b><br><br>
         <p style="font-size:14px; color:#fff; line-height:1.4; margin:0;">Pague o valor de <b id="valor-aviso" style="color:#25D366;"></b> no seu banco usando o <b>Pix Copia e Cola</b>.</p>
         <small style="display:block; margin-top:15px; color:#666;">Aguarde o redirecionamento...</small>
+    </div>
+
+    <!-- MODAL PIX R$ 3,89 RADAR MAPA VIP -->
+    <div id="modal-pix-mapa-vip">
+        <div class="box-pix-vip">
+            <h3 style="color:gold; font-family:'Playfair Display', serif; margin:0 0 8px;">📍 RADAR MAPA VIP</h3>
+            <p style="font-size:11px; color:#ccc; margin:0 0 15px; line-height:1.4;">Libere por <b>24 horas</b> o mapa interativo com a localização de bairro e Stories em tempo real por apenas <b style="color:#25D366;">R$ 3,89</b>.</p>
+            
+            <div id="area-qr-mapa-vip" style="margin:10px 0;">
+                <p id="status-gerando-pix-vip" style="color:gold; font-size:12px; font-weight:bold;">Gerando Pix automático...</p>
+                <img id="img-qr-vip" src="" style="display:none; width:170px; height:170px; margin:0 auto 10px; border-radius:8px; border:2px solid gold; background:#fff; padding:4px;">
+                <input type="text" id="input-copia-cola-vip" readonly style="display:none; width:90%; background:#000; border:1px dashed gold; color:#25D366; font-size:10px; padding:8px; text-align:center; margin:5px auto;" onclick="this.select()">
+            </div>
+
+            <button class="btn" id="btn-copiar-pix-vip" style="display:none; background:#25D366; color:#000; font-weight:900; padding:12px; font-size:12px;" onclick="copiarPixMapaVip()">COPIAR PIX COPIA E COLA</button>
+            <p id="status-aguardando-pagamento-vip" style="display:none; font-size:10px; color:#aaa; margin-top:8px;">🔄 Aguardando pagamento... Liberação automática!</p>
+            <button class="btn" style="background:#222; color:#aaa; padding:10px; font-size:11px; margin-top:12px;" onclick="fecharModalPixMapaVip()">FECHAR</button>
+        </div>
+    </div>
+
+    <!-- MODAL MAPA INTERATIVO LEAFLET -->
+    <div id="modal-radar-mapa">
+        <div class="radar-header">
+            <div style="text-align:left;">
+                <b style="color:gold; font-size:13px; display:block;">📍 RADAR MAPA VIP</b>
+                <span id="radar-cidade-titulo" style="font-size:10px; color:#aaa; text-transform:uppercase;">CARREGANDO...</span>
+            </div>
+            <button onclick="fecharRadarMapa()" style="background:red; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:900; font-size:11px; cursor:pointer;">FECHAR ✕</button>
+        </div>
+        <div id="mapa-leaflet-container"></div>
+        <div class="radar-footer" id="radar-tempo-restante">
+            ⏳ Acesso VIP Ativo • Toque em uma foto para abrir o anúncio
+        </div>
     </div>
 
     <a href="https://wa.me/5551981833377?text=Olá moderadores, preciso de ajuda." target="_blank" id="btn-suporte-fixo">● SUPORTE 1</a>
@@ -357,7 +584,7 @@
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('PR', this)">PARANÁ (PR)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('PE', this)">PERNAMBUCO (PE)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('PI', this)">PIAUÍ (PI)</button>
-                <button class="item-cidade-link" onclick="carregarCidadesEstado('RJ', 'this')">RIO DE JANEIRO (RJ)</button>
+                <button class="item-cidade-link" onclick="carregarCidadesEstado('RJ', this)">RIO DE JANEIRO (RJ)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('RN', this)">RIO GRANDE DO NORTE (RN)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('RS', this)">RIO GRANDE DO SUL (RS)</button>
                 <button class="item-cidade-link" onclick="carregarCidadesEstado('RO', this)">RONDÔNIA (RO)</button>
@@ -395,6 +622,7 @@
 
     <div id="menu" class="tela ativa">
         <button class="btn" id="btn-ver-anuncios" onclick="document.getElementById('inp-filtro-cidade').focus();">VER ANÚNCIOS</button>
+        <button class="btn btn-mapa-vip" id="btn-mapa-vip-menu" onclick="acionarRadarMapaVip('menu')">📍 VER MAIS PRÓXIMAS NO MAPA POR R$ 3,89</button>
         <button class="btn" style="background:#fff; color:#000" onclick="ir('planos')">ANUNCIAR AGORA</button>
         <button class="btn" style="background:none; border: 1px solid #333; font-size:10px;" onclick="abrirEdicao()">SOMENTE PARA ANUNCIANTES, EDITAR MEU ANÚNCIO</button>
         <div class="galeria-social" id="area-social" style="display:none;">
@@ -441,6 +669,12 @@
             
             <button class="btn btn-upgrade" id="btn-solicitar-upgrade" onclick="ir('planos-upgrade')">FAZER UPGRADE DE PLANO 🚀</button>
             
+            <div id="box-status-story-edit" style="display:none; background:#1a1400; border:1px solid gold; padding:12px; border-radius:8px; margin:15px 0; text-align:left;">
+                <p style="font-size:10px; color:gold; font-weight:900; margin:0 0 5px;">⚡ STATUS RÁPIDO NO MAPA (DURA 24H - MÁX 25 LETRAS):</p>
+                <input type="text" id="edit-status-story" maxlength="25" placeholder="Ex: Livre agora no Centro 🔥" style="width:95%; margin:4px 0; border-color:gold;">
+                <small style="font-size:9px; color:#ccc; display:block;">Aparece piscando acima da sua foto no Mapa VIP e no seu card da vitrine por 24h.</small>
+            </div>
+
             <div class="alerta-troca-tel">
                 <p>Precisa trocar seu WhatsApp ou Telefone? <b>Custo: R$ 19,90.</b></p>
                 <p>🎁 Você ganha <b>+7 dias de destaque</b> ao realizar a para trocar.</p>
@@ -596,6 +830,7 @@
     </div>
 
     <div id="vitrine" class="tela">
+        <button class="btn btn-mapa-vip" id="btn-mapa-vip-vitrine" style="margin-bottom: 12px;" onclick="acionarRadarMapaVip('vitrine')">📍 VER QUEM ESTÁ PRÓXIMA NO MAPA POR R$ 3,89</button>
         <div class="container-genero-filtros">
             <button class="btn-filtro-genero ativo" id="btn-vitrine-Feminino" onclick="filtrarPorGenero('Feminino', this)">MULHERES</button>
             <button class="btn-filtro-genero" id="btn-vitrine-Masculino" onclick="filtrarPorGenero('Masculino', this)">HOMENS</button>
@@ -623,7 +858,7 @@
         <div id="lista-troca-tel"></div>
         <hr style="border-color:#333;">
 
-        <h4 style="text-align:left; colorgold;">🚀 PEDIDOS DE UPGRADE:</h4>
+        <h4 style="text-align:left; color:gold;">🚀 PEDIDOS DE UPGRADE:</h4>
         <div id="lista-upgrades"></div>
         <hr style="border-color:#333;">
 
@@ -646,25 +881,90 @@
         let chatGlobalId = null;
         let hashesNovasFotos = [];
 
+        // URL DO COFRE GOOGLE APPS SCRIPT (PONTE MERCADO PAGO)
+        const URL_COFRE_MP = "https://script.google.com/macros/s/AKfycbx5bDbTZLL3iYY9YpZViIN-Yg5k2i5bBEAOn_9KjC1Jw_VRkOWK_VgnaMUJRjeNaY3f/exec";
+        let timerVerificacaoPixVip = null;
+        let mapaLeafletInstance = null;
+        let cidadeAlvoMapaVip = "";
+        let cacheGeoBairros = {};
+        
+        // VARIÁVEIS PARA GARANTIR O SCROLL E PISCAR AO CLICAR NO AVATAR DO MAPA
+        let idAlvoPendenteScroll = null;
+        let generoAlvoPendente = null;
+
         // SENHA DE SERVIDOR PARA BLINDAR COMANDOS DO ADM
         let myAuthKey = "";
 
-        // FUNÇÃO ATUALIZADA: Pede a senha sempre que o botão for clicado
-        function logAdm(alvo) { 
-            const s = prompt("Senha:"); 
-            if (s === null) return; // Se cancelar o prompt
-            if(btoa(s) === "MTkwNzgz") { 
-                myAuthKey = "Guaiba2026_Segredo_Urbano_X99_Secure"; 
-                ir(alvo); 
+        function fecharTecladoCelular() {
+            if (document.activeElement && typeof document.activeElement.blur === "function") {
+                document.activeElement.blur();
+            }
+            const inpCid = document.getElementById('inp-filtro-cidade');
+            if (inpCid) inpCid.blur();
+        }
+
+        // ATUALIZA OS TEXTOS DOS BOTÕES DO MAPA VIP CONFORME AS 24 HORAS
+        function atualizarBotoesMapaVip() {
+            const expira = parseInt(localStorage.getItem('su_vip_mapa_expira') || "0");
+            const agora = Date.now();
+            const btnMenu = document.getElementById('btn-mapa-vip-menu');
+            const btnVitrine = document.getElementById('btn-mapa-vip-vitrine');
+
+            if (expira > agora) {
+                const txtAtivo = "📍 CLIQUE AQUI PARA REABRIR O MAPA VIP";
+                if (btnMenu) btnMenu.innerText = txtAtivo;
+                if (btnVitrine) btnVitrine.innerText = txtAtivo;
             } else {
-                alert("Senha incorreta");
+                if (btnMenu) btnMenu.innerText = "📍 VER MAIS PRÓXIMAS NO MAPA POR R$ 3,89";
+                if (btnVitrine) btnVitrine.innerText = "📍 VER QUEM ESTÁ PRÓXIMA NO MAPA POR R$ 3,89";
             }
         }
 
-        // FUNÇÃO NOVA: Limpa a chave ao sair do ADM para que peça senha de novo
+        atualizarBotoesMapaVip();
+        setInterval(atualizarBotoesMapaVip, 15000);
+
+        function logAdm(alvo) { 
+            fecharTecladoCelular();
+            setTimeout(() => {
+                const s = prompt("Senha:"); 
+                if (s === null) return;
+                if(btoa(s) === "MTkwNzgz") { 
+                    myAuthKey = "Guaiba2026_Segredo_Urbano_X99_Secure"; 
+                    fecharTecladoCelular();
+                    ir(alvo); 
+                } else {
+                    alert("Senha incorreta");
+                }
+            }, 80);
+        }
+
         function sairAdm() {
-            myAuthKey = ""; // Derruba a sessão de forma segura
+            myAuthKey = "";
+            fecharTecladoCelular();
             ir('menu');
+        }
+
+        // ======== SISTEMA DE TAGS EXCLUSIVAS (@) ======== //
+        function gerarTagExclusiva(nome, key) {
+            const limpo = normalizarTxt(nome || "modelo");
+            const sufixo = (key || "00").slice(-2).toLowerCase();
+            return "@" + limpo + sufixo;
+        }
+
+        function copiarTagModelo(event, tag) {
+            event.stopPropagation();
+            navigator.clipboard.writeText(tag);
+            alert("TAG " + tag + " copiada!");
+        }
+
+        // ======== SISTEMA DE STORIES 24H ======== //
+        function obterStoryAtivo(d) {
+            if (!d || !(d.plano > 0) || !d.status_story || !d.status_story_time) return null;
+            const agora = Date.now();
+            if (agora - d.status_story_time <= 24 * 60 * 60 * 1000) {
+                return d.status_story;
+            }
+            return null;
         }
 
         // ======== SISTEMA DE CURTIDAS ======== //
@@ -726,7 +1026,7 @@
             });
         }
 
-        // ======== NOVA FUNÇÃO DE DUPLA GRAVAÇÃO (SYNC RESUMO BLINDADO) ======== //
+        // ======== DUPLA GRAVAÇÃO (SYNC RESUMO BLINDADO) ======== //
         function syncResumo(key) {
             return db.ref('anuncios/' + key).once('value').then(snap => {
                 const d = snap.val();
@@ -750,11 +1050,444 @@
                     v_hora: d.v_hora || "", tem_local: d.tem_local || "", horario_atend: d.horario_atend || "", 
                     fotosBorradas: d.fotosBorradas || [], privacyLink: d.privacyLink || "", onlyfansLink: d.onlyfansLink || "", 
                     pontos_atividade: d.pontos_atividade || 0, totalFotos: d.fotos ? d.fotos.length : 0,
-                    token: d.token || ""
+                    token: d.token || "",
+                    status_story: d.status_story || "",
+                    status_story_time: d.status_story_time || 0,
+                    tag_exclusiva: gerarTagExclusiva(d.nome, key),
+                    lat: d.lat || null,
+                    lng: d.lng || null
                 };
                 if(myAuthKey) resumo.authKey = myAuthKey;
                 return db.ref('anuncios_resumo/' + key).set(resumo);
             });
+        }
+
+        // ======== RADAR MAPA VIP + COORDENADAS CALIBRADAS NOS BAIRROS REAIS ======== //
+        const COORDENADAS_CIDADES = {
+            "guaiba": [-30.1136, -51.3250],
+            "portoalegre": [-30.0346, -51.2177],
+            "canoas": [-29.9189, -51.1781],
+            "caxiasdosul": [-29.1678, -51.1794],
+            "pelotas": [-31.7654, -52.3376],
+            "passofundo": [-28.2628, -52.4067],
+            "santamaria": [-29.6842, -53.8069],
+            "novohamburgo": [-29.6783, -51.1306],
+            "saoleopoldo": [-29.7604, -51.1472],
+            "ibipora": [-23.2692, -51.0481],
+            "gravatai": [-29.9444, -50.9919],
+            "viamao": [-30.0811, -51.0233],
+            "alvorada": [-29.9897, -51.0836],
+            "cachoeirinha": [-29.9511, -51.0939],
+            "eldoradodosul": [-30.0836, -51.6164],
+            "sapucaiadosul": [-29.8275, -51.1447],
+            "esteio": [-29.8525, -51.1842],
+            "santacruzdosul": [-29.7175, -52.4258],
+            "riogrande": [-32.0350, -52.0986],
+            "bentogoncalves": [-29.1714, -51.5186],
+            "lajeado": [-29.4669, -51.9614],
+            "tramandai": [-29.9847, -50.1328],
+            "capaodacanoa": [-29.7608, -50.0169]
+        };
+
+        const COORDENADAS_BAIRROS_GUAIBA = {
+            "centro": [-30.1088, -51.3188],
+            "parque35": [-30.1065, -51.3340],
+            "chacaradaspaineiras": [-30.1015, -51.3300],
+            "colina": [-30.1180, -51.3415],
+            "moradasdacolina": [-30.1160, -51.3465],
+            "santarita": [-30.0955, -51.3375],
+            "cohab": [-30.0975, -51.3395],
+            "cohabsantarita": [-30.0965, -51.3385],
+            "jardimdoslagos": [-30.1135, -51.3515],
+            "columbiacity": [-30.1215, -51.3460],
+            "bomfim": [-30.1290, -51.3500],
+            "altosdaalegria": [-30.1275, -51.3355],
+            "alegria": [-30.1255, -51.3320],
+            "vilaalegria": [-30.1255, -51.3320],
+            "vilaiolanda": [-30.1170, -51.3260],
+            "jardimiolanda": [-30.1325, -51.3295],
+            "pedrasbrancas": [-30.1188, -51.3295],
+            "ermo": [-30.1235, -51.3275],
+            "ermida": [-30.1205, -51.3240],
+            "florida": [-30.1380, -51.3285],
+            "passofundo": [-30.1430, -51.3395],
+            "alvorada": [-30.1230, -51.3205],
+            "coronelvisitacao": [-30.1045, -51.3235],
+            "ipiranga": [-30.1140, -51.3320],
+            "saojorge": [-30.1310, -51.3410],
+            "primavera": [-30.1285, -51.3420],
+            "ramada": [-30.1345, -51.3380],
+            "engenhovelho": [-30.1120, -51.3360],
+            "fatima": [-30.1150, -51.3290],
+            "lotenovo": [-30.1020, -51.3360]
+        };
+
+        function acionarRadarMapaVip(origem) {
+            fecharTecladoCelular();
+            const inputCid = document.getElementById('inp-filtro-cidade').value.trim();
+            if (inputCid && !inputCid.startsWith('@')) {
+                cidadeAlvoMapaVip = inputCid;
+                localStorage.setItem('su_ultima_cidade_mapa', inputCid);
+            } else {
+                cidadeAlvoMapaVip = localStorage.getItem('su_ultima_cidade_mapa') || "";
+            }
+
+            const expira = parseInt(localStorage.getItem('su_vip_mapa_expira') || "0");
+            const agora = Date.now();
+
+            if (expira > agora) {
+                atualizarBotoesMapaVip();
+                abrirRadarMapaInterativo(cidadeAlvoMapaVip);
+            } else {
+                iniciarCheckoutPixMapaVip();
+            }
+        }
+
+        function iniciarCheckoutPixMapaVip() {
+            document.getElementById('modal-pix-mapa-vip').style.display = 'flex';
+            document.getElementById('status-gerando-pix-vip').style.display = 'block';
+            document.getElementById('status-gerando-pix-vip').innerText = 'Gerando QR Code Pix (R$ 3,89)...';
+            document.getElementById('img-qr-vip').style.display = 'none';
+            document.getElementById('input-copia-cola-vip').style.display = 'none';
+            document.getElementById('btn-copiar-pix-vip').style.display = 'none';
+            document.getElementById('status-aguardando-pagamento-vip').style.display = 'none';
+
+            const payloadPix = {
+                transaction_amount: 3.89,
+                description: "Acesso 24h Radar Mapa VIP - Segredo Urbano",
+                payment_method_id: "pix",
+                payer: {
+                    email: "cliente_vip@segredourbano.com.br",
+                    first_name: "Visitante",
+                    last_name: "VIP",
+                    identification: {
+                        type: "CPF",
+                        number: "19119119100"
+                    }
+                }
+            };
+
+            fetch(URL_COFRE_MP, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payloadPix)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res && res.point_of_interaction && res.point_of_interaction.transaction_data) {
+                    const qrBase64 = res.point_of_interaction.transaction_data.qr_code_base64;
+                    const qrCodeTxt = res.point_of_interaction.transaction_data.qr_code;
+                    const paymentId = res.id;
+
+                    document.getElementById('status-gerando-pix-vip').style.display = 'none';
+                    if (qrBase64) {
+                        const imgQr = document.getElementById('img-qr-vip');
+                        imgQr.src = "data:image/png;base64," + qrBase64;
+                        imgQr.style.display = 'block';
+                    }
+                    const inpCopia = document.getElementById('input-copia-cola-vip');
+                    inpCopia.value = qrCodeTxt;
+                    inpCopia.style.display = 'block';
+                    document.getElementById('btn-copiar-pix-vip').style.display = 'block';
+                    document.getElementById('status-aguardando-pagamento-vip').style.display = 'block';
+
+                    monitorarPagamentoPixVip(paymentId);
+                } else {
+                    const msgErro = (res && res.message) ? res.message : "Verifique a chave Pix da conta Mercado Pago.";
+                    document.getElementById('status-gerando-pix-vip').innerText = "Erro ao gerar Pix: " + msgErro;
+                }
+            })
+            .catch(err => {
+                document.getElementById('status-gerando-pix-vip').innerText = "Falha de conexão com o servidor Pix.";
+            });
+        }
+
+        function copiarPixMapaVip() {
+            const inp = document.getElementById('input-copia-cola-vip');
+            inp.select();
+            inp.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(inp.value);
+            const btn = document.getElementById('btn-copiar-pix-vip');
+            btn.innerText = "✓ CÓDIGO PIX COPIADO!";
+            setTimeout(() => { btn.innerText = "COPIAR PIX COPIA E COLA"; }, 3000);
+        }
+
+        function monitorarPagamentoPixVip(paymentId) {
+            if (timerVerificacaoPixVip) clearInterval(timerVerificacaoPixVip);
+            timerVerificacaoPixVip = setInterval(() => {
+                fetch(URL_COFRE_MP + "?id=" + paymentId)
+                .then(r => r.json())
+                .then(res => {
+                    if (res && res.status === "approved") {
+                        clearInterval(timerVerificacaoPixVip);
+                        const expiraEm = Date.now() + (24 * 60 * 60 * 1000);
+                        localStorage.setItem('su_vip_mapa_expira', expiraEm.toString());
+                        atualizarBotoesMapaVip();
+                        fecharModalPixMapaVip();
+                        abrirRadarMapaInterativo(cidadeAlvoMapaVip);
+                    }
+                })
+                .catch(() => {});
+            }, 4000);
+        }
+
+        function fecharModalPixMapaVip() {
+            if (timerVerificacaoPixVip) clearInterval(timerVerificacaoPixVip);
+            document.getElementById('modal-pix-mapa-vip').style.display = 'none';
+        }
+
+        function fecharRadarMapa() {
+            document.getElementById('modal-radar-mapa').style.display = 'none';
+        }
+
+        async function resolverCoordenadasCidade(nomeCidade) {
+            const norm = normalizarTxt(nomeCidade);
+            if (COORDENADAS_CIDADES[norm]) return COORDENADAS_CIDADES[norm];
+            try {
+                const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(nomeCidade + " Brasil")}&limit=1`);
+                const d = await r.json();
+                if (d && d.features && d.features.length > 0) {
+                    const coords = d.features[0].geometry.coordinates;
+                    const c = [coords[1], coords[0]];
+                    COORDENADAS_CIDADES[norm] = c;
+                    return c;
+                }
+            } catch(e) {}
+            return [-30.1136, -51.3250];
+        }
+
+        async function resolverCoordenadasBairroExato(nomeCidade, nomeBairro, baseCoords) {
+            const cidNorm = normalizarTxt(nomeCidade);
+            let baiNorm = normalizarTxt(nomeBairro || "centro");
+            baiNorm = baiNorm.replace(/^bairro/, "").replace(/^vila/, "vila");
+            const chaveCache = cidNorm + "_" + baiNorm;
+
+            if (cacheGeoBairros[chaveCache]) return cacheGeoBairros[chaveCache];
+
+            if (cidNorm === "guaiba") {
+                if (COORDENADAS_BAIRROS_GUAIBA[baiNorm]) {
+                    cacheGeoBairros[chaveCache] = [...COORDENADAS_BAIRROS_GUAIBA[baiNorm]];
+                    return cacheGeoBairros[chaveCache];
+                }
+                for (const k of Object.keys(COORDENADAS_BAIRROS_GUAIBA)) {
+                    if (baiNorm.includes(k) || k.includes(baiNorm)) {
+                        cacheGeoBairros[chaveCache] = [...COORDENADAS_BAIRROS_GUAIBA[k]];
+                        return cacheGeoBairros[chaveCache];
+                    }
+                }
+            }
+
+            try {
+                const q = `${nomeBairro} ${nomeCidade} Brasil`;
+                const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=1`);
+                const d = await r.json();
+                if (d && d.features && d.features.length > 0) {
+                    const coords = d.features[0].geometry.coordinates;
+                    const lat = coords[1];
+                    const lng = coords[0];
+                    if (Math.abs(lat - baseCoords[0]) < 0.22 && Math.abs(lng - baseCoords[1]) < 0.22) {
+                        const c = [lat, lng];
+                        cacheGeoBairros[chaveCache] = c;
+                        return c;
+                    }
+                }
+            } catch(e) {}
+
+            let hash = 0;
+            for (let i = 0; i < baiNorm.length; i++) {
+                hash = ((hash << 5) - hash) + baiNorm.charCodeAt(i);
+                hash |= 0;
+            }
+            const latOffset = ((hash % 100) / 100) * 0.022 - 0.011;
+            const lngOffset = (((hash >> 4) % 100) / 100) * 0.022 - 0.011;
+            const fallback = [baseCoords[0] + latOffset, baseCoords[1] + lngOffset];
+            cacheGeoBairros[chaveCache] = fallback;
+            return fallback;
+        }
+
+        async function detectarCidadePorIP() {
+            try {
+                const r = await fetch("https://ipwho.is/");
+                const d = await r.json();
+                if (d && d.city) {
+                    if (normalizarTxt(d.city) === "portoalegre") return "Guaíba";
+                    return d.city;
+                }
+            } catch(e) {}
+            return "Guaíba";
+        }
+
+        function obterLocalizacaoClienteGPS() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) return resolve(null);
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => resolve([pos.coords.latitude, pos.coords.longitude]),
+                    () => resolve(null),
+                    { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
+                );
+            });
+        }
+
+        async function descobrirCidadePeloGPS(lat, lng) {
+            if (lat >= -30.20 && lat <= -30.05 && lng >= -51.42 && lng <= -51.28) {
+                return "Guaíba";
+            }
+            try {
+                const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                const d = await r.json();
+                if (d && d.address) {
+                    return d.address.city || d.address.town || d.address.municipality || null;
+                }
+            } catch(e) {}
+            return null;
+        }
+
+        async function abrirRadarMapaInterativo(cidadeDigitada) {
+            atualizarBotoesMapaVip();
+            const expira = parseInt(localStorage.getItem('su_vip_mapa_expira') || "0");
+            const horasRestantes = Math.max(1, Math.ceil((expira - Date.now()) / (1000 * 60 * 60)));
+            document.getElementById('radar-tempo-restante').innerText = `⏳ Acesso VIP Ativo (${horasRestantes}h restantes) • Toque na foto para abrir o anúncio`;
+            document.getElementById('radar-cidade-titulo').innerText = "LOCALIZANDO...";
+            document.getElementById('modal-radar-mapa').style.display = 'flex';
+
+            const inputAtual = document.getElementById('inp-filtro-cidade').value.trim();
+            let cidadeFinal = "";
+            if (inputAtual && !inputAtual.startsWith('@')) {
+                cidadeFinal = inputAtual;
+            } else if (cidadeDigitada && !cidadeDigitada.startsWith('@')) {
+                cidadeFinal = cidadeDigitada.trim();
+            }
+
+            const coordsUsuarioGPS = await obterLocalizacaoClienteGPS();
+
+            if (!cidadeFinal) {
+                if (coordsUsuarioGPS) {
+                    const cidGps = await descobrirCidadePeloGPS(coordsUsuarioGPS[0], coordsUsuarioGPS[1]);
+                    if (cidGps) cidadeFinal = cidGps;
+                }
+                if (!cidadeFinal) {
+                    cidadeFinal = localStorage.getItem('su_ultima_cidade_mapa') || await detectarCidadePorIP();
+                }
+            }
+
+            let buscaChave = "ativo_" + normalizarTxt(cidadeFinal);
+            let snapCheck = await db.ref('anuncios_resumo').orderByChild('status_cidade').equalTo(buscaChave).once('value');
+            if (!snapCheck.exists() && !inputAtual) {
+                cidadeFinal = "Guaíba";
+                buscaChave = "ativo_guaiba";
+                snapCheck = await db.ref('anuncios_resumo').orderByChild('status_cidade').equalTo(buscaChave).once('value');
+            }
+
+            localStorage.setItem('su_ultima_cidade_mapa', cidadeFinal);
+            document.getElementById('radar-cidade-titulo').innerText = cidadeFinal.toUpperCase();
+            const baseCoords = await resolverCoordenadasCidade(cidadeFinal);
+
+            if (mapaLeafletInstance) {
+                mapaLeafletInstance.remove();
+                mapaLeafletInstance = null;
+            }
+
+            mapaLeafletInstance = L.map('mapa-leaflet-container').setView(baseCoords, 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap | Segredo Urbano VIP',
+                maxZoom: 19
+            }).addTo(mapaLeafletInstance);
+
+            setTimeout(() => {
+                if (mapaLeafletInstance) mapaLeafletInstance.invalidateSize();
+            }, 200);
+
+            if (coordsUsuarioGPS) {
+                const iconeVoce = L.divIcon({
+                    className: 'custom-voce-pin',
+                    html: `<div class="pin-voce-aqui"><div class="pin-voce-bolinha"></div><div class="pin-voce-txt">📍 VOCÊ ESTÁ AQUI</div></div>`,
+                    iconSize: [110, 42],
+                    iconAnchor: [55, 21]
+                });
+                L.marker(coordsUsuarioGPS, { icon: iconeVoce, zIndexOffset: 1000 }).addTo(mapaLeafletInstance);
+            }
+
+            let modelosPorBairro = {};
+
+            snapCheck.forEach(child => {
+                const d = child.val();
+                if (d.status !== 'ativo') return;
+                const nomeBairroOriginal = (d.bairro || "CENTRO").trim();
+                const bNorm = normalizarTxt(nomeBairroOriginal);
+                if (!modelosPorBairro[bNorm]) {
+                    modelosPorBairro[bNorm] = { nomeExibicao: nomeBairroOriginal, lista: [] };
+                }
+                modelosPorBairro[bNorm].lista.push({ key: child.key, ...d });
+            });
+
+            for (const bKey of Object.keys(modelosPorBairro)) {
+                const objBairro = modelosPorBairro[bKey];
+                const grupo = objBairro.lista;
+                const centroBairro = await resolverCoordenadasBairroExato(cidadeFinal, objBairro.nomeExibicao, baseCoords);
+
+                L.circleMarker(centroBairro, {
+                    radius: 5,
+                    fillColor: '#ff0000',
+                    color: '#ffffff',
+                    weight: 1.5,
+                    opacity: 1,
+                    fillOpacity: 1
+                }).addTo(mapaLeafletInstance);
+
+                grupo.forEach((m, idx) => {
+                    let lat = centroBairro[0];
+                    let lng = centroBairro[1];
+                    if (grupo.length > 1) {
+                        const angulo = (2 * Math.PI * idx) / grupo.length;
+                        const raio = 0.0020 + (grupo.length > 4 ? 0.0008 : 0);
+                        lat += Math.sin(angulo) * raio;
+                        lng += Math.cos(angulo) * raio;
+                    }
+
+                    if (grupo.length > 1) {
+                        L.polyline([centroBairro, [lat, lng]], {
+                            color: '#ff0000',
+                            weight: 2,
+                            dashArray: '4, 6',
+                            opacity: 0.9
+                        }).addTo(mapaLeafletInstance);
+                    }
+
+                    const isVip = (m.plano || 0) > 0;
+                    const storyTxt = obterStoryAtivo(m);
+
+                    // NO MAPA VIP TODAS AS BOLINHAS APARECEM 100% SEM BLUR
+                    const htmlPin = `
+                        <div class="pin-avatar-wrap">
+                            ${storyTxt ? `<div class="pin-story-bubble">${storyTxt}</div>` : ''}
+                            <div class="pin-avatar-circle ${isVip ? 'vip-pin' : 'gratis-pin'}">
+                                <img src="${m.foto_capa}">
+                            </div>
+                            <div class="pin-label-black">${m.nome} • ${m.bairro || 'CENTRO'}</div>
+                        </div>
+                    `;
+
+                    const iconeCustom = L.divIcon({
+                        className: 'custom-leaflet-pin',
+                        html: htmlPin,
+                        iconSize: [90, 85],
+                        iconAnchor: [45, 42]
+                    });
+
+                    const marker = L.marker([lat, lng], { icon: iconeCustom }).addTo(mapaLeafletInstance);
+                    marker.on('click', () => {
+                        fecharRadarMapa();
+                        irParaAnuncioDoMapa(m.key, m.cidade, m.genero || 'Feminino');
+                    });
+                });
+            }
+        }
+
+        function irParaAnuncioDoMapa(anuncioKey, cidadeModelo, generoModelo) {
+            idAlvoPendenteScroll = anuncioKey;
+            generoAlvoPendente = generoModelo || 'Feminino';
+            document.getElementById('inp-filtro-cidade').value = cidadeModelo;
+            filtrarPorCidade(cidadeModelo);
         }
 
         function generatePhotoHash(base64) {
@@ -926,6 +1659,7 @@
         const normalizarTxt = (txt) => txt ? txt.toString().normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "") : "";
 
         function abrirListaCidades() {
+            fecharTecladoCelular();
             document.getElementById('etapa-estado').style.display = 'block';
             document.getElementById('etapa-cidade').style.display = 'none';
             document.getElementById('modal-cidades').style.display = 'block';
@@ -1100,8 +1834,9 @@
             const linkBase = window.location.origin + window.location.pathname;
             document.getElementById('link-divulgacao-campo').value = linkBase + "?id=" + key;
 
+            const tagGerada = gerarTagExclusiva(data.nome, key);
             const infoDiv = document.getElementById('info-modelo-edit');
-            infoDiv.innerHTML = `<img src="${data.fotos[0]}"><div><b style="font-size:18px;">${data.nome}</b><br><small style="color:#25D366; font-weight:bold;">📍 ${data.cidade} ✔️</small></div>`;
+            infoDiv.innerHTML = `<img src="${data.fotos[0]}"><div><b style="font-size:18px;">${data.nome}</b> <span class="tag-exclusiva-badge" onclick="copiarTagModelo(event, '${tagGerada}')">${tagGerada}</span><br><small style="color:#25D366; font-weight:bold;">📍 ${data.cidade} ✔️</small></div>`;
             document.getElementById('edit-nome').value = data.nome || "";
             document.getElementById('edit-valor').value = data.v_hora || "";
             document.getElementById('edit-local').value = data.tem_local || "nao";
@@ -1117,6 +1852,16 @@
                 document.getElementById('edit-h-fecha').value = partes[1];
             }
             document.getElementById('btn-solicitar-upgrade').style.display = (data.plano > 0) ? 'none' : 'block';
+
+            const boxStory = document.getElementById('box-status-story-edit');
+            const inpStory = document.getElementById('edit-status-story');
+            if (data.plano > 0) {
+                boxStory.style.display = 'block';
+                inpStory.value = obterStoryAtivo(data) || "";
+            } else {
+                boxStory.style.display = 'none';
+                inpStory.value = "";
+            }
             
             imgsEdit = data.fotos || [];
             capaTemporaria = data.foto_capa || imgsEdit[0];
@@ -1160,73 +1905,7 @@
             db.ref('anuncios_resumo/' + idAlvo).once('value', snap => {
                 const d = snap.val();
                 if (!d || d.status !== 'ativo') return;
-
-                document.getElementById('inp-filtro-cidade').value = d.cidade;
-                document.getElementById('badge-local-topo').innerText = "📍 " + d.cidade.toUpperCase();
-                
-                const termoNormal = normalizarTxt(d.cidade);
-                const buscaChave = "ativo_" + termoNormal;
-
-                db.ref('anuncios_resumo').orderByChild('status_cidade').equalTo(buscaChave).once('value', snapCid => {
-                    const lv = document.getElementById('lv');
-                    lv.innerHTML = '';
-                    let listaFiltrada = [];
-                    const agora = Date.now();
-                    
-                    snapCid.forEach(childSnap => {
-                        const adv = childSnap.val();
-                        let score = 0;
-                        if(adv.plano > 0) {
-                            const dataFim = (adv.criadoEm || agora) + (adv.plano * 24 * 60 * 60 * 1000);
-                            const diff = dataFim - agora;
-                            const diasRestantes = diff / (1000 * 60 * 60 * 24);
-                            if(agora > dataFim) {
-                                adv.plano = 0; adv.pos = 999;
-                                db.ref('anuncios/' + childSnap.key).update({ plano: 0, pos: 999, authKey: myAuthKey || "" }).then(() => syncResumo(childSnap.key));
-                            } else {
-                                score = Math.ceil(diasRestantes) * 100;
-                            }
-                        }
-                        score += (adv.pontos_atividade || 0);
-                        listaFiltrada.push({key: childSnap.key, ...adv, scoreRank: score});
-                    });
-
-                    ir('vitrine');
-
-                    const modalidade = d.genero || 'Feminino';
-                    const btnGen = document.getElementById('btn-vitrine-' + modalidade);
-                    
-                    document.querySelectorAll('.btn-filtro-genero').forEach(b => b.classList.remove('ativo'));
-                    if(btnGen) btnGen.classList.add('ativo');
-
-                    let filtradosPorGenero = listaFiltrada.filter(item => item.genero === modalidade);
-                    const btnBusca = document.getElementById('btn-lupa-busca');
-                    
-                    finalizarRenderizacao(filtradosPorGenero, btnBusca, btnBusca.innerHTML, d.cidade);
-
-                    setTimeout(() => {
-                        let cardElement = document.getElementById('img-pago-' + idAlvo);
-                        let containerCard = cardElement ? cardElement.closest('.card-pago') : null;
-
-                        if (!containerCard) {
-                            let todosGratis = document.querySelectorAll('.card-gratis');
-                            for (let cardG of todosGratis) {
-                                if (cardG.innerHTML.includes(`abrirGaleria('${idAlvo}'`)) {
-                                    containerCard = cardG;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (containerCard) {
-                            containerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            containerCard.classList.add('anuncio-link-destacado');
-                            setTimeout(() => {
-                                containerCard.classList.remove('anuncio-link-destacado');
-                            }, 5000);
-                        }
-                    }, 500);
-                });
+                irParaAnuncioDoMapa(idAlvo, d.cidade, d.genero || 'Feminino');
             });
         }
 
@@ -1306,7 +1985,6 @@
         }
 
         function deletarFotoEdit(index) {
-            const planoAtivo = planoTemporario > 0;
             if(imgsEdit.length <= 1 && novasImgsTemp.length === 0) { alert("O anúncio precisa de pelo menos 1 foto."); return; }
             
             if(confirm("Deseja remover esta foto do quadro oficial?\n(Lembre-se de clicar em SALVAR ALTERAÇÕES para confirmar no sistema)")) {
@@ -1341,7 +2019,6 @@
                 const ehCapa = (data === capaTemporaria);
                 
                 let htmlFoto = `<div class="foto-edit-wrapper ${ehCapa ? 'capa-selecionada' : ''}"><img src="${data}">`;
-                
                 htmlFoto += `<button class="btn-del-foto" onclick="deletarFotoEdit(${idx})">&times;</button>`;
                 
                 if(ehCapa) {
@@ -1388,6 +2065,7 @@
             const h1 = formatarInputHora(document.getElementById('edit-h-abre').value);
             const h2 = formatarInputHora(document.getElementById('edit-h-fecha').value);
             const hFinal = `${h1} às ${h2}`;
+            const txtStory = document.getElementById('edit-status-story') ? document.getElementById('edit-status-story').value.trim().slice(0, 25) : "";
             
             db.ref('anuncios/' + keyEdicao).once('value', snap => {
                 const data = snap.val();
@@ -1420,7 +2098,9 @@
                     pontos_atividade: ptsAtuais + novosPontos,
                     historico_fotos: historico,
                     status_cidade: `${data.status || 'ativo'}_${normalizarTxt(data.cidade)}`,
-                    token: tk
+                    token: tk,
+                    status_story: (data.plano > 0) ? txtStory : "",
+                    status_story_time: (data.plano > 0 && txtStory) ? Date.now() : 0
                 };
                 if(myAuthKey) upData.authKey = myAuthKey;
                 
@@ -1483,6 +2163,7 @@
         }
 
         function filtrarPorCidade(termoManual = "") {
+            fecharTecladoCelular();
             const btnBusca = document.getElementById('btn-lupa-busca');
             const originalIcon = btnBusca.innerHTML;
             btnBusca.innerHTML = "⌛";
@@ -1496,7 +2177,29 @@
                 btnBusca.innerHTML = originalIcon;
                 return false; 
             }
+
+            if (termoOriginal.startsWith('@')) {
+                const tagBusca = termoOriginal.toLowerCase();
+                db.ref('anuncios_resumo').orderByChild('status').equalTo('ativo').once('value', snap => {
+                    let encontrado = null;
+                    snap.forEach(ch => {
+                        const d = ch.val();
+                        const tg = d.tag_exclusiva || gerarTagExclusiva(d.nome, ch.key);
+                        if (tg.toLowerCase() === tagBusca) {
+                            encontrado = { key: ch.key, ...d };
+                        }
+                    });
+                    btnBusca.innerHTML = originalIcon;
+                    if (encontrado) {
+                        irParaAnuncioDoMapa(encontrado.key, encontrado.cidade, encontrado.genero || 'Feminino');
+                    } else {
+                        alert("Nenhuma modelo encontrada com a TAG " + termoOriginal);
+                    }
+                });
+                return true;
+            }
             
+            localStorage.setItem('su_ultima_cidade_mapa', termoOriginal);
             const lv = document.getElementById('lv'); 
             lv.innerHTML = '<p style="color:#666; margin-top:20px;">Buscando anúncios...</p>'; 
             ir('vitrine');
@@ -1531,8 +2234,10 @@
                     listaFiltrada.push({key: childSnap.key, ...d, scoreRank: score});
                 });
                 
-                const btnMulher = document.getElementById('btn-vitrine-Feminino');
-                filtrarPorGenero('Feminino', btnMulher, listaFiltrada);
+                const generoInicial = generoAlvoPendente || 'Feminino';
+                generoAlvoPendente = null;
+                const btnGenAlvo = document.getElementById('btn-vitrine-' + generoInicial) || document.getElementById('btn-vitrine-Feminino');
+                filtrarPorGenero(generoInicial, btnGenAlvo, listaFiltrada);
             });
             btnBusca.innerHTML = originalIcon;
             return true;
@@ -1540,7 +2245,7 @@
 
         function filtrarPorGenero(genero, btn, listaPreCarregada = null) {
             document.querySelectorAll('.btn-filtro-genero').forEach(b => b.classList.remove('ativo'));
-            btn.classList.add('ativo');
+            if (btn) btn.classList.add('ativo');
 
             const lv = document.getElementById('lv');
             const termoCidade = normalizarTxt(document.getElementById('inp-filtro-cidade').value);
@@ -1612,7 +2317,13 @@
                 const mensagemMelhorada = `🔥 *SEGREDO URBANO* 🔥\nOlá ${d.nome}, vi seu anúncio no site *Segredo Urbano* e gostaria de mais informações! 📍\n\n*Vim por este link:* ${linkBaseAnuncio}`;
                 const waLink = `https://wa.me/${d.whats}?text=${encodeURIComponent(mensagemMelhorada)}`;
                 
+                const tagExclusiva = d.tag_exclusiva || gerarTagExclusiva(d.nome, d.key);
+                const tagHtml = `<span class="tag-exclusiva-badge" onclick="copiarTagModelo(event, '${tagExclusiva}')">${tagExclusiva}</span>`;
                 const bTxt = d.bairro ? `<span class="bairro-txt">• ${d.bairro}</span>` : "";
+                
+                const storyAtivo = obterStoryAtivo(d);
+                const storyHtml = storyAtivo ? `<div style="text-align:center;"><span class="story-vitrine-destaque">⚡ ${storyAtivo}</span></div>` : "";
+
                 const estaOn = checkStatus(d.horario_atend);
                 let opcionalHtml = '<div class="info-opcional-bar">';
                 if(estaOn) opcionalHtml += `<div class="badge-opcional badge-on">🟢 DISPONÍVEL AGORA</div>`;
@@ -1644,10 +2355,10 @@
 
                 if(d.plano > 0) {
                     const styleBlur = borradas.includes(indexDaCapa) ? 'filter: blur(10px) grayscale(100%);' : '';
-                    lv.innerHTML += `<div class="card-pago"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="img-container"><img src="${fotoParaCapa}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${totalFotos}</div><div id="btn-curtir-${d.key}" class="btn-curtir btn-curtir-pago" onclick="curtirAnuncio(event, '${d.key}')"><span class="coracao" id="icone-coracao-${d.key}">🤍</span> <span style="margin: 0 2px;">CURTIR</span> <span id="count-curtidas-${d.key}">0</span></div>${totalFotos > 1 || autoCura ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
+                    lv.innerHTML += `<div class="card-pago" id="card-anuncio-${d.key}"><div class="cidade-txt"><span>📍 ${d.cidade} ${bTxt}</span> ${tagHtml}</div><div class="img-container"><img src="${fotoParaCapa}" style="${styleBlur}" id="img-pago-${d.key}" onclick="abrirGaleria('${d.key}')" loading="lazy"><div class="badge-fotos" id="badge-pago-${d.key}">📸 1/${totalFotos}</div><div id="btn-curtir-${d.key}" class="btn-curtir btn-curtir-pago" onclick="curtirAnuncio(event, '${d.key}')"><span class="coracao" id="icone-coracao-${d.key}">🤍</span> <span style="margin: 0 2px;">CURTIR</span> <span id="count-curtidas-${d.key}">0</span></div>${totalFotos > 1 || autoCura ? `<button class="btn-seta seta-esq" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', -1)">&#10094;</button><button class="btn-seta seta-dir" onclick="event.stopPropagation(); trocarFotoCard('${d.key}', 1)">&#10095;</button>` : ''}</div><h2>${d.nome}</h2>${storyHtml}${opcionalHtml}<a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" class="btn btn-whats">WhatsApp</a>${conteudosHtml}</div>`;
                 } else {
                     const styleBlur = borradas.includes(indexDaCapa) ? 'filter: blur(10px) grayscale(100%)' : '';
-                    lv.innerHTML += `<div class="card-gratis"><div class="cidade-txt">📍 ${d.cidade} ${bTxt}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${fotoParaCapa}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" id="badge-gratis-${d.key}" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${totalFotos}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}<div style="display:flex; gap:8px; margin-top:6px; align-items:center;"><div id="btn-curtir-${d.key}" class="btn-curtir" onclick="curtirAnuncio(event, '${d.key}')"><span class="coracao" id="icone-coracao-${d.key}">🤍</span> <span style="margin: 0 2px;">CURTIR</span> <span id="count-curtidas-${d.key}">0</span></div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold;">WHATS</a></div></div></div></div>`;
+                    lv.innerHTML += `<div class="card-gratis" id="card-anuncio-${d.key}"><div class="cidade-txt"><span>📍 ${d.cidade} ${bTxt}</span> ${tagHtml}</div><div class="card-gratis-flex"><div class="img-container" style="position:relative;" onclick="abrirGaleria('${d.key}', 0)"><img src="${fotoParaCapa}" style="${styleBlur}" loading="lazy"><div class="badge-fotos" id="badge-gratis-${d.key}" style="font-size:8px; padding:2px 5px; top:3px; right:3px;">📸 ${totalFotos}</div></div><div style="flex:1;"><b>${d.nome}</b>${opcionalHtml}<div style="display:flex; gap:8px; margin-top:6px; align-items:center;"><div id="btn-curtir-${d.key}" class="btn-curtir" onclick="curtirAnuncio(event, '${d.key}')"><span class="coracao" id="icone-coracao-${d.key}">🤍</span> <span style="margin: 0 2px;">CURTIR</span> <span id="count-curtidas-${d.key}">0</span></div><a href="${waLink}" target="_blank" onclick="trackZap('${d.key}')" style="color:#25D366; text-decoration:none; border:1px solid #25D366; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold;">WHATS</a></div></div></div></div>`;
                 }
 
                 if (autoCura) {
@@ -1671,11 +2382,26 @@
                 document.getElementById('txt-aviso-vazio').innerText = `Ainda não temos anúncios nesta categoria em ${termo.toUpperCase()}.`; 
                 document.getElementById('aviso-vazio').style.display = 'block'; 
             } else { document.getElementById('aviso-vazio').style.display = 'none'; }
+
+            if (idAlvoPendenteScroll) {
+                const alvoId = idAlvoPendenteScroll;
+                idAlvoPendenteScroll = null;
+                setTimeout(() => {
+                    const cardEl = document.getElementById('card-anuncio-' + alvoId);
+                    if (cardEl) {
+                        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        cardEl.classList.add('anuncio-link-destacado');
+                        setTimeout(() => cardEl.classList.remove('anuncio-link-destacado'), 5500);
+                    }
+                }, 250);
+            }
         }
 
         window.onpopstate = function(event) { 
             if (document.getElementById('modal-galeria').style.display === 'block') { 
                 fecharGaleria(); 
+            } else if (document.getElementById('modal-radar-mapa').style.display === 'flex') {
+                fecharRadarMapa();
             } else if (event.state && event.state.page) {
                 ir(event.state.page, true); 
             } else if (telaAtual !== 'menu') { 
@@ -1684,6 +2410,8 @@
         };
 
         function ir(id, isBack = false) { 
+            fecharTecladoCelular();
+            atualizarBotoesMapaVip();
             document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa')); 
             document.getElementById(id).classList.add('ativa'); 
             telaAtual = id;
@@ -1848,7 +2576,8 @@
                     pontos_atividade: 0,
                     historico_fotos: historicoInicial,
                     status_cidade: `pendente_${cidadeNormalizada}`,
-                    token: tkGerado
+                    token: tkGerado,
+                    tag_exclusiva: gerarTagExclusiva(n, novoRef.key)
                 }).then(() => {
                     return syncResumo(novoRef.key); 
                 }).then(() => { 
